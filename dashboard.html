@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Student Performance Analytics Portal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">📊 EduAnalytics</a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+        <li><a href="report.html" class="nav-link">Reports</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== DASHBOARD LAYOUT: SIDEBAR + MAIN ===== -->
+  <div class="dashboard-layout">
+
+    <!-- ---- SIDEBAR ---- -->
+    <aside class="sidebar">
+      <ul class="sidebar-menu">
+        <li><a href="dashboard.html" class="active">📊 Overview</a></li>
+        <li><a href="report.html">📄 Performance Reports</a></li>
+        <li><a href="#addStudentForm">➕ Add Student</a></li>
+        <li><a href="#studentTable">🎓 Student Records</a></li>
+        <li><a href="contact.html">⚙️ Settings</a></li>
+      </ul>
+    </aside>
+
+    <!-- ---- MAIN CONTENT ---- -->
+    <main class="dashboard-main">
+      <h1 style="margin-bottom:6px;">Welcome back, Teacher 👋</h1>
+      <p style="color:var(--text-muted); margin-bottom:30px;">Here's what's happening with your students today.</p>
+
+      <!-- Quick Stats -->
+      <div class="stats-grid" style="margin-bottom:40px;">
+        <div class="stat-card">
+          <div class="stat-icon">🎓</div>
+          <h3>128</h3>
+          <p>Students Enrolled</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📈</div>
+          <h3>82.6%</h3>
+          <p>Class Average</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🏆</div>
+          <h3>34</h3>
+          <p>Top Performers</p>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⚠️</div>
+          <h3>9</h3>
+          <p>Need Attention</p>
+        </div>
+      </div>
+
+      <!-- Add Student Form -->
+      <h2 style="margin-bottom:16px;" id="addStudentForm">Add New Student Record</h2>
+      <div class="form-container" style="margin-bottom:40px; max-width:100%;">
+        <div class="success-message" id="dashSuccessMsg">✅ Student record added successfully!</div>
+        <form id="addStudentFormEl" novalidate>
+          <div class="form-row">
+            <div class="form-group" id="grp-name">
+              <label for="studentName">Full Name</label>
+              <input type="text" id="studentName" placeholder="e.g. Ali Raza" />
+              <span class="error-text">Please enter the student's full name.</span>
+            </div>
+            <div class="form-group" id="grp-roll">
+              <label for="rollNo">Roll Number</label>
+              <input type="text" id="rollNo" placeholder="e.g. STU-1042" />
+              <span class="error-text">Please enter a valid roll number.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group" id="grp-class">
+              <label for="studentClass">Class / Grade</label>
+              <select id="studentClass">
+                <option value="">Select Class</option>
+                <option>Grade 9</option>
+                <option>Grade 10</option>
+                <option>Grade 11</option>
+                <option>Grade 12</option>
+              </select>
+              <span class="error-text">Please select a class.</span>
+            </div>
+            <div class="form-group" id="grp-score">
+              <label for="studentScore">Average Score (%)</label>
+              <input type="number" id="studentScore" min="0" max="100" placeholder="e.g. 85" />
+              <span class="error-text">Enter a valid score between 0 and 100.</span>
+            </div>
+          </div>
+
+          <div class="form-group" id="grp-email">
+            <label for="studentEmail">Guardian Email</label>
+            <input type="email" id="studentEmail" placeholder="e.g. guardian@example.com" />
+            <span class="error-text">Please enter a valid email address.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;">Add Student</button>
+        </form>
+      </div>
+
+      <!-- Student Records Table -->
+      <h2 style="margin-bottom:16px;" id="studentTable">Student Records</h2>
+      <div class="table-wrapper">
+        <table id="studentsTable">
+          <thead>
+            <tr>
+              <th>Roll No.</th>
+              <th>Name</th>
+              <th>Class</th>
+              <th>Avg. Score</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>STU-1001</td>
+              <td>Ayesha Khan</td>
+              <td>Grade 10</td>
+              <td>92%</td>
+              <td><span class="badge badge-success">Excellent</span></td>
+            </tr>
+            <tr>
+              <td>STU-1002</td>
+              <td>Bilal Ahmed</td>
+              <td>Grade 9</td>
+              <td>74%</td>
+              <td><span class="badge badge-warning">Average</span></td>
+            </tr>
+            <tr>
+              <td>STU-1003</td>
+              <td>Sara Malik</td>
+              <td>Grade 11</td>
+              <td>58%</td>
+              <td><span class="badge badge-danger">At Risk</span></td>
+            </tr>
+            <tr>
+              <td>STU-1004</td>
+              <td>Hamza Tariq</td>
+              <td>Grade 12</td>
+              <td>88%</td>
+              <td><span class="badge badge-success">Excellent</span></td>
+            </tr>
+            <tr>
+              <td>STU-1005</td>
+              <td>Zainab Fatima</td>
+              <td>Grade 10</td>
+              <td>67%</td>
+              <td><span class="badge badge-warning">Average</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
