@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up | Student Performance Analytics Portal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">📊 EduAnalytics</a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="report.html" class="nav-link">Reports</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="login.html" class="nav-link" id="navAuthLink">Login</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <section class="auth-section">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="auth-icon">📝</div>
+        <h1>Create Account</h1>
+        <p>Sign up to start tracking student performance</p>
+      </div>
+
+      <div class="success-message" id="signupSuccessMsg">✅ Account created successfully! Redirecting to login...</div>
+      <div class="error-banner" id="signupErrorBanner">❌ An account with this email already exists.</div>
+
+      <form id="signupFormEl" novalidate>
+        <div class="form-group" id="grp-sname">
+          <label for="signupName">Full Name</label>
+          <input type="text" id="signupName" placeholder="e.g. Ali Raza" autocomplete="name" />
+          <span class="error-text">Please enter your full name (min 3 characters).</span>
+        </div>
+
+        <div class="form-group" id="grp-semail">
+          <label for="signupEmail">Email Address</label>
+          <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="username" />
+          <span class="error-text">Please enter a valid email address.</span>
+        </div>
+
+        <div class="form-group" id="grp-srole">
+          <label for="signupRole">Role</label>
+          <select id="signupRole">
+            <option value="">Select your role</option>
+            <option value="Teacher">Teacher</option>
+            <option value="Administrator">Administrator</option>
+            <option value="Coordinator">Coordinator</option>
+          </select>
+          <span class="error-text">Please select your role.</span>
+        </div>
+
+        <div class="form-group" id="grp-spassword">
+          <label for="signupPassword">Password</label>
+          <div class="password-wrapper">
+            <input type="password" id="signupPassword" placeholder="Create a password" autocomplete="new-password" />
+            <button type="button" class="toggle-password" id="toggleSignupPassword" aria-label="Show password">👁️</button>
+          </div>
+          <span class="error-text">Password must be at least 6 characters.</span>
+          <div class="password-strength" id="passwordStrength"></div>
+        </div>
+
+        <div class="form-group" id="grp-sconfirm">
+          <label for="signupConfirmPassword">Confirm Password</label>
+          <input type="password" id="signupConfirmPassword" placeholder="Re-enter your password" autocomplete="new-password" />
+          <span class="error-text">Passwords do not match.</span>
+        </div>
+
+        <div class="form-group" id="grp-sterms">
+          <label class="checkbox-label">
+            <input type="checkbox" id="agreeTerms" />
+            <span>I agree to the Terms of Service and Privacy Policy</span>
+          </label>
+          <span class="error-text">You must agree to continue.</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%;">Create Account</button>
+
+        <p class="auth-hint">Already have an account? <a href="login.html" style="color:var(--primary-color); font-weight:600;">Login here</a></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
