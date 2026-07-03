@@ -537,3 +537,187 @@ tbody tr:hover {
 @media (max-width: 900px) {
   .contact-grid { grid-template-columns: 1fr !important; }
 }
+/* ==========================================================================
+   WEEK 2 ADDITIONS: Login Page, Interactive Cards, Sortable Tables,
+   Search/Filter Bar, Mobile Table Cards, Scroll-Spy Nav
+   ========================================================================== */
+
+/* ---- Login / Auth Page ---- */
+.auth-section {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 50px 20px;
+  background: linear-gradient(135deg, #eff6ff, #f8fafc);
+}
+
+.auth-card {
+  background: var(--bg-white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: 40px;
+  max-width: 440px;
+  width: 100%;
+}
+
+.auth-header { text-align: center; margin-bottom: 28px; }
+
+.auth-icon {
+  width: 60px; height: 60px;
+  background: rgba(37,99,235,0.1);
+  color: var(--primary-color);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.8rem;
+  margin: 0 auto 16px;
+}
+
+.auth-header h1 { font-size: 1.6rem; margin-bottom: 6px; }
+.auth-header p { color: var(--text-muted); font-size: 0.9rem; }
+
+.password-wrapper { position: relative; }
+.toggle-password {
+  position: absolute;
+  right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  cursor: pointer; font-size: 1.1rem;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-size: 0.88rem;
+}
+
+.checkbox-label { display: flex; align-items: center; gap: 6px; cursor: pointer; color: var(--text-muted); }
+.forgot-link { color: var(--primary-color); font-weight: 500; }
+.forgot-link:hover { text-decoration: underline; }
+
+.auth-hint {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 18px;
+  background: var(--bg-light);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.error-banner {
+  background: rgba(239,68,68,0.1);
+  color: var(--danger-color);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  font-size: 0.88rem;
+  display: none;
+}
+
+/* ---- Clickable / Interactive Stat Cards ---- */
+.stat-card.clickable { cursor: pointer; position: relative; }
+.stat-card.clickable::before {
+  content: '🔍 Click to filter';
+  position: absolute;
+  bottom: 8px; left: 0; right: 0;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  opacity: 0;
+  transition: var(--transition);
+}
+.stat-card.clickable:hover::before { opacity: 1; }
+.stat-card.card-active { border-top-color: var(--secondary-color); background: rgba(16,185,129,0.05); }
+
+/* ---- Search & Filter Bar (Dashboard) ---- */
+.toolbar {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.toolbar input[type="text"],
+.toolbar select {
+  padding: 10px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+}
+
+.toolbar input[type="text"] { flex: 1; min-width: 200px; }
+
+.btn-sm {
+  padding: 9px 18px;
+  font-size: 0.85rem;
+}
+
+.btn-clear {
+  background: var(--bg-light);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border-color);
+}
+.btn-clear:hover { background: var(--border-color); }
+
+/* ---- Sortable Table Headers ---- */
+th.sortable { cursor: pointer; user-select: none; position: relative; }
+th.sortable:hover { background: var(--primary-dark); }
+th.sortable::after { content: ' ⇅'; font-size: 0.75rem; opacity: 0.6; }
+th.sortable.sort-asc::after { content: ' ↑'; opacity: 1; }
+th.sortable.sort-desc::after { content: ' ↓'; opacity: 1; }
+
+/* ---- Result count / empty state ---- */
+.result-info {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* ---- Scroll-spy active nav highlight already handled via JS + .active class ---- */
+
+/* ---- Responsive: Mobile Table -> Card View ---- */
+@media (max-width: 700px) {
+  .toolbar { flex-direction: column; align-items: stretch; }
+
+  table.responsive-table thead { display: none; }
+
+  table.responsive-table, table.responsive-table tbody, table.responsive-table tr, table.responsive-table td {
+    display: block;
+    width: 100%;
+  }
+
+  table.responsive-table tr {
+    margin-bottom: 14px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 14px;
+    background: var(--bg-white);
+  }
+
+  table.responsive-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 0.88rem;
+  }
+
+  table.responsive-table td:last-child { border-bottom: none; }
+
+  table.responsive-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card { padding: 26px; }
+  .form-options { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
