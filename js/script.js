@@ -241,7 +241,138 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------------------------------------------------------
-     1. LOGIN FORM VALIDATION + FAKE AUTH SYSTEM
+     1. USER STORAGE HELPERS (localStorage-based mini "database")
+  --------------------------------------------------------- */
+  const USERS_KEY = 'eduanalytics_users';
+
+  function getStoredUsers() {
+    const usersJSON = localStorage.getItem(USERS_KEY);
+    let users = usersJSON ? JSON.parse(usersJSON) : [];
+
+    // Seed a default demo account if none exist yet
+    if (users.length === 0) {
+      users = [{ name: 'Demo Teacher', email: 'demo@eduanalytics.com', role: 'Teacher', password: 'demo123' }];
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+    return users;
+  }
+
+  function saveUser(newUser) {
+    const users = getStoredUsers();
+    users.push(newUser);
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+
+  function findUserByEmail(email) {
+    return getStoredUsers().find(u => u.email.toLowerCase() === email.toLowerCase());
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  /* ---------------------------------------------------------
+     2. SIGNUP FORM: VALIDATION + REGISTER NEW USER
+  --------------------------------------------------------- */
+  const signupForm = document.getElementById('signupFormEl');
+
+  if (signupForm) {
+    const signupPasswordInput = document.getElementById('signupPassword');
+    const toggleSignupBtn = document.getElementById('toggleSignupPassword');
+    const strengthBar = document.getElementById('passwordStrength');
+
+    if (toggleSignupBtn) {
+      toggleSignupBtn.addEventListener('click', function () {
+        const isHidden = signupPasswordInput.type === 'password';
+        signupPasswordInput.type = isHidden ? 'text' : 'password';
+        toggleSignupBtn.textContent = isHidden ? '🙈' : '👁️';
+      });
+    }
+
+    // Live password strength indicator
+    if (strengthBar) {
+      signupPasswordInput.addEventListener('input', function () {
+        const val = signupPasswordInput.value;
+        strengthBar.classList.remove('weak', 'medium', 'strong');
+        if (val.length === 0) return;
+
+        const hasUpper = /[A-Z]/.test(val);
+        const hasNumber = /[0-9]/.test(val);
+        const hasSpecial = /[^A-Za-z0-9]/.test(val);
+        const score = [hasUpper, hasNumber, hasSpecial, val.length >= 8].filter(Boolean).length;
+
+        if (val.length < 6) strengthBar.classList.add('weak');
+        else if (score <= 2) strengthBar.classList.add('medium');
+        else strengthBar.classList.add('strong');
+      });
+    }
+
+    signupForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      let isValid = true;
+
+      const nameGroup = document.getElementById('grp-sname');
+      const nameInput = document.getElementById('signupName');
+      const emailGroup = document.getElementById('grp-semail');
+      const emailInput = document.getElementById('signupEmail');
+      const roleGroup = document.getElementById('grp-srole');
+      const roleInput = document.getElementById('signupRole');
+      const passGroup = document.getElementById('grp-spassword');
+      const confirmGroup = document.getElementById('grp-sconfirm');
+      const confirmInput = document.getElementById('signupConfirmPassword');
+      const termsGroup = document.getElementById('grp-sterms');
+      const termsCheckbox = document.getElementById('agreeTerms');
+      const errorBanner = document.getElementById('signupErrorBanner');
+      const successMsg = document.getElementById('signupSuccessMsg');
+
+      errorBanner.style.display = 'none';
+
+      if (nameInput.value.trim().length < 3) { nameGroup.classList.add('invalid'); isValid = false; }
+      else nameGroup.classList.remove('invalid');
+
+      if (!emailPattern.test(emailInput.value.trim())) { emailGroup.classList.add('invalid'); isValid = false; }
+      else emailGroup.classList.remove('invalid');
+
+      if (roleInput.value === '') { roleGroup.classList.add('invalid'); isValid = false; }
+      else roleGroup.classList.remove('invalid');
+
+      if (signupPasswordInput.value.length < 6) { passGroup.classList.add('invalid'); isValid = false; }
+      else passGroup.classList.remove('invalid');
+
+      if (confirmInput.value !== signupPasswordInput.value || confirmInput.value === '') {
+        confirmGroup.classList.add('invalid'); isValid = false;
+      } else confirmGroup.classList.remove('invalid');
+
+      if (!termsCheckbox.checked) { termsGroup.classList.add('invalid'); isValid = false; }
+      else termsGroup.classList.remove('invalid');
+
+      if (!isValid) return;
+
+      // Check if email already registered
+      if (findUserByEmail(emailInput.value.trim())) {
+        errorBanner.textContent = '❌ An account with this email already exists. Please login instead.';
+        errorBanner.style.display = 'block';
+        return;
+      }
+
+      // Save the new user
+      saveUser({
+        name: nameInput.value.trim(),
+        email: emailInput.value.trim(),
+        role: roleInput.value,
+        password: signupPasswordInput.value
+      });
+
+      successMsg.style.display = 'block';
+      signupForm.reset();
+      strengthBar?.classList.remove('weak', 'medium', 'strong');
+
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1500);
+    });
+  }
+
+  /* ---------------------------------------------------------
+     3. LOGIN FORM: VALIDATE AGAINST REGISTERED USERS
   --------------------------------------------------------- */
   const loginForm = document.getElementById('loginFormEl');
 
@@ -249,7 +380,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const togglePasswordBtn = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('loginPassword');
 
-    // Show/hide password toggle
     if (togglePasswordBtn) {
       togglePasswordBtn.addEventListener('click', function () {
         const isHidden = passwordInput.type === 'password';
@@ -270,15 +400,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
       errorBanner.style.display = 'none';
 
-      // Email format check
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailPattern.test(emailInput.value.trim())) {
         emailGroup.classList.add('invalid'); isValid = false;
       } else {
         emailGroup.classList.remove('invalid');
       }
 
-      // Password length check
       if (passwordInput.value.trim().length < 6) {
         passGroup.classList.add('invalid'); isValid = false;
       } else {
@@ -287,45 +414,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (!isValid) return;
 
-      // ---- Demo Authentication (front-end only, no real backend) ----
-      const DEMO_EMAIL = 'demo@eduanalytics.com';
-      const DEMO_PASSWORD = 'demo123';
+      // Check credentials against ALL registered users (not just demo)
+      const matchedUser = findUserByEmail(emailInput.value.trim());
 
-      if (emailInput.value.trim() === DEMO_EMAIL && passwordInput.value === DEMO_PASSWORD) {
+      if (matchedUser && matchedUser.password === passwordInput.value) {
         successMsg.style.display = 'block';
 
-        // Remember login state if "Remember me" checked
         const rememberMe = document.getElementById('rememberMe').checked;
+        const userData = JSON.stringify({ name: matchedUser.name, email: matchedUser.email, role: matchedUser.role });
+
         if (rememberMe) {
-          localStorage.setItem('eduanalytics_user', emailInput.value.trim());
+          localStorage.setItem('eduanalytics_current_user', userData);
         } else {
-          sessionStorage.setItem('eduanalytics_user', emailInput.value.trim());
+          sessionStorage.setItem('eduanalytics_current_user', userData);
         }
 
-        // Redirect to dashboard after short delay
         setTimeout(() => {
           window.location.href = 'dashboard.html';
         }, 1200);
       } else {
+        errorBanner.textContent = '❌ Invalid email or password. Try demo@eduanalytics.com / demo123, or sign up for a new account.';
         errorBanner.style.display = 'block';
       }
     });
   }
 
-  /* ---------------------------------------------------------
-     2. UPDATE NAVBAR LOGIN/LOGOUT STATE ON ALL PAGES
+ /* ---------------------------------------------------------
+     4. UPDATE NAVBAR LOGIN/LOGOUT STATE ON ALL PAGES
   --------------------------------------------------------- */
   const navAuthLink = document.getElementById('navAuthLink');
-  const loggedInUser = localStorage.getItem('eduanalytics_user') || sessionStorage.getItem('eduanalytics_user');
+  const currentUserJSON = localStorage.getItem('eduanalytics_current_user') || sessionStorage.getItem('eduanalytics_current_user');
+  const currentUser = currentUserJSON ? JSON.parse(currentUserJSON) : null;
 
   if (navAuthLink) {
-    if (loggedInUser) {
+    if (currentUser) {
       navAuthLink.textContent = 'Logout';
       navAuthLink.href = '#';
       navAuthLink.addEventListener('click', function (e) {
         e.preventDefault();
-        localStorage.removeItem('eduanalytics_user');
-        sessionStorage.removeItem('eduanalytics_user');
+        localStorage.removeItem('eduanalytics_current_user');
+        sessionStorage.removeItem('eduanalytics_current_user');
         window.location.href = 'login.html';
       });
     } else {
@@ -334,13 +462,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Personalize dashboard welcome message
+  // Personalize dashboard welcome message with actual registered name
   const welcomeMsg = document.getElementById('welcomeMsg');
-  if (welcomeMsg && loggedInUser) {
-    const nameGuess = loggedInUser.split('@')[0];
-    welcomeMsg.textContent = `Welcome back, ${nameGuess} 👋`;
+  if (welcomeMsg && currentUser) {
+    welcomeMsg.textContent = `Welcome back, ${currentUser.name} 👋`;
   }
-
   /* ---------------------------------------------------------
      3. DYNAMIC DASHBOARD CARDS (auto-count + click to filter)
   --------------------------------------------------------- */
