@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reports | Student Performance Analytics Portal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">📊 EduAnalytics</a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="report.html" class="nav-link active">Reports</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE HEADER ===== -->
+  <header class="page-header">
+    <h1>Performance Reports</h1>
+    <p>Detailed subject-wise and term-wise breakdown of student performance</p>
+  </header>
+
+  <section class="stats-section container">
+
+    <!-- Filter Bar -->
+    <div class="form-container" style="max-width:100%; padding:24px; margin-bottom:30px;">
+      <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr auto; align-items:end; gap:16px;">
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="filterClass">Filter by Class</label>
+          <select id="filterClass">
+            <option value="all">All Classes</option>
+            <option value="Grade 9">Grade 9</option>
+            <option value="Grade 10">Grade 10</option>
+            <option value="Grade 11">Grade 11</option>
+            <option value="Grade 12">Grade 12</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="filterSubject">Subject</label>
+          <select id="filterSubject">
+            <option value="all">All Subjects</option>
+            <option>Mathematics</option>
+            <option>Science</option>
+            <option>English</option>
+            <option>Computer Studies</option>
+          </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <label for="searchStudent">Search Student</label>
+          <input type="text" id="searchStudent" placeholder="Search by name or roll no..." />
+        </div>
+        <button class="btn btn-primary" id="applyFilterBtn">Apply</button>
+      </div>
+    </div>
+
+    <!-- Report Summary Cards -->
+    <div class="stats-grid" style="margin-bottom:40px;">
+      <div class="stat-card">
+        <div class="stat-icon">📘</div>
+        <h3>85%</h3>
+        <p>Mathematics Avg.</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔬</div>
+        <h3>79%</h3>
+        <p>Science Avg.</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📖</div>
+        <h3>88%</h3>
+        <p>English Avg.</p>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">💻</div>
+        <h3>91%</h3>
+        <p>Computer Studies Avg.</p>
+      </div>
+    </div>
+
+    <!-- Detailed Report Table -->
+    <h2 style="margin-bottom:16px;">Detailed Performance Report</h2>
+    <div class="table-wrapper">
+      <table id="reportTable">
+        <thead>
+          <tr>
+            <th>Roll No.</th>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Subject</th>
+            <th>Score</th>
+            <th>Grade</th>
+            <th>Progress</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-class="Grade 10" data-subject="Mathematics">
+            <td>STU-1001</td><td>Ayesha Khan</td><td>Grade 10</td><td>Mathematics</td><td>92%</td>
+            <td><span class="badge badge-success">A+</span></td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:92%;"></div></div></td>
+          </tr>
+          <tr data-class="Grade 9" data-subject="Science">
+            <td>STU-1002</td><td>Bilal Ahmed</td><td>Grade 9</td><td>Science</td><td>74%</td>
+            <td><span class="badge badge-warning">B</span></td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:74%; background:var(--accent-color);"></div></div></td>
+          </tr>
+          <tr data-class="Grade 11" data-subject="English">
+            <td>STU-1003</td><td>Sara Malik</td><td>Grade 11</td><td>English</td><td>58%</td>
+            <td><span class="badge badge-danger">C</span></td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:58%; background:var(--danger-color);"></div></div></td>
+          </tr>
+          <tr data-class="Grade 12" data-subject="Computer Studies">
+            <td>STU-1004</td><td>Hamza Tariq</td><td>Grade 12</td><td>Computer Studies</td><td>88%</td>
+            <td><span class="badge badge-success">A</span></td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:88%;"></div></div></td>
+          </tr>
+          <tr data-class="Grade 10" data-subject="Mathematics">
+            <td>STU-1005</td><td>Zainab Fatima</td><td>Grade 10</td><td>Mathematics</td><td>67%</td>
+            <td><span class="badge badge-warning">B-</span></td>
+            <td><div class="progress-bar"><div class="progress-fill" style="width:67%; background:var(--accent-color);"></div></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p id="noResultsMsg" style="display:none; text-align:center; color:var(--text-muted); margin-top:20px;">No matching records found.</p>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
