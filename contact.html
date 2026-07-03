@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | Student Performance Analytics Portal</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== NAVIGATION BAR ===== -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">📊 EduAnalytics</a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="report.html" class="nav-link">Reports</a></li>
+        <li><a href="contact.html" class="nav-link active">Contact</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ===== PAGE HEADER ===== -->
+  <header class="page-header">
+    <h1>Get in Touch</h1>
+    <p>Have questions? We'd love to hear from you.</p>
+  </header>
+
+  <section class="stats-section container">
+    <div style="display:grid; grid-template-columns: 1fr 1.3fr; gap:40px;" class="contact-grid">
+
+      <!-- Contact Info -->
+      <div>
+        <h2 style="margin-bottom:20px;">Contact Information</h2>
+        <div class="feature-card" style="margin-bottom:16px;">
+          <div class="icon-box">📧</div>
+          <h3>Email</h3>
+          <p>support@eduanalytics.com</p>
+        </div>
+        <div class="feature-card" style="margin-bottom:16px;">
+          <div class="icon-box">📞</div>
+          <h3>Phone</h3>
+          <p>+92 300 1234567</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon-box">📍</div>
+          <h3>Address</h3>
+          <p>123 Education Street, Gulberg, Lahore, Pakistan</p>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="form-container" style="max-width:100%;">
+        <div class="success-message" id="contactSuccessMsg">✅ Your message has been sent successfully! We'll get back to you soon.</div>
+        <form id="contactFormEl" novalidate>
+          <div class="form-row">
+            <div class="form-group" id="grp-cname">
+              <label for="contactName">Full Name</label>
+              <input type="text" id="contactName" placeholder="Your name" />
+              <span class="error-text">Please enter your name.</span>
+            </div>
+            <div class="form-group" id="grp-cemail">
+              <label for="contactEmail">Email Address</label>
+              <input type="email" id="contactEmail" placeholder="you@example.com" />
+              <span class="error-text">Please enter a valid email.</span>
+            </div>
+          </div>
+
+          <div class="form-group" id="grp-csubject">
+            <label for="contactSubject">Subject</label>
+            <select id="contactSubject">
+              <option value="">Select a subject</option>
+              <option>General Inquiry</option>
+              <option>Technical Support</option>
+              <option>Feedback / Suggestion</option>
+              <option>Partnership</option>
+            </select>
+            <span class="error-text">Please select a subject.</span>
+          </div>
+
+          <div class="form-group" id="grp-cmessage">
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" rows="5" placeholder="Write your message here..."></textarea>
+            <span class="error-text">Message must be at least 10 characters.</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary" style="width:100%;">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>EduAnalytics</h4>
+        <p>Empowering educators with data-driven insights into student performance.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li>📧 support@eduanalytics.com</li>
+          <li>📞 +92 300 1234567</li>
+          <li>📍 Lahore, Pakistan</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
