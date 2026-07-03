@@ -36,5 +36,5 @@ help teachers and administrators track and analyze student academic performance.
 ```
 2. Open `index.html` in your browser (or use VS Code Live Server extension).
 
-👤 Author
+👤 Rameen Kainat
 Intern Developer — Internship Week 1 Project
