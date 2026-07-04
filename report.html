@@ -8,7 +8,6 @@
 </head>
 <body>
 
-  <!-- ===== NAVIGATION BAR ===== -->
   <nav class="navbar">
     <div class="nav-container">
       <a href="index.html" class="nav-logo">📊 EduAnalytics</a>
@@ -17,8 +16,8 @@
         <li><a href="about.html" class="nav-link">About</a></li>
         <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
         <li><a href="report.html" class="nav-link active">Reports</a></li>
-        <li><a href="login.html" class="nav-link" id="navAuthLink">Login</a></li>
         <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="login.html" class="nav-link" id="navAuthLink">Login</a></li>
       </ul>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
@@ -26,7 +25,6 @@
     </div>
   </nav>
 
-  <!-- ===== PAGE HEADER ===== -->
   <header class="page-header">
     <h1>Performance Reports</h1>
     <p>Detailed subject-wise and term-wise breakdown of student performance</p>
@@ -34,8 +32,7 @@
 
   <section class="stats-section container">
 
-    <!-- Filter Bar -->
-    <div class="form-container" style="max-width:100%; padding:24px; margin-bottom:30px;">
+    <div class="form-container" style="max-width:100%; padding:24px; margin-bottom:24px;">
       <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr auto; align-items:end; gap:16px;">
         <div class="form-group" style="margin-bottom:0;">
           <label for="filterClass">Filter by Class</label>
@@ -65,43 +62,35 @@
       </div>
     </div>
 
-    <!-- Report Summary Cards -->
-    <div class="stats-grid" style="margin-bottom:40px;">
-      <div class="stat-card">
-        <div class="stat-icon">📘</div>
-        <h3>85%</h3>
-        <p>Mathematics Avg.</p>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">🔬</div>
-        <h3>79%</h3>
-        <p>Science Avg.</p>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">📖</div>
-        <h3>88%</h3>
-        <p>English Avg.</p>
-      </div>
-      <div class="stat-card">
-        <div class="stat-icon">💻</div>
-        <h3>91%</h3>
-        <p>Computer Studies Avg.</p>
-      </div>
+    <!-- Advanced Search: Quick Score-Range Chips -->
+    <div class="filter-chips">
+      <button class="filter-chip active" data-range="all">All Performance Levels</button>
+      <button class="filter-chip" data-range="excellent">🏆 Excellent (80–100%)</button>
+      <button class="filter-chip" data-range="average">📊 Average (60–79%)</button>
+      <button class="filter-chip" data-range="risk">⚠️ At Risk (Below 60%)</button>
     </div>
 
-    <!-- Detailed Report Table -->
-    <h2 style="margin-bottom:16px;">Detailed Performance Report</h2>
+    <div class="stats-grid" style="margin-bottom:30px;">
+      <div class="stat-card"><div class="stat-icon">📘</div><h3>85%</h3><p>Mathematics Avg.</p></div>
+      <div class="stat-card"><div class="stat-icon">🔬</div><h3>79%</h3><p>Science Avg.</p></div>
+      <div class="stat-card"><div class="stat-icon">📖</div><h3>88%</h3><p>English Avg.</p></div>
+      <div class="stat-card"><div class="stat-icon">💻</div><h3>91%</h3><p>Computer Studies Avg.</p></div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <h2 style="margin-bottom:0;">Detailed Performance Report</h2>
+      <div class="view-toggle">
+        <button id="viewTableBtn" class="active">📋 Table View</button>
+        <button id="viewCardBtn">🗂 Card View</button>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+
     <div class="table-wrapper">
       <table id="reportTable">
         <thead>
           <tr>
-            <th>Roll No.</th>
-            <th>Name</th>
-            <th>Class</th>
-            <th>Subject</th>
-            <th>Score</th>
-            <th>Grade</th>
-            <th>Progress</th>
+            <th>Roll No.</th><th>Name</th><th>Class</th><th>Subject</th><th>Score</th><th>Grade</th><th>Progress</th>
           </tr>
         </thead>
         <tbody>
@@ -134,13 +123,83 @@
       </table>
     </div>
     <p id="noResultsMsg" style="display:none; text-align:center; color:var(--text-muted); margin-top:20px;">No matching records found.</p>
+
+    <!-- Dynamically rendered by js/students-data.js -> renderPerformanceCards() -->
+    <div class="performance-cards-grid" id="performanceCardsGrid"></div>
+
   </section>
 
-  <!-- ===== FOOTER ===== -->
   <footer class="footer">
     <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
   </footer>
 
+  <script src="js/students-data.js"></script>
+  <script src="js/auth-extra.js"></script>
   <script src="js/script.js"></script>
+
+  <!-- Page-specific: View Toggle + Advanced Score-Range Filter -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const viewTableBtn = document.getElementById('viewTableBtn');
+      const viewCardBtn = document.getElementById('viewCardBtn');
+      const tableWrapper = document.querySelector('.table-wrapper');
+      const cardsGrid = document.getElementById('performanceCardsGrid');
+      const chips = document.querySelectorAll('.filter-chip');
+      const noResultsMsg = document.getElementById('noResultsMsg');
+
+      let currentRange = 'all';
+
+      function combinedFilter(student) {
+        const score = getOverallScore(student);
+        const classVal = document.getElementById('filterClass').value;
+        const searchVal = document.getElementById('searchStudent').value.trim().toLowerCase();
+
+        const rangeMatch =
+          currentRange === 'excellent' ? score >= 80 :
+          currentRange === 'average' ? (score >= 60 && score < 80) :
+          currentRange === 'risk' ? score < 60 : true;
+
+        const classMatch = classVal === 'all' || student.class === classVal;
+        const searchMatch = searchVal === '' ||
+          student.name.toLowerCase().includes(searchVal) ||
+          student.id.toLowerCase().includes(searchVal);
+
+        return rangeMatch && classMatch && searchMatch;
+      }
+
+      function refreshCards() {
+        if (cardsGrid.style.display === 'grid') renderPerformanceCards(combinedFilter);
+      }
+
+      viewTableBtn.addEventListener('click', function () {
+        viewTableBtn.classList.add('active');
+        viewCardBtn.classList.remove('active');
+        tableWrapper.style.display = '';
+        cardsGrid.style.display = 'none';
+        noResultsMsg.style.display = 'none';
+      });
+
+      viewCardBtn.addEventListener('click', function () {
+        viewCardBtn.classList.add('active');
+        viewTableBtn.classList.remove('active');
+        tableWrapper.style.display = 'none';
+        noResultsMsg.style.display = 'none';
+        cardsGrid.style.display = 'grid';
+        renderPerformanceCards(combinedFilter);
+      });
+
+      chips.forEach(chip => {
+        chip.addEventListener('click', function () {
+          chips.forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+          currentRange = chip.getAttribute('data-range');
+          refreshCards();
+        });
+      });
+
+      document.getElementById('filterClass').addEventListener('change', refreshCards);
+      document.getElementById('searchStudent').addEventListener('input', refreshCards);
+    });
+  </script>
 </body>
 </html>

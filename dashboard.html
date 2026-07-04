@@ -40,7 +40,6 @@
       <h1 style="margin-bottom:6px;" id="welcomeMsg">Welcome back, Teacher 👋</h1>
       <p style="color:var(--text-muted); margin-bottom:30px;">Here's what's happening with your students today. Click a card below to filter records.</p>
 
-      <!-- DYNAMIC/CLICKABLE STAT CARDS -->
       <div class="stats-grid" style="margin-bottom:40px;" id="statCardsContainer">
         <div class="stat-card clickable" data-filter="all">
           <div class="stat-icon">🎓</div>
@@ -64,7 +63,6 @@
         </div>
       </div>
 
-      <!-- ADD STUDENT FORM -->
       <h2 style="margin-bottom:16px;" id="addStudentForm">Add New Student Record</h2>
       <div class="form-container" style="margin-bottom:40px; max-width:100%;">
         <div class="success-message" id="dashSuccessMsg">✅ Student record added successfully!</div>
@@ -106,7 +104,6 @@
         </form>
       </div>
 
-      <!-- SEARCH + FILTER TOOLBAR -->
       <h2 style="margin-bottom:16px;" id="studentTable">Student Records</h2>
       <div class="toolbar">
         <input type="text" id="dashSearchInput" placeholder="🔍 Search by name or roll number..." />
@@ -121,6 +118,8 @@
           <option value="Average">Average</option>
           <option value="At Risk">At Risk</option>
         </select>
+        <input type="number" id="dashMinScore" placeholder="Min %" min="0" max="100" />
+        <input type="number" id="dashMaxScore" placeholder="Max %" min="0" max="100" />
         <button class="btn btn-clear btn-sm" id="clearFiltersBtn">Clear Filters</button>
       </div>
       <p class="result-info" id="dashResultInfo">Showing 5 of 5 students</p>
@@ -134,44 +133,11 @@
               <th class="sortable" data-key="class">Class</th>
               <th class="sortable" data-key="score">Avg. Score</th>
               <th>Status</th>
+              <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-            <tr data-class="Grade 10" data-status="Excellent" data-score="92">
-              <td data-label="Roll No.">STU-1001</td>
-              <td data-label="Name">Ayesha Khan</td>
-              <td data-label="Class">Grade 10</td>
-              <td data-label="Avg. Score">92%</td>
-              <td data-label="Status"><span class="badge badge-success">Excellent</span></td>
-            </tr>
-            <tr data-class="Grade 9" data-status="Average" data-score="74">
-              <td data-label="Roll No.">STU-1002</td>
-              <td data-label="Name">Bilal Ahmed</td>
-              <td data-label="Class">Grade 9</td>
-              <td data-label="Avg. Score">74%</td>
-              <td data-label="Status"><span class="badge badge-warning">Average</span></td>
-            </tr>
-            <tr data-class="Grade 11" data-status="At Risk" data-score="58">
-              <td data-label="Roll No.">STU-1003</td>
-              <td data-label="Name">Sara Malik</td>
-              <td data-label="Class">Grade 11</td>
-              <td data-label="Avg. Score">58%</td>
-              <td data-label="Status"><span class="badge badge-danger">At Risk</span></td>
-            </tr>
-            <tr data-class="Grade 12" data-status="Excellent" data-score="88">
-              <td data-label="Roll No.">STU-1004</td>
-              <td data-label="Name">Hamza Tariq</td>
-              <td data-label="Class">Grade 12</td>
-              <td data-label="Avg. Score">88%</td>
-              <td data-label="Status"><span class="badge badge-success">Excellent</span></td>
-            </tr>
-            <tr data-class="Grade 10" data-status="Average" data-score="67">
-              <td data-label="Roll No.">STU-1005</td>
-              <td data-label="Name">Zainab Fatima</td>
-              <td data-label="Class">Grade 10</td>
-              <td data-label="Avg. Score">67%</td>
-              <td data-label="Status"><span class="badge badge-warning">Average</span></td>
-            </tr>
+          <tbody id="studentsTableBody">
+            <!-- Dynamically rendered by js/students-data.js -> renderStudentsTable() -->
           </tbody>
         </table>
       </div>
@@ -182,6 +148,8 @@
     <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
   </footer>
 
+  <script src="js/students-data.js"></script>
+  <script src="js/auth-extra.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>

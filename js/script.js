@@ -95,18 +95,27 @@ document.addEventListener('DOMContentLoaded', function () {
       const tableBody = document.querySelector('#studentsTable tbody');
       const newRow = document.createElement('tr');
 
+      let statusText = 'At Risk';
       let statusBadge = '<span class="badge badge-danger">At Risk</span>';
-      if (score >= 80) statusBadge = '<span class="badge badge-success">Excellent</span>';
-      else if (score >= 60) statusBadge = '<span class="badge badge-warning">Average</span>';
+      if (score >= 80) { statusText = 'Excellent'; statusBadge = '<span class="badge badge-success">Excellent</span>'; }
+      else if (score >= 60) { statusText = 'Average'; statusBadge = '<span class="badge badge-warning">Average</span>'; }
+
+      newRow.setAttribute('data-class', classInput.value);
+      newRow.setAttribute('data-status', statusText);
+      newRow.setAttribute('data-score', score);
 
       newRow.innerHTML = `
-        <td>${rollInput.value.trim()}</td>
-        <td>${nameInput.value.trim()}</td>
-        <td>${classInput.value}</td>
-        <td>${score}%</td>
-        <td>${statusBadge}</td>
+        <td data-label="Roll No.">${rollInput.value.trim()}</td>
+        <td data-label="Name">${nameInput.value.trim()}</td>
+        <td data-label="Class">${classInput.value}</td>
+        <td data-label="Avg. Score">${score}%</td>
+        <td data-label="Status">${statusBadge}</td>
+        <td data-label="Action"><a href="student-profile.html?id=${rollInput.value.trim()}" class="btn-link">View Profile →</a></td>
       `;
       tableBody.prepend(newRow);
+
+      // Notify Week 3 dashboard cards/filters to refresh
+      document.dispatchEvent(new CustomEvent('studentAdded'));
 
       // Show success message
       const successMsg = document.getElementById('dashSuccessMsg');
@@ -517,9 +526,11 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ---------------------------------------------------------
      4. DASHBOARD TABLE: SEARCH + FILTER + RESULT COUNT
   --------------------------------------------------------- */
-  const dashSearchInput = document.getElementById('dashSearchInput');
+ const dashSearchInput = document.getElementById('dashSearchInput');
   const dashClassFilter = document.getElementById('dashClassFilter');
   const dashStatusFilter = document.getElementById('dashStatusFilter');
+  const dashMinScore = document.getElementById('dashMinScore');
+  const dashMaxScore = document.getElementById('dashMaxScore');
   const clearFiltersBtn = document.getElementById('clearFiltersBtn');
   const dashResultInfo = document.getElementById('dashResultInfo');
 
@@ -527,6 +538,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const searchVal = (dashSearchInput?.value || '').trim().toLowerCase();
     const classVal = dashClassFilter?.value || 'all';
     const statusVal = dashStatusFilter?.value || 'all';
+    const minScore = dashMinScore?.value !== '' ? parseFloat(dashMinScore.value) : 0;
+    const maxScore = dashMaxScore?.value !== '' ? parseFloat(dashMaxScore.value) : 100;
 
     const rows = document.querySelectorAll('#studentsTable tbody tr');
     let visibleCount = 0;
@@ -535,13 +548,15 @@ document.addEventListener('DOMContentLoaded', function () {
     rows.forEach(row => {
       const rowClass = row.getAttribute('data-class');
       const rowStatus = row.getAttribute('data-status');
+      const rowScore = parseFloat(row.getAttribute('data-score')) || 0;
       const rowText = row.textContent.toLowerCase();
 
       const matchSearch = searchVal === '' || rowText.includes(searchVal);
       const matchClass = classVal === 'all' || rowClass === classVal;
       const matchStatus = statusVal === 'all' || rowStatus === statusVal;
+      const matchScore = rowScore >= minScore && rowScore <= maxScore;
 
-      if (matchSearch && matchClass && matchStatus) {
+      if (matchSearch && matchClass && matchStatus && matchScore) {
         row.style.display = '';
         visibleCount++;
       } else {
@@ -558,12 +573,22 @@ document.addEventListener('DOMContentLoaded', function () {
     dashSearchInput.addEventListener('input', applyDashboardFilters);
     dashClassFilter.addEventListener('change', applyDashboardFilters);
     dashStatusFilter.addEventListener('change', applyDashboardFilters);
+    dashMinScore.addEventListener('input', applyDashboardFilters);
+    dashMaxScore.addEventListener('input', applyDashboardFilters);
 
     clearFiltersBtn.addEventListener('click', function () {
       dashSearchInput.value = '';
       dashClassFilter.value = 'all';
       dashStatusFilter.value = 'all';
+      dashMinScore.value = '';
+      dashMaxScore.value = '';
       document.querySelectorAll('.stat-card.clickable').forEach(c => c.classList.remove('card-active'));
+      applyDashboardFilters();
+    });
+
+    // Week 3: refresh cards + filters whenever a new student is added
+    document.addEventListener('studentAdded', function () {
+      updateStatCards();
       applyDashboardFilters();
     });
 
