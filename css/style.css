@@ -19,6 +19,10 @@
   --radius: 10px;
   --transition: all 0.3s ease;
 }
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
 
 * {
   margin: 0;
@@ -32,6 +36,8 @@ body {
   color: var(--text-dark);
   line-height: 1.6;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  width: 100%; 
 }
 
 a { text-decoration: none; color: inherit; }
@@ -439,6 +445,7 @@ tbody tr:hover {
 
 .dashboard-main {
   padding: 30px;
+   min-width: 0; 
 }
 
 .progress-bar {
