@@ -696,6 +696,9 @@ th.sortable.sort-desc::after { content: ' ↓'; opacity: 1; }
     display: block;
     width: 100%;
   }
+    table.responsive-table {
+    min-width: 0;   
+  }
 
   table.responsive-table tr {
     margin-bottom: 14px;
