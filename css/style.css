@@ -743,3 +743,139 @@ th.sortable.sort-desc::after { content: ' ↓'; opacity: 1; }
 .password-strength.weak::before { width: 33%; background: var(--danger-color); }
 .password-strength.medium::before { width: 66%; background: var(--accent-color); }
 .password-strength.strong::before { width: 100%; background: var(--secondary-color); }
+/* ==========================================================================
+   WEEK 3 ADDITIONS: Forgot/Reset Password UI, Dynamic Profiles,
+   Performance Cards, Advanced Search, Micro-Animations
+   ========================================================================== */
+
+/* ---- Scroll Reveal Animation ---- */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+
+/* ---- Button Ripple Effect ---- */
+.btn { position: relative; overflow: hidden; }
+.ripple-circle {
+  position: absolute; border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  transform: scale(0);
+  animation: ripple-animation 0.6s ease-out;
+  pointer-events: none;
+}
+@keyframes ripple-animation { to { transform: scale(2.5); opacity: 0; } }
+
+/* ---- OTP Display Box (Forgot Password demo) ---- */
+.otp-display-box {
+  background: var(--bg-light);
+  border: 1.5px dashed var(--primary-color);
+  border-radius: 10px;
+  text-align: center;
+  padding: 18px;
+  margin-bottom: 20px;
+  animation: fadeIn 0.4s ease;
+}
+.otp-display-box p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; }
+.otp-code { font-size: 1.8rem; font-weight: 800; letter-spacing: 6px; color: var(--primary-color); margin: 8px 0; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---- Avatar Circle ---- */
+.avatar-circle {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 1rem; flex-shrink: 0;
+}
+.avatar-lg { width: 84px; height: 84px; font-size: 1.7rem; }
+
+/* ---- Radial Progress Ring (Performance Cards) ---- */
+.progress-ring {
+  width: 120px; height: 120px; border-radius: 50%; margin: 20px auto;
+  background: conic-gradient(var(--primary-color) calc(var(--pct) * 1%), var(--border-color) 0);
+  display: flex; align-items: center; justify-content: center;
+}
+.progress-ring-inner {
+  width: 92px; height: 92px; background: var(--bg-white); border-radius: 50%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+}
+.progress-ring-inner strong { font-size: 1.3rem; }
+
+/* ---- Subject Progress Bars ---- */
+.subject-bars { display: flex; flex-direction: column; gap: 14px; }
+.subject-bar-row { display: grid; grid-template-columns: 140px 1fr 50px; align-items: center; gap: 12px; }
+.subject-label { font-size: 0.85rem; font-weight: 600; color: var(--text-dark); }
+.subject-value { font-size: 0.85rem; font-weight: 700; color: var(--primary-color); text-align: right; }
+.mini-bar { background: var(--border-color); height: 8px; border-radius: 20px; overflow: hidden; }
+.mini-bar-fill {
+  height: 100%; width: 0%; border-radius: 20px;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  transition: width 1s ease;
+}
+
+/* ---- Performance Cards (Report Page - Card View) ---- */
+.performance-cards-grid { display: none; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+.performance-card {
+  background: var(--bg-white); border: 1px solid var(--border-color);
+  border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow-sm); transition: var(--transition);
+}
+.performance-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+.performance-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+.performance-card-header h3 { font-size: 1rem; }
+.performance-card-header p { font-size: 0.78rem; color: var(--text-muted); }
+
+/* ---- View Toggle (Table / Card) ---- */
+.view-toggle { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.view-toggle button {
+  padding: 10px 20px; border-radius: 8px; border: 1.5px solid var(--border-color);
+  background: var(--bg-white); color: var(--text-muted); font-weight: 600; font-size: 0.88rem;
+  cursor: pointer; transition: var(--transition);
+}
+.view-toggle button.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+
+/* ---- Quick Filter Chips (Advanced Search) ---- */
+.filter-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+.filter-chip {
+  padding: 8px 16px; border-radius: 999px; border: 1.5px solid var(--border-color);
+  background: var(--bg-white); color: var(--text-muted); font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: var(--transition);
+}
+.filter-chip:hover { border-color: var(--primary-color); color: var(--primary-color); }
+.filter-chip.active { background: var(--primary-color); color: #fff; border-color: var(--primary-color); }
+
+/* ---- Profile Page ---- */
+.profile-header {
+  display: flex; align-items: center; gap: 22px;
+  background: var(--bg-white); border: 1px solid var(--border-color);
+  border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow-sm); margin-bottom: 30px;
+}
+.profile-header-info h1 { font-size: 1.5rem; margin-bottom: 4px; }
+.profile-header-info p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 4px; }
+.profile-not-found {
+  text-align: center; background: var(--bg-white); border-radius: var(--radius);
+  padding: 60px 30px; border: 1px solid var(--border-color); max-width: 480px; margin: 40px auto;
+}
+.profile-not-found h2 { margin-bottom: 10px; }
+.profile-not-found p { color: var(--text-muted); }
+
+/* ---- Small Link Button (Action column in table) ---- */
+.btn-link { color: var(--primary-color); font-weight: 600; font-size: 0.85rem; white-space: nowrap; }
+.btn-link:hover { text-decoration: underline; }
+
+/* ---- Number Inputs in Toolbar (Min/Max Score) ---- */
+.toolbar input[type="number"] {
+  width: 100px; padding: 10px 14px; border: 1.5px solid var(--border-color);
+  border-radius: 8px; font-size: 0.9rem; font-family: inherit;
+}
+
+/* ---- Skeleton Loader ---- */
+.skeleton { background: linear-gradient(90deg, #eef0f5 25%, #f7f8fb 50%, #eef0f5 75%); background-size: 200% 100%; animation: skeleton-loading 1.3s infinite; }
+@keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ---- Responsive (Week 3) ---- */
+@media (max-width: 700px) {
+  .profile-header { flex-direction: column; text-align: center; }
+  .subject-bar-row { grid-template-columns: 90px 1fr 40px; gap: 8px; }
+}
+@media (max-width: 480px) {
+  .avatar-lg { width: 64px; height: 64px; font-size: 1.3rem; }
+  .progress-ring { width: 100px; height: 100px; }
+  .progress-ring-inner { width: 76px; height: 76px; }
+}
