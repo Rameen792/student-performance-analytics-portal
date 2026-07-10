@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Profile | Student Performance Analytics Portal</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <script>
+    (function () {
+      var saved = localStorage.getItem('eduanalytics_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+</head>
+<body>
+
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">📊 EduAnalytics</a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+        <li><a href="report.html" class="nav-link">Reports</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="login.html" class="nav-link" id="navAuthLink">Login</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <ul class="sidebar-menu" id="sidebarMenu">
+        <li><a href="dashboard.html">📊 Overview</a></li>
+        <li><a href="profile-settings.html" class="active">⚙️ My Profile</a></li>
+      </ul>
+    </aside>
+
+    <main class="dashboard-main" id="mainContent">
+      <h1 style="margin-bottom:6px;">Profile Management</h1>
+      <p style="color:var(--text-muted); margin-bottom:30px;">Update your personal details, password, and preferences.</p>
+
+      <div id="profileGuestNotice" class="settings-section" style="display:none;">
+        <h3>🔒 You're not logged in</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Please <a href="login.html" style="color:var(--primary-color); font-weight:600;">log in</a> to view and edit your profile.</p>
+      </div>
+
+      <div id="profileContent" style="display:none;">
+        <div class="profile-settings-grid">
+          <!-- Left: Avatar summary card -->
+          <div class="profile-card">
+            <div class="avatar-editable" id="profileAvatarInitial">A</div>
+            <h2 id="profileCardName" style="margin-bottom:4px;">—</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:10px;" id="profileCardEmail">—</p>
+            <span class="role-badge" id="profileCardRoleBadge">—</span>
+          </div>
+
+          <!-- Right: Editable settings -->
+          <div>
+            <div class="settings-section">
+              <h3>👤 Personal Information</h3>
+              <div class="success-message" id="profileSuccessMsg">✅ Profile updated successfully!</div>
+              <form id="profileFormEl" novalidate>
+                <div class="form-row">
+                  <div class="form-group" id="grp-pname">
+                    <label for="profileName">Full Name</label>
+                    <input type="text" id="profileName" />
+                    <span class="error-text">Please enter your full name.</span>
+                  </div>
+                  <div class="form-group" id="grp-prole">
+                    <label for="profileRole">Role</label>
+                    <input type="text" id="profileRole" disabled />
+                  </div>
+                </div>
+                <div class="form-group" id="grp-pemail">
+                  <label for="profileEmail">Email Address</label>
+                  <input type="email" id="profileEmail" disabled />
+                  <span class="error-text">Please enter a valid email address.</span>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </form>
+            </div>
+
+            <div class="settings-section">
+              <h3>🔑 Change Password</h3>
+              <div class="error-banner" id="passwordErrorBanner"></div>
+              <div class="success-message" id="passwordSuccessMsg">✅ Password changed successfully!</div>
+              <form id="passwordFormEl" novalidate>
+                <div class="form-group" id="grp-currentpass">
+                  <label for="currentPassword">Current Password</label>
+                  <input type="password" id="currentPassword" />
+                  <span class="error-text">Please enter your current password.</span>
+                </div>
+                <div class="form-row">
+                  <div class="form-group" id="grp-newpass">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" />
+                    <span class="error-text">Must be at least 6 characters.</span>
+                  </div>
+                  <div class="form-group" id="grp-confirmpass">
+                    <label for="confirmNewPassword">Confirm New Password</label>
+                    <input type="password" id="confirmNewPassword" />
+                    <span class="error-text">Passwords do not match.</span>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Password</button>
+              </form>
+            </div>
+
+            <div class="settings-section">
+              <h3>🎨 Preferences</h3>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Dark Mode</div>
+                  <div class="settings-row-desc">Switch between light and dark themes.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="darkModeSwitch" />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div>
+                  <div class="settings-row-label">Email Notifications</div>
+                  <div class="settings-row-desc">Get notified about performance updates.</div>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="emailNotifSwitch" checked />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
+  </footer>
+
+  <script src="js/script.js"></script>
+  <script src="js/week4.js"></script>
+  <script src="js/profile-settings.js"></script>
+</body>
+</html>
