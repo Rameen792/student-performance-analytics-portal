@@ -242,6 +242,58 @@
   /* ---------------------------------------------------------
      7. ADMIN: USER MANAGEMENT WIDGET (dashboard.html only)
   --------------------------------------------------------- */
+  function renderRoleHero() {
+  const mount = document.getElementById('roleHeroMount');
+  if (!mount) return;
+  const name = currentUser ? (currentUser.name || currentUser.email) : 'Guest';
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
+  const students = (typeof STUDENTS_DATA !== 'undefined') ? STUDENTS_DATA : [];
+  const withStatus = students.map(s => {
+    const score = getOverallScore(s);
+    return Object.assign({ score, status: getStatusFromScore(score) }, s);
+  });
+  let usersRaw = [];
+  try { usersRaw = JSON.parse(localStorage.getItem('eduanalytics_users') || '[]'); } catch (e) {}
+
+  let html = '';
+  if (ROLE === 'Administrator') {
+    const atRisk = withStatus.filter(s => s.status === 'At Risk').length;
+    html = `<div class="role-hero-top">
+      <div><h1>${greeting}, ${name} 🛡️</h1><p>Full system view — manage every user, teacher and student record.</p></div>
+      <span class="role-chip">👑 Administrator</span></div>
+      <div class="role-hero-stats">
+        <div class="role-hero-stat"><strong>${usersRaw.length}</strong><span>Total Users</span></div>
+        <div class="role-hero-stat"><strong>${withStatus.length}</strong><span>Student Records</span></div>
+        <div class="role-hero-stat"><strong>${atRisk}</strong><span>Flagged At Risk</span></div>
+      </div>`;
+  } else if (ROLE === 'Teacher') {
+    const excellent = withStatus.filter(s => s.status === 'Excellent').length;
+    html = `<div class="role-hero-top">
+      <div><h1>${greeting}, ${name} 📚</h1><p>Your class at a glance — track progress, spot who needs help.</p></div>
+      <span class="role-chip">🧑‍🏫 Teacher</span></div>
+      <div class="role-hero-stats">
+        <div class="role-hero-stat"><strong>${withStatus.length}</strong><span>Students Tracked</span></div>
+        <div class="role-hero-stat"><strong>${excellent}</strong><span>Top Performers</span></div>
+      </div>`;
+  } else if (ROLE === 'Student') {
+    const me = withStatus.find(s => (s.email||'').toLowerCase() === (currentUser ? currentUser.email.toLowerCase() : ''));
+    html = `<div class="role-hero-top">
+      <div><h1>${greeting}, ${name} 🎓</h1><p>${me ? "Your personal performance snapshot for this term." : "Ask your teacher to link your record."}</p></div>
+      <span class="role-chip">🎓 Student</span></div>
+      ${me ? `<div class="role-hero-stats">
+        <div class="role-hero-stat"><strong>${me.score}%</strong><span>Avg. Score</span></div>
+        <div class="role-hero-stat"><strong>${me.class||'—'}</strong><span>Class</span></div>
+        <div class="role-hero-stat"><strong>${me.status}</strong><span>Status</span></div>
+      </div>` : ''}`;
+  } else {
+    html = `<div class="role-hero-top"><div><h1>Welcome 👋</h1><p>Log in to see your dashboard.</p></div>
+      <span class="role-chip">Guest</span></div>`;
+  }
+  mount.className = 'role-hero';
+  mount.innerHTML = html;
+}
   function renderUserManagement() {
     const container = document.getElementById('userManagementBody');
     if (!container) return;
@@ -326,11 +378,13 @@
   /* ---------------------------------------------------------
      9. INIT
   --------------------------------------------------------- */
-  document.addEventListener('DOMContentLoaded', function () {
-    injectTopbarControls();
-    applyRoleVisibility();
-    renderSidebarMenu();
-    renderUserManagement();
-    applyStudentScopedView();
-  });
+document.addEventListener('DOMContentLoaded', function () {
+  document.body.setAttribute('data-role-view', ROLE);
+  injectTopbarControls();
+  applyRoleVisibility();
+  renderSidebarMenu();
+  renderRoleHero();
+  renderUserManagement();
+  applyStudentScopedView();
+});
 })();
