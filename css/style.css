@@ -1352,3 +1352,115 @@ main.dashboard-main h2::after {
   border-radius: 3px;
   background: var(--gradient-gold);
 }
+/* ==========================================================================
+   FIXES + POLISH — Navbar overlap, Dark-mode footer bug, Light mode
+   refresh, Auth pages (login/signup/forgot/reset) glow-up
+   ========================================================================== */
+
+/* ---- FIX 1: Navbar overlap ("Home" sitting on top of logo) ----
+   Root cause: the theme/bell/badge controls were squeezing into the
+   same row as the full nav-menu on tablet widths. We now let the row
+   wrap safely, and collapse the menu into the hamburger earlier. ---- */
+.nav-container { flex-wrap: wrap; row-gap: 8px; }
+.nav-logo { flex-shrink: 0; white-space: nowrap; }
+
+@media (max-width: 1024px) {
+  .nav-menu {
+    position: fixed;
+    top: 64px;
+    left: -100%;
+    flex-direction: column;
+    background: var(--bg-white);
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition);
+    gap: 10px;
+    z-index: 1400;
+  }
+  .nav-menu.active { left: 0; }
+  .hamburger { display: flex; }
+}
+
+/* ---- FIX 2: Footer breaking in dark mode ----
+   Root cause: footer background was tied to --text-dark, which
+   flips to a LIGHT color in dark mode (since it's also body text
+   color) — making the footer nearly invisible. Gave the footer its
+   own independent variable instead. ---- */
+:root { --footer-bg: #1e293b; }
+[data-theme="dark"] { --footer-bg: #020617; }
+.footer { background: var(--footer-bg) !important; }
+
+/* ---- FIX 3: Light mode palette refresh ---- */
+:root {
+  --bg-light: #f6f6fd;
+  --bg-white: #ffffff;
+  --border-color: #e6e4f7;
+  --shadow-sm: 0 2px 8px rgba(99, 102, 241, 0.07);
+  --shadow-md: 0 10px 28px rgba(99, 102, 241, 0.14);
+}
+
+/* ---- Auth pages glow-up (login, signup, forgot/reset password) ---- */
+.auth-section {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(99,102,241,0.16), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(236,72,153,0.14), transparent 45%),
+    var(--bg-light);
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="dark"] .auth-section {
+  background:
+    radial-gradient(circle at 15% 20%, rgba(99,102,241,0.22), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(236,72,153,0.18), transparent 45%),
+    var(--bg-light);
+}
+
+.auth-card {
+  position: relative;
+  border: 1px solid var(--border-color);
+  animation: authCardIn 0.5s cubic-bezier(.2,.8,.2,1);
+}
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+  background: var(--gradient-brand);
+}
+@keyframes authCardIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.auth-icon {
+  background: var(--gradient-brand);
+  color: #fff;
+  animation: authIconPop 0.5s cubic-bezier(.34,1.56,.64,1) 0.1s backwards;
+}
+@keyframes authIconPop {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.auth-header h1 {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.btn-primary,
+.password-strength.strong::before { }
+
+.forgot-link, .checkbox-label a { transition: color 0.2s ease; }
+
+.otp-code {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
