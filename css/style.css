@@ -1170,3 +1170,185 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   .notification-panel { position: fixed; top: 66px; right: 10px; left: 10px; width: auto; }
   .role-badge { display: none; } /* keep mobile navbar uncluttered */
 }
+/* ==========================================================================
+   NEXT-LEVEL THEME — New Color Scheme, Glass Navbar, Animations
+   (This block comes LAST in the file so it overrides earlier colors)
+   ========================================================================== */
+
+/* ---- New Palette: Indigo + Gold ---- */
+:root {
+  --primary-color: #6366f1;
+  --primary-dark: #4338ca;
+  --secondary-color: #f59e0b;
+  --accent-color: #f59e0b;
+  --accent-violet: #8b5cf6;
+  --accent-pink: #ec4899;
+  --gradient-brand: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --gradient-pretty: linear-gradient(135deg, #8b5cf6, #ec4899);
+  --gradient-gold: linear-gradient(135deg, #f59e0b, #fbbf24);
+}
+
+[data-theme="dark"] {
+  --primary-color: #818cf8;
+  --primary-dark: #6366f1;
+}
+
+/* ---- Glass Navbar ---- */
+.navbar {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+}
+[data-theme="dark"] .navbar {
+  background: rgba(15, 23, 42, 0.75);
+  border-bottom: 1px solid rgba(129, 140, 248, 0.15);
+}
+
+.nav-logo {
+  background: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: logoGlow 4s ease-in-out infinite;
+}
+@keyframes logoGlow {
+  0%, 100% { filter: drop-shadow(0 0 0 rgba(99,102,241,0)); }
+  50% { filter: drop-shadow(0 0 10px rgba(99,102,241,0.35)); }
+}
+
+.nav-link::after {
+  background: var(--gradient-brand);
+  height: 3px;
+  border-radius: 3px;
+}
+.nav-link:hover { transform: translateY(-1px); }
+
+/* ---- Buttons: gradient + shine sweep ---- */
+.btn-primary {
+  background: var(--gradient-brand);
+  background-size: 200% auto;
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary:hover {
+  background-position: right center;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 10px 25px rgba(99, 102, 241, 0.35);
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
+  transform: skewX(-25deg);
+  transition: left 0.6s ease;
+}
+.btn-primary:hover::before { left: 130%; }
+
+.btn-outline:hover {
+  background: var(--gradient-brand);
+  border-color: transparent;
+  color: #fff;
+  transform: translateY(-3px);
+}
+
+/* ---- Hero: animated gradient ---- */
+.hero {
+  background: linear-gradient(120deg, #6366f1, #8b5cf6, #ec4899, #6366f1);
+  background-size: 300% 300%;
+  animation: heroFlow 12s ease infinite;
+}
+@keyframes heroFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ---- Cards: lift + glow + stagger entrance ---- */
+.stat-card, .feature-card, .performance-card {
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease, border-color 0.3s;
+}
+.stat-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 16px 32px rgba(99, 102, 241, 0.18);
+  border-top-color: var(--accent-pink);
+}
+.feature-card:hover { transform: translateY(-6px) scale(1.015); }
+
+.stats-grid .stat-card,
+.features-grid .feature-card {
+  animation: cardRise 0.6s ease backwards;
+}
+.stats-grid .stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stats-grid .stat-card:nth-child(2) { animation-delay: 0.15s; }
+.stats-grid .stat-card:nth-child(3) { animation-delay: 0.25s; }
+.stats-grid .stat-card:nth-child(4) { animation-delay: 0.35s; }
+@keyframes cardRise {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Page load fade-in ---- */
+body { animation: pageFade 0.5s ease; }
+@keyframes pageFade {
+  from { opacity: 0; } to { opacity: 1; }
+}
+
+/* ---- Notification bell pulse when unread ---- */
+.notif-badge { animation: badgePulse 1.8s ease-in-out infinite; }
+@keyframes badgePulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+/* ---- Icon buttons: nicer hover ---- */
+.icon-btn:hover {
+  background: var(--gradient-brand);
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-2px) rotate(-4deg);
+}
+
+/* ---- Sidebar active gradient + smoother hover ---- */
+.sidebar-menu li a {
+  transition: all 0.25s ease;
+}
+.sidebar-menu li a:hover {
+  transform: translateX(4px);
+}
+
+/* ---- Table row hover ---- */
+table.responsive-table tbody tr,
+#studentsTable tbody tr,
+#userManagementBody tr {
+  transition: background 0.2s ease;
+}
+#studentsTable tbody tr:hover,
+#userManagementBody tr:hover {
+  background: rgba(99, 102, 241, 0.05);
+}
+
+/* ---- Form inputs: nicer focus ---- */
+.form-group input:focus,
+.form-group select:focus,
+.toolbar input:focus,
+.toolbar select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+/* ---- Section headings: subtle gradient underline ---- */
+main.dashboard-main h2 {
+  position: relative;
+  padding-bottom: 8px;
+}
+main.dashboard-main h2::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 46px; height: 3px;
+  border-radius: 3px;
+  background: var(--gradient-gold);
+}
