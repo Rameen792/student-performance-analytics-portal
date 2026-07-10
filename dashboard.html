@@ -5,8 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard | Student Performance Analytics Portal</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script>
+    // Applies saved theme BEFORE the page paints, so there's no light-mode flash
+    (function () {
+      var saved = localStorage.getItem('eduanalytics_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
 </head>
 <body>
+
+  <a href="#mainContent" class="skip-link">Skip to main content</a>
 
   <nav class="navbar">
     <div class="nav-container">
@@ -27,16 +36,17 @@
 
   <div class="dashboard-layout">
     <aside class="sidebar">
-      <ul class="sidebar-menu">
+      <ul class="sidebar-menu" id="sidebarMenu">
+        <!-- Filled in dynamically by js/week4.js based on the logged-in role -->
         <li><a href="dashboard.html" class="active">📊 Overview</a></li>
         <li><a href="report.html">📄 Performance Reports</a></li>
         <li><a href="#addStudentForm">➕ Add Student</a></li>
         <li><a href="#studentTable">🎓 Student Records</a></li>
-        <li><a href="contact.html">⚙️ Settings</a></li>
+        <li><a href="profile-settings.html">⚙️ My Profile</a></li>
       </ul>
     </aside>
 
-    <main class="dashboard-main">
+    <main class="dashboard-main" id="mainContent">
       <h1 style="margin-bottom:6px;" id="welcomeMsg">Welcome back, Teacher 👋</h1>
       <p style="color:var(--text-muted); margin-bottom:30px;">Here's what's happening with your students today. Click a card below to filter records.</p>
 
@@ -63,6 +73,29 @@
         </div>
       </div>
 
+      <div class="settings-section" data-role="Student" style="margin-bottom:30px;">
+        <h3>👋 Here's your snapshot</h3>
+        <p style="color:var(--text-muted); font-size:0.9rem;">This dashboard is scoped to your own record. If a section looks empty, ask your teacher to link your account to a student record using your login email.</p>
+      </div>
+
+      <div data-role="Administrator">
+        <h2 style="margin-bottom:16px;" id="userManagement">👥 Manage Users</h2>
+        <div class="settings-section" style="margin-bottom:40px;">
+          <div class="user-mgmt-toolbar">
+            <input type="text" id="userManagementSearch" placeholder="🔍 Search users by name or email..." aria-label="Search users" />
+          </div>
+          <div class="table-wrapper">
+            <table class="responsive-table">
+              <thead>
+                <tr><th>Name</th><th>Email</th><th>Role</th><th>Action</th></tr>
+              </thead>
+              <tbody id="userManagementBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div data-role="Administrator,Teacher">
       <h2 style="margin-bottom:16px;" id="addStudentForm">Add New Student Record</h2>
       <div class="form-container" style="margin-bottom:40px; max-width:100%;">
         <div class="success-message" id="dashSuccessMsg">✅ Student record added successfully!</div>
@@ -102,6 +135,7 @@
           </div>
           <button type="submit" class="btn btn-primary" style="width:100%;">Add Student</button>
         </form>
+      </div>
       </div>
 
       <h2 style="margin-bottom:16px;" id="studentTable">Student Records</h2>
@@ -151,5 +185,6 @@
   <script src="js/students-data.js"></script>
   <script src="js/auth-extra.js"></script>
   <script src="js/script.js"></script>
+  <script src="js/week4.js"></script>
 </body>
 </html>
