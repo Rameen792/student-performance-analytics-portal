@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Reports | Student Performance Analytics Portal</title>
   <link rel="stylesheet" href="css/style.css" />
+  <script>
+  (function () {
+    var saved = localStorage.getItem('eduanalytics_theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
 </head>
 <body>
 
@@ -201,5 +207,6 @@
       document.getElementById('searchStudent').addEventListener('input', refreshCards);
     });
   </script>
+  <script src="js/week4.js"></script>
 </body>
 </html>
