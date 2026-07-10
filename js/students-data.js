@@ -69,7 +69,7 @@ function renderStudentsTable() {
     const badgeClass = getStatusBadgeClass(status);
 
     return `
-      <tr data-class="${student.class}" data-status="${status}" data-score="${score}">
+      <tr data-class="${student.class}" data-status="${status}" data-score="${score}" data-email="${student.email.toLowerCase()}">
         <td data-label="Roll No.">${student.id}</td>
         <td data-label="Name">${student.name}</td>
         <td data-label="Class">${student.class}</td>
