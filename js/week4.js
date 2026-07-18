@@ -42,6 +42,10 @@
     return 'Guest';
   }
   const ROLE = normalizeRole(currentRole);
+  // Week 5: expose the resolved user/role so js/dashboard-week5.js can build
+  // its own role-scoped student list without re-reading localStorage.
+  window.EA_currentUser = currentUser;
+  window.EA_role = ROLE;
 
   /* ---------------------------------------------------------
      2. DARK / LIGHT MODE
@@ -349,34 +353,10 @@
   }
 
   /* ---------------------------------------------------------
-     8. STUDENT: PERSONALIZE DASHBOARD TO "MY RECORD ONLY"
-  --------------------------------------------------------- */
-  function applyStudentScopedView() {
-    if (ROLE !== 'Student' || !currentUser) return;
-    // Wait a tick so students-data.js has already rendered the table rows
-    setTimeout(() => {
-      const rows = document.querySelectorAll('#studentsTable tbody tr');
-      let matched = false;
-      rows.forEach(row => {
-        const rowEmail = (row.getAttribute('data-email') || '').toLowerCase();
-        if (rowEmail === currentUser.email.toLowerCase()) {
-          row.style.display = '';
-          matched = true;
-        } else {
-          row.style.display = 'none';
-        }
-      });
-      const resultInfo = document.getElementById('dashResultInfo');
-      if (resultInfo) {
-        resultInfo.textContent = matched
-          ? 'Showing your record only'
-          : 'No linked student record found for your account yet — ask your teacher to add one.';
-      }
-    }, 0);
-  }
-
-  /* ---------------------------------------------------------
-     9. INIT
+     8. INIT   (Student-scoped table filtering is now handled inside
+     js/dashboard-week5.js's own filter pipeline, so the same
+     re-render pass that powers search/sort/pagination also
+     respects role scoping — no separate DOM patch needed.)
   --------------------------------------------------------- */
 document.addEventListener('DOMContentLoaded', function () {
   document.body.setAttribute('data-role-view', ROLE);
@@ -385,6 +365,5 @@ document.addEventListener('DOMContentLoaded', function () {
   renderSidebarMenu();
   renderRoleHero();
   renderUserManagement();
-  applyStudentScopedView();
 });
 })();

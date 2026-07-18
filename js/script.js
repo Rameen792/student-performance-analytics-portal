@@ -48,74 +48,91 @@ document.addEventListener('DOMContentLoaded', function () {
   const addStudentForm = document.getElementById('addStudentFormEl');
 
   if (addStudentForm) {
+    const nameGroup = document.getElementById('grp-name');
+    const nameInput = document.getElementById('studentName');
+    const rollGroup = document.getElementById('grp-roll');
+    const rollInput = document.getElementById('rollNo');
+    const classGroup = document.getElementById('grp-class');
+    const classInput = document.getElementById('studentClass');
+    const scoreGroup = document.getElementById('grp-score');
+    const scoreInput = document.getElementById('studentScore');
+    const emailGroup = document.getElementById('grp-email');
+    const emailInput = document.getElementById('studentEmail');
+    const rollErrorText = rollGroup.querySelector('.error-text');
+    const defaultRollError = rollErrorText ? rollErrorText.textContent : '';
+
+    // Each validator toggles its own error state and returns true/false, so
+    // the exact same function can run on blur (live feedback) AND on submit.
+    function validateName() {
+      const ok = nameInput.value.trim().length >= 3;
+      ok ? clearError(nameGroup) : showError(nameGroup);
+      return ok;
+    }
+    function validateRoll() {
+      const val = rollInput.value.trim();
+      if (val.length < 3) {
+        if (rollErrorText) rollErrorText.textContent = defaultRollError;
+        showError(rollGroup);
+        return false;
+      }
+      if (window.EA_isDuplicateRoll && window.EA_isDuplicateRoll(val)) {
+        if (rollErrorText) rollErrorText.textContent = 'This roll number is already in use — please use a unique one.';
+        showError(rollGroup);
+        return false;
+      }
+      clearError(rollGroup);
+      return true;
+    }
+    function validateClass() {
+      const ok = classInput.value !== '';
+      ok ? clearError(classGroup) : showError(classGroup);
+      return ok;
+    }
+    function validateScore() {
+      const score = parseFloat(scoreInput.value);
+      const ok = !isNaN(score) && score >= 0 && score <= 100;
+      ok ? clearError(scoreGroup) : showError(scoreGroup);
+      return ok;
+    }
+    function validateEmail() {
+      const ok = isEmailValid(emailInput.value.trim());
+      ok ? clearError(emailGroup) : showError(emailGroup);
+      return ok;
+    }
+
+    // Live validation: flag/clear a field as soon as the user leaves it,
+    // instead of only finding out about mistakes at submit time.
+    nameInput.addEventListener('blur', validateName);
+    rollInput.addEventListener('blur', validateRoll);
+    classInput.addEventListener('change', validateClass);
+    scoreInput.addEventListener('blur', validateScore);
+    emailInput.addEventListener('blur', validateEmail);
+
     addStudentForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      let isValid = true;
 
-      const nameGroup = document.getElementById('grp-name');
-      const nameInput = document.getElementById('studentName');
-      const rollGroup = document.getElementById('grp-roll');
-      const rollInput = document.getElementById('rollNo');
-      const classGroup = document.getElementById('grp-class');
-      const classInput = document.getElementById('studentClass');
-      const scoreGroup = document.getElementById('grp-score');
-      const scoreInput = document.getElementById('studentScore');
-      const emailGroup = document.getElementById('grp-email');
-      const emailInput = document.getElementById('studentEmail');
-
-      // Name validation
-      if (nameInput.value.trim().length < 3) {
-        showError(nameGroup); isValid = false;
-      } else clearError(nameGroup);
-
-      // Roll number validation
-      if (rollInput.value.trim().length < 3) {
-        showError(rollGroup); isValid = false;
-      } else clearError(rollGroup);
-
-      // Class validation
-      if (classInput.value === '') {
-        showError(classGroup); isValid = false;
-      } else clearError(classGroup);
-
-      // Score validation
-      const score = parseFloat(scoreInput.value);
-      if (isNaN(score) || score < 0 || score > 100) {
-        showError(scoreGroup); isValid = false;
-      } else clearError(scoreGroup);
-
-      // Email validation
-      if (!isEmailValid(emailInput.value.trim())) {
-        showError(emailGroup); isValid = false;
-      } else clearError(emailGroup);
-
+      // Run every validator (avoid short-circuiting with &&, so ALL fields
+      // get their error state updated together, not just the first bad one).
+      const results = [validateName(), validateRoll(), validateClass(), validateScore(), validateEmail()];
+      const isValid = results.every(Boolean);
       if (!isValid) return;
 
-      // ---- Add new row to the Student Records table dynamically ----
-      const tableBody = document.querySelector('#studentsTable tbody');
-      const newRow = document.createElement('tr');
+      // ---- Week 5: hand the new student off to the shared data layer ----
+      // js/dashboard-week5.js owns rendering (search/filter/sort/pagination),
+      // so we just persist the record here and let it re-render the table.
+      const newStudent = {
+        id: rollInput.value.trim(),
+        name: nameInput.value.trim(),
+        class: classInput.value,
+        score: parseFloat(scoreInput.value),
+        email: emailInput.value.trim()
+      };
 
-      let statusText = 'At Risk';
-      let statusBadge = '<span class="badge badge-danger">At Risk</span>';
-      if (score >= 80) { statusText = 'Excellent'; statusBadge = '<span class="badge badge-success">Excellent</span>'; }
-      else if (score >= 60) { statusText = 'Average'; statusBadge = '<span class="badge badge-warning">Average</span>'; }
+      if (window.EA_addExtraStudent) window.EA_addExtraStudent(newStudent);
+      if (window.EA_logActivity) window.EA_logActivity('➕', `${newStudent.name} (${newStudent.id}) was added to Student Records.`);
 
-      newRow.setAttribute('data-class', classInput.value);
-      newRow.setAttribute('data-status', statusText);
-      newRow.setAttribute('data-score', score);
-
-      newRow.innerHTML = `
-        <td data-label="Roll No.">${rollInput.value.trim()}</td>
-        <td data-label="Name">${nameInput.value.trim()}</td>
-        <td data-label="Class">${classInput.value}</td>
-        <td data-label="Avg. Score">${score}%</td>
-        <td data-label="Status">${statusBadge}</td>
-        <td data-label="Action"><a href="student-profile.html?id=${rollInput.value.trim()}" class="btn-link">View Profile →</a></td>
-      `;
-      tableBody.prepend(newRow);
-
-      // Notify Week 3 dashboard cards/filters to refresh
-      document.dispatchEvent(new CustomEvent('studentAdded'));
+      // Notify the dashboard controller to refresh cards/table/charts
+      document.dispatchEvent(new CustomEvent('studentAdded', { detail: newStudent }));
 
       // Show success message
       const successMsg = document.getElementById('dashSuccessMsg');
@@ -477,167 +494,14 @@ document.addEventListener('DOMContentLoaded', function () {
     welcomeMsg.textContent = `Welcome back, ${currentUser.name} 👋`;
   }
   /* ---------------------------------------------------------
-     3. DYNAMIC DASHBOARD CARDS (auto-count + click to filter)
+     3. DASHBOARD CARDS / FILTERS / SORT / PAGINATION
+     Week 5: this logic now lives in js/dashboard-week5.js, which
+     also handles pagination, Chart.js charts, CSV/PDF export and
+     the recent-activity feed as one consistent render pipeline.
   --------------------------------------------------------- */
-  const statCardsContainer = document.getElementById('statCardsContainer');
-
-  function updateStatCards() {
-    const rows = document.querySelectorAll('#studentsTable tbody tr');
-    let total = 0, excellent = 0, average = 0, atRisk = 0;
-
-    rows.forEach(row => {
-      total++;
-      const status = row.getAttribute('data-status');
-      if (status === 'Excellent') excellent++;
-      else if (status === 'Average') average++;
-      else if (status === 'At Risk') atRisk++;
-    });
-
-    const cardTotal = document.getElementById('cardTotal');
-    const cardExcellent = document.getElementById('cardExcellent');
-    const cardAverage = document.getElementById('cardAverage');
-    const cardAtRisk = document.getElementById('cardAtRisk');
-
-    if (cardTotal) cardTotal.textContent = total;
-    if (cardExcellent) cardExcellent.textContent = excellent;
-    if (cardAverage) cardAverage.textContent = average;
-    if (cardAtRisk) cardAtRisk.textContent = atRisk;
-  }
-
-  if (statCardsContainer) {
-    updateStatCards();
-
-    // Click a card to filter the table by that status
-    document.querySelectorAll('.stat-card.clickable').forEach(card => {
-      card.addEventListener('click', function () {
-        document.querySelectorAll('.stat-card.clickable').forEach(c => c.classList.remove('card-active'));
-        card.classList.add('card-active');
-
-        const filterValue = card.getAttribute('data-filter');
-        const statusFilterSelect = document.getElementById('dashStatusFilter');
-        if (statusFilterSelect) {
-          statusFilterSelect.value = filterValue === 'all' ? 'all' : filterValue;
-          applyDashboardFilters();
-        }
-      });
-    });
-  }
 
   /* ---------------------------------------------------------
-     4. DASHBOARD TABLE: SEARCH + FILTER + RESULT COUNT
-  --------------------------------------------------------- */
- const dashSearchInput = document.getElementById('dashSearchInput');
-  const dashClassFilter = document.getElementById('dashClassFilter');
-  const dashStatusFilter = document.getElementById('dashStatusFilter');
-  const dashMinScore = document.getElementById('dashMinScore');
-  const dashMaxScore = document.getElementById('dashMaxScore');
-  const clearFiltersBtn = document.getElementById('clearFiltersBtn');
-  const dashResultInfo = document.getElementById('dashResultInfo');
-
-  function applyDashboardFilters() {
-    const searchVal = (dashSearchInput?.value || '').trim().toLowerCase();
-    const classVal = dashClassFilter?.value || 'all';
-    const statusVal = dashStatusFilter?.value || 'all';
-    const minScore = dashMinScore?.value !== '' ? parseFloat(dashMinScore.value) : 0;
-    const maxScore = dashMaxScore?.value !== '' ? parseFloat(dashMaxScore.value) : 100;
-
-    const rows = document.querySelectorAll('#studentsTable tbody tr');
-    let visibleCount = 0;
-    const total = rows.length;
-
-    rows.forEach(row => {
-      const rowClass = row.getAttribute('data-class');
-      const rowStatus = row.getAttribute('data-status');
-      const rowScore = parseFloat(row.getAttribute('data-score')) || 0;
-      const rowText = row.textContent.toLowerCase();
-
-      const matchSearch = searchVal === '' || rowText.includes(searchVal);
-      const matchClass = classVal === 'all' || rowClass === classVal;
-      const matchStatus = statusVal === 'all' || rowStatus === statusVal;
-      const matchScore = rowScore >= minScore && rowScore <= maxScore;
-
-      if (matchSearch && matchClass && matchStatus && matchScore) {
-        row.style.display = '';
-        visibleCount++;
-      } else {
-        row.style.display = 'none';
-      }
-    });
-
-    if (dashResultInfo) {
-      dashResultInfo.textContent = `Showing ${visibleCount} of ${total} students`;
-    }
-  }
-
-  if (dashSearchInput) {
-    dashSearchInput.addEventListener('input', applyDashboardFilters);
-    dashClassFilter.addEventListener('change', applyDashboardFilters);
-    dashStatusFilter.addEventListener('change', applyDashboardFilters);
-    dashMinScore.addEventListener('input', applyDashboardFilters);
-    dashMaxScore.addEventListener('input', applyDashboardFilters);
-
-    clearFiltersBtn.addEventListener('click', function () {
-      dashSearchInput.value = '';
-      dashClassFilter.value = 'all';
-      dashStatusFilter.value = 'all';
-      dashMinScore.value = '';
-      dashMaxScore.value = '';
-      document.querySelectorAll('.stat-card.clickable').forEach(c => c.classList.remove('card-active'));
-      applyDashboardFilters();
-    });
-
-    // Week 3: refresh cards + filters whenever a new student is added
-    document.addEventListener('studentAdded', function () {
-      updateStatCards();
-      applyDashboardFilters();
-    });
-
-    applyDashboardFilters(); // initial run
-  }
-
-  /* ---------------------------------------------------------
-     5. SORTABLE TABLE COLUMNS (click header to sort)
-  --------------------------------------------------------- */
-  const sortableHeaders = document.querySelectorAll('#studentsTable th.sortable');
-
-  sortableHeaders.forEach(header => {
-    header.addEventListener('click', function () {
-      const key = header.getAttribute('data-key');
-      const tbody = document.querySelector('#studentsTable tbody');
-      const rows = Array.from(tbody.querySelectorAll('tr'));
-
-      const isAscending = !header.classList.contains('sort-asc');
-
-      // Reset all header sort states
-      sortableHeaders.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-      header.classList.add(isAscending ? 'sort-asc' : 'sort-desc');
-
-      rows.sort((rowA, rowB) => {
-        let valA, valB;
-
-        if (key === 'score') {
-          valA = parseFloat(rowA.getAttribute('data-score'));
-          valB = parseFloat(rowB.getAttribute('data-score'));
-        } else if (key === 'class') {
-          valA = rowA.getAttribute('data-class');
-          valB = rowB.getAttribute('data-class');
-        } else {
-          const cellIndex = key === 'roll' ? 0 : 1;
-          valA = rowA.children[cellIndex].textContent.trim().toLowerCase();
-          valB = rowB.children[cellIndex].textContent.trim().toLowerCase();
-        }
-
-        if (valA < valB) return isAscending ? -1 : 1;
-        if (valA > valB) return isAscending ? 1 : -1;
-        return 0;
-      });
-
-      rows.forEach(row => tbody.appendChild(row));
-    });
-  });
-
-  /* ---------------------------------------------------------
-     6. SCROLL-SPY: HIGHLIGHT ACTIVE NAV LINK WHILE SCROLLING
+     4. SCROLL-SPY: HIGHLIGHT ACTIVE NAV LINK WHILE SCROLLING
   --------------------------------------------------------- */
   const sections = document.querySelectorAll('section[id]');
   const navLinks = document.querySelectorAll('.nav-link');
