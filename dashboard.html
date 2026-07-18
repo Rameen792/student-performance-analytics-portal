@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard | Student Performance Analytics Portal</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard-advanced.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script>
     // Applies saved theme BEFORE the page paints, so there's no light-mode flash
     (function () {
@@ -68,6 +70,21 @@
           <div class="stat-icon">⚠️</div>
           <h3 id="cardAtRisk">0</h3>
           <p>Need Attention</p>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="chart-card">
+          <h4>📊 Performance Distribution</h4>
+          <canvas id="statusDoughnutChart" height="220" role="img" aria-label="Doughnut chart showing student performance distribution"></canvas>
+        </div>
+        <div class="chart-card">
+          <h4>📈 Average Score by Class</h4>
+          <canvas id="classBarChart" height="220" role="img" aria-label="Bar chart showing average score per class"></canvas>
+        </div>
+        <div class="chart-card activity-card">
+          <h4>🕒 Recent Activity</h4>
+          <ul class="activity-feed" id="activityFeedList"></ul>
         </div>
       </div>
 
@@ -154,6 +171,23 @@
         <input type="number" id="dashMaxScore" placeholder="Max %" min="0" max="100" />
         <button class="btn btn-clear btn-sm" id="clearFiltersBtn">Clear Filters</button>
       </div>
+
+      <div class="toolbar toolbar-secondary">
+        <div class="page-size-control">
+          <label for="dashPageSize">Rows per page:</label>
+          <select id="dashPageSize">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="9999">All</option>
+          </select>
+        </div>
+        <div class="export-controls">
+          <button type="button" class="btn btn-outline btn-sm" id="exportCsvBtn">⬇️ Export CSV</button>
+          <button type="button" class="btn btn-outline btn-sm" id="exportPdfBtn">🖨️ Export PDF</button>
+        </div>
+      </div>
+
       <p class="result-info" id="dashResultInfo">Showing 5 of 5 students</p>
 
       <div class="table-wrapper">
@@ -169,10 +203,12 @@
             </tr>
           </thead>
           <tbody id="studentsTableBody">
-            <!-- Dynamically rendered by js/students-data.js -> renderStudentsTable() -->
+            <!-- Dynamically rendered by js/dashboard-week5.js -> render() (paginated) -->
           </tbody>
         </table>
       </div>
+
+      <nav class="pagination" id="dashPagination" aria-label="Student records pagination"></nav>
     </main>
   </div>
 
@@ -180,9 +216,13 @@
     <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
   </footer>
 
+  <!-- Hidden report container: only shown to the browser's print engine when exporting to PDF -->
+  <div id="printableReport" class="printable-report"></div>
+
   <script src="js/students-data.js"></script>
   <script src="js/auth-extra.js"></script>
   <script src="js/script.js"></script>
   <script src="js/week4.js"></script>
+  <script src="js/dashboard-week5.js"></script>
 </body>
 </html>

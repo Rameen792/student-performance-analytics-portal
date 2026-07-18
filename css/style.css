@@ -113,6 +113,7 @@ img { max-width: 100%; display: block; }
   font-weight: 500;
   color: var(--text-dark);
   padding: 8px 4px;
+  padding-left: 30px;
   position: relative;
   transition: var(--transition);
 }
@@ -121,7 +122,7 @@ img { max-width: 100%; display: block; }
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
+  left: 17px;
   width: 0;
   height: 2px;
   background: var(--primary-color);
