@@ -1540,3 +1540,112 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
 }
 
 .icon-btn:hover { transform: translateY(-2px) scale(1.06); box-shadow: var(--shadow-sm); }
+/* ---- Persuasive, real-time form validation ---- */
+.pw-checklist {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 10px;
+}
+.pw-checklist li {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding-left: 18px;
+  position: relative;
+  transition: var(--transition);
+}
+.pw-checklist li::before {
+  content: '○';
+  position: absolute;
+  left: 0;
+  color: var(--text-muted);
+}
+.pw-checklist li.met {
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+.pw-checklist li.met::before {
+  content: '✓';
+  color: var(--secondary-color);
+}
+
+.strength-label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  margin-top: 6px;
+}
+.strength-label.weak { color: var(--danger-color); }
+.strength-label.medium { color: var(--accent-color); }
+.strength-label.strong { color: var(--secondary-color); }
+
+.match-indicator {
+  display: block;
+  font-size: 0.8rem;
+  margin-top: 6px;
+  font-weight: 600;
+}
+.match-indicator.match { color: var(--secondary-color); }
+.match-indicator.mismatch { color: var(--danger-color); }
+
+/* Field turns green the instant it becomes valid — not just red when it's wrong */
+.form-group.valid input,
+.form-group.valid select {
+  border-color: var(--secondary-color) !important;
+}
+
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  animation: none !important;
+  transform: none !important;
+}
+<!-- ===== HERO SECTION ===== -->
+  <section class="hero">
+    <div class="hero-split">
+      <div>
+        <span class="hero-badge"><span class="dot"></span> Live dashboard · Role-based access</span>
+        <h1>Track. Analyze. Improve Student Performance.</h1>
+        <p>A centralized platform for teachers and administrators to monitor academic progress, generate reports, and make data-driven decisions.</p>
+        <div class="hero-buttons">
+          <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+          <a href="about.html" class="btn btn-outline" style="background:#fff;">Learn More</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-visual-header">
+          <strong>📊 Class Performance</strong>
+          <span>This term</span>
+        </div>
+        <div class="hero-mini-bars">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="hero-visual-rows">
+          <div class="hero-visual-row good"><span class="avatar">🎓</span><span class="grow">Excellent performers</span><span class="pct">62%</span></div>
+          <div class="hero-visual-row warn"><span class="avatar">📊</span><span class="grow">Average performers</span><span class="pct">29%</span></div>
+          <div class="hero-visual-row risk"><span class="avatar">⚠️</span><span class="grow">Need attention</span><span class="pct">9%</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CAPABILITY MARQUEE ===== -->
+  <div class="trust-bar">
+    <div class="trust-bar-track">
+      <span class="trust-chip">🔐 Role-Based Access</span>
+      <span class="trust-chip">📈 Real-Time Charts</span>
+      <span class="trust-chip">⬇️ CSV / PDF Export</span>
+      <span class="trust-chip">🌙 Dark Mode</span>
+      <span class="trust-chip">🔍 Advanced Search & Filters</span>
+      <span class="trust-chip">📱 Fully Responsive</span>
+      <span class="trust-chip">🔐 Role-Based Access</span>
+      <span class="trust-chip">📈 Real-Time Charts</span>
+      <span class="trust-chip">⬇️ CSV / PDF Export</span>
+      <span class="trust-chip">🌙 Dark Mode</span>
+      <span class="trust-chip">🔍 Advanced Search & Filters</span>
+      <span class="trust-chip">📱 Fully Responsive</span>
+    </div>
+  </div>

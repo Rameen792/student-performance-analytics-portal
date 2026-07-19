@@ -103,8 +103,8 @@
 
     const els = {
       search: document.getElementById('dashSearchInput'),
+      searchClear: document.getElementById('dashSearchClear'),
       classFilter: document.getElementById('dashClassFilter'),
-      statusFilter: document.getElementById('dashStatusFilter'),
       minScore: document.getElementById('dashMinScore'),
       maxScore: document.getElementById('dashMaxScore'),
       clearBtn: document.getElementById('clearFiltersBtn'),
@@ -115,24 +115,42 @@
       exportCsvBtn: document.getElementById('exportCsvBtn'),
       exportPdfBtn: document.getElementById('exportPdfBtn'),
       sortHeaders: document.querySelectorAll('#studentsTable th.sortable'),
+      filterToggleBtn: document.getElementById('filterToggleBtn'),
+      filterPanel: document.getElementById('filterPanel'),
+      filterCountBadge: document.getElementById('filterCountBadge'),
+      statusPills: document.getElementById('statusPills'),
+      activeChips: document.getElementById('activeChips'),
       role: (window.EA_role || 'Guest'),
       currentUser: window.EA_currentUser || null
     };
 
     let sortState = { key: 'roll', asc: true };
     let currentPage = 1;
+    let activeStatus = 'all'; // replaces the old <select id="dashStatusFilter">
+
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+
+    function highlight(text, term) {
+      const safe = escapeHtml(text);
+      if (!term) return safe;
+      const idx = safe.toLowerCase().indexOf(term.toLowerCase());
+      if (idx === -1) return safe;
+      return safe.slice(0, idx) + '<mark class="search-highlight">' + safe.slice(idx, idx + term.length) + '</mark>' + safe.slice(idx + term.length);
+    }
 
     /* ---- 2a. Filtering ---- */
     function getFiltered() {
       const searchVal = (els.search && els.search.value || '').trim().toLowerCase();
       const classVal = els.classFilter ? els.classFilter.value : 'all';
-      const statusVal = els.statusFilter ? els.statusFilter.value : 'all';
       const minScore = els.minScore && els.minScore.value !== '' ? parseFloat(els.minScore.value) : 0;
       const maxScore = els.maxScore && els.maxScore.value !== '' ? parseFloat(els.maxScore.value) : 100;
 
       let list = getAllStudents();
 
-      // Students only ever see their own record
       if (els.role === 'Student' && els.currentUser) {
         list = list.filter(function (s) { return s.email.toLowerCase() === els.currentUser.email.toLowerCase(); });
       }
@@ -141,7 +159,7 @@
         const text = (s.id + ' ' + s.name + ' ' + s.class + ' ' + s.email).toLowerCase();
         const matchSearch = searchVal === '' || text.includes(searchVal);
         const matchClass = classVal === 'all' || s.class === classVal;
-        const matchStatus = statusVal === 'all' || s.status === statusVal;
+        const matchStatus = activeStatus === 'all' || s.status === activeStatus;
         const matchScore = s.score >= minScore && s.score <= maxScore;
         return matchSearch && matchClass && matchStatus && matchScore;
       });
@@ -172,27 +190,20 @@
       if (!els.pagination) return;
       const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
       if (currentPage > totalPages) currentPage = totalPages;
-
       if (totalPages <= 1) { els.pagination.innerHTML = ''; return; }
 
       let buttons = '';
       buttons += '<button type="button" class="page-btn" data-page="prev" ' + (currentPage === 1 ? 'disabled' : '') + '>‹ Prev</button>';
-
       const maxButtons = 5;
       let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
       let end = Math.min(totalPages, start + maxButtons - 1);
       start = Math.max(1, end - maxButtons + 1);
-
       if (start > 1) buttons += '<button type="button" class="page-btn" data-page="1">1</button>' + (start > 2 ? '<span class="page-dots">…</span>' : '');
-
       for (let p = start; p <= end; p++) {
         buttons += '<button type="button" class="page-btn ' + (p === currentPage ? 'active' : '') + '" data-page="' + p + '">' + p + '</button>';
       }
-
       if (end < totalPages) buttons += (end < totalPages - 1 ? '<span class="page-dots">…</span>' : '') + '<button type="button" class="page-btn" data-page="' + totalPages + '">' + totalPages + '</button>';
-
       buttons += '<button type="button" class="page-btn" data-page="next" ' + (currentPage === totalPages ? 'disabled' : '') + '>Next ›</button>';
-
       els.pagination.innerHTML = buttons;
     }
 
@@ -209,20 +220,61 @@
       });
     }
 
-    /* ---- 2d. Row rendering (only the current page hits the DOM) ---- */
-    function rowHtml(s) {
+    /* ---- 2d. Row rendering (highlights the live search term) ---- */
+    function rowHtml(s, term) {
       const badgeClass = getStatusBadgeClass(s.status);
       return '<tr data-id="' + s.id + '">' +
-        '<td data-label="Roll No.">' + s.id + '</td>' +
-        '<td data-label="Name">' + s.name + '</td>' +
-        '<td data-label="Class">' + s.class + '</td>' +
+        '<td data-label="Roll No.">' + highlight(s.id, term) + '</td>' +
+        '<td data-label="Name">' + highlight(s.name, term) + '</td>' +
+        '<td data-label="Class">' + highlight(s.class, term) + '</td>' +
         '<td data-label="Avg. Score">' + s.score + '%</td>' +
         '<td data-label="Status"><span class="badge ' + badgeClass + '">' + s.status + '</span></td>' +
         '<td data-label="Action"><a href="student-profile.html?id=' + s.id + '" class="btn-link">View Profile →</a></td>' +
         '</tr>';
     }
 
+    /* ---- 2e. Active filter chips + badge ---- */
+    function renderChips() {
+      if (!els.activeChips) return;
+      const searchVal = (els.search && els.search.value || '').trim();
+      const classVal = els.classFilter ? els.classFilter.value : 'all';
+      const minVal = els.minScore ? els.minScore.value : '';
+      const maxVal = els.maxScore ? els.maxScore.value : '';
+
+      const chips = [];
+      if (searchVal) chips.push({ type: 'search', label: 'Search: “' + searchVal + '”' });
+      if (classVal !== 'all') chips.push({ type: 'class', label: 'Class: ' + classVal });
+      if (activeStatus !== 'all') chips.push({ type: 'status', label: 'Status: ' + activeStatus });
+      if (minVal !== '' || maxVal !== '') chips.push({ type: 'score', label: 'Score: ' + (minVal || '0') + '–' + (maxVal || '100') + '%' });
+
+      els.activeChips.innerHTML = chips.map(function (c) {
+        return '<span class="chip" data-type="' + c.type + '">' + c.label + '<button type="button" data-remove="' + c.type + '" aria-label="Remove filter">✕</button></span>';
+      }).join('');
+
+      const advancedCount = (classVal !== 'all' ? 1 : 0) + ((minVal !== '' || maxVal !== '') ? 1 : 0);
+      if (els.filterCountBadge) {
+        els.filterCountBadge.hidden = advancedCount === 0;
+        els.filterCountBadge.textContent = advancedCount;
+      }
+      if (els.searchClear) els.searchClear.hidden = searchVal === '';
+    }
+
+    if (els.activeChips) {
+      els.activeChips.addEventListener('click', function (e) {
+        const btn = e.target.closest('[data-remove]');
+        if (!btn) return;
+        const type = btn.getAttribute('data-remove');
+        if (type === 'search' && els.search) els.search.value = '';
+        if (type === 'class' && els.classFilter) els.classFilter.value = 'all';
+        if (type === 'score') { if (els.minScore) els.minScore.value = ''; if (els.maxScore) els.maxScore.value = ''; }
+        if (type === 'status') setStatus('all');
+        goToFirstPageAndRender();
+      });
+    }
+
+    /* ---- 2f. Master render ---- */
     function render() {
+      const term = (els.search && els.search.value || '').trim();
       const filtered = applySort(getFiltered());
       const pageSize = getPageSize();
       const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -234,8 +286,15 @@
 
       if (els.tbody) {
         els.tbody.innerHTML = pageItems.length
-          ? pageItems.map(rowHtml).join('')
-          : '<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--text-muted);">No students match the current filters.</td></tr>';
+          ? pageItems.map(function (s) { return rowHtml(s, term); }).join('')
+          : '<tr class="no-results-row"><td colspan="6">' +
+              '<span class="nr-icon">🔍</span>' +
+              '<span class="nr-title">No students match your filters</span>' +
+              'Try a different search term or widen your filters.' +
+              '<br><button type="button" class="nr-clear" id="nrClearBtn">Clear all filters</button>' +
+            '</td></tr>';
+        const nrBtn = document.getElementById('nrClearBtn');
+        if (nrBtn) nrBtn.addEventListener('click', function () { els.clearBtn && els.clearBtn.click(); });
       }
 
       if (els.resultInfo) {
@@ -249,6 +308,7 @@
       }
 
       renderPagination(filtered.length, pageSize);
+      renderChips();
       updateStatCards();
       updateCharts(filtered);
     }
@@ -259,28 +319,72 @@
 
     function goToFirstPageAndRender() { currentPage = 1; render(); }
 
-    [els.classFilter, els.statusFilter].forEach(function (el) {
-      if (el) el.addEventListener('change', goToFirstPageAndRender);
-    });
+    /* ---- 2g. Wiring: search, clear, panel toggle, pills, filters ---- */
+    if (els.classFilter) els.classFilter.addEventListener('change', goToFirstPageAndRender);
     [els.minScore, els.maxScore].forEach(function (el) {
       if (el) el.addEventListener('input', debounce(goToFirstPageAndRender, 250));
     });
-    if (els.search) els.search.addEventListener('input', debounce(goToFirstPageAndRender, 250));
+    if (els.search) els.search.addEventListener('input', debounce(goToFirstPageAndRender, 200));
     if (els.pageSize) els.pageSize.addEventListener('change', goToFirstPageAndRender);
+
+    if (els.searchClear) {
+      els.searchClear.addEventListener('click', function () {
+        els.search.value = '';
+        els.search.focus();
+        goToFirstPageAndRender();
+      });
+    }
+
+    // "/" jumps straight into the search box, like Gmail/GitHub
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== '/' || !els.search) return;
+      const tag = (document.activeElement && document.activeElement.tagName) || '';
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      e.preventDefault();
+      els.search.focus();
+    });
+
+    if (els.filterToggleBtn && els.filterPanel) {
+      els.filterToggleBtn.addEventListener('click', function () {
+        const isOpen = !els.filterPanel.hidden;
+        els.filterPanel.hidden = isOpen;
+        els.filterToggleBtn.setAttribute('aria-expanded', String(!isOpen));
+      });
+    }
+
+    function setStatus(status) {
+      activeStatus = status;
+      if (els.statusPills) {
+        els.statusPills.querySelectorAll('.pill').forEach(function (p) {
+          p.classList.toggle('active', p.getAttribute('data-status') === status);
+        });
+      }
+      document.querySelectorAll('.stat-card.clickable').forEach(function (c) {
+        c.classList.toggle('card-active', c.getAttribute('data-filter') === status);
+      });
+    }
+
+    if (els.statusPills) {
+      els.statusPills.addEventListener('click', function (e) {
+        const pill = e.target.closest('.pill');
+        if (!pill) return;
+        setStatus(pill.getAttribute('data-status'));
+        goToFirstPageAndRender();
+      });
+    }
 
     if (els.clearBtn) {
       els.clearBtn.addEventListener('click', function () {
         if (els.search) els.search.value = '';
         if (els.classFilter) els.classFilter.value = 'all';
-        if (els.statusFilter) els.statusFilter.value = 'all';
         if (els.minScore) els.minScore.value = '';
         if (els.maxScore) els.maxScore.value = '';
-        document.querySelectorAll('.stat-card.clickable').forEach(function (c) { c.classList.remove('card-active'); });
+        setStatus('all');
         goToFirstPageAndRender();
       });
     }
 
-    /* ---- 2e. Sortable headers ---- */
+    /* ---- Sortable headers ---- */
     els.sortHeaders.forEach(function (header) {
       header.addEventListener('click', function () {
         const key = header.getAttribute('data-key');
@@ -292,7 +396,7 @@
       });
     });
 
-    /* ---- 2f. Stat cards (always reflect the FULL dataset, not just filtered) ---- */
+    /* ---- Stat cards (always reflect the FULL dataset) ---- */
     function updateStatCards() {
       let all = getAllStudents();
       if (els.role === 'Student' && els.currentUser) {
@@ -313,19 +417,12 @@
 
     document.querySelectorAll('.stat-card.clickable').forEach(function (card) {
       card.addEventListener('click', function () {
-        document.querySelectorAll('.stat-card.clickable').forEach(function (c) { c.classList.remove('card-active'); });
-        card.classList.add('card-active');
-        if (els.statusFilter) {
-          els.statusFilter.value = card.getAttribute('data-filter');
-          goToFirstPageAndRender();
-        }
+        setStatus(card.getAttribute('data-filter'));
+        goToFirstPageAndRender();
       });
     });
 
-    /* ---- 2g. New student added elsewhere on the page ---- */
-    document.addEventListener('studentAdded', function () {
-      goToFirstPageAndRender();
-    });
+    document.addEventListener('studentAdded', function () { goToFirstPageAndRender(); });
 
     /* ---- 2h. CHARTS (Chart.js) ---- */
     let statusChart = null;

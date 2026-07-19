@@ -293,7 +293,34 @@ document.addEventListener('DOMContentLoaded', function () {
     return getStoredUsers().find(u => u.email.toLowerCase() === email.toLowerCase());
   }
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  function setFieldError(groupEl, message) {
+    groupEl.classList.add('invalid');
+    groupEl.classList.remove('valid');
+    const errText = groupEl.querySelector('.error-text');
+    if (errText && message) errText.textContent = message;
+  }
+  function setFieldValid(groupEl) {
+    groupEl.classList.remove('invalid');
+    groupEl.classList.add('valid');
+  }
+  function clearFieldState(groupEl) {
+    groupEl.classList.remove('invalid', 'valid');
+  }
+
+  // Pinpoints the REAL objection instead of a generic "invalid email" message
+  function emailObjection(value) {
+    const v = value.trim();
+    if (v === '') return 'We need your email address to continue.';
+    if (!v.includes('@')) return "That's missing the @ symbol — e.g. name@example.com.";
+    const [local, domain] = v.split('@');
+    if (!local) return 'Add something before the @ symbol.';
+    if (!domain) return 'Add a domain after the @, like gmail.com.';
+    if (!domain.includes('.')) return 'The domain needs an extension, like ".com" or ".edu".';
+    if (!emailPattern.test(v)) return "That email address doesn't look valid — please double-check it.";
+    return '';
+  }
 
   /* ---------------------------------------------------------
      2. SIGNUP FORM: VALIDATION + REGISTER NEW USER
@@ -301,9 +328,25 @@ document.addEventListener('DOMContentLoaded', function () {
   const signupForm = document.getElementById('signupFormEl');
 
   if (signupForm) {
+    const nameGroup = document.getElementById('grp-sname');
+    const nameInput = document.getElementById('signupName');
+    const emailGroup = document.getElementById('grp-semail');
+    const emailInput = document.getElementById('signupEmail');
+    const roleGroup = document.getElementById('grp-srole');
+    const roleInput = document.getElementById('signupRole');
+    const passGroup = document.getElementById('grp-spassword');
     const signupPasswordInput = document.getElementById('signupPassword');
     const toggleSignupBtn = document.getElementById('toggleSignupPassword');
     const strengthBar = document.getElementById('passwordStrength');
+    const strengthLabel = document.getElementById('strengthLabel');
+    const checklist = document.getElementById('pwChecklist');
+    const confirmGroup = document.getElementById('grp-sconfirm');
+    const confirmInput = document.getElementById('signupConfirmPassword');
+    const matchIndicator = document.getElementById('matchIndicator');
+    const termsGroup = document.getElementById('grp-sterms');
+    const termsCheckbox = document.getElementById('agreeTerms');
+    const errorBanner = document.getElementById('signupErrorBanner');
+    const successMsg = document.getElementById('signupSuccessMsg');
 
     if (toggleSignupBtn) {
       toggleSignupBtn.addEventListener('click', function () {
@@ -313,73 +356,128 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
-    // Live password strength indicator
-    if (strengthBar) {
-      signupPasswordInput.addEventListener('input', function () {
-        const val = signupPasswordInput.value;
-        strengthBar.classList.remove('weak', 'medium', 'strong');
-        if (val.length === 0) return;
-
-        const hasUpper = /[A-Z]/.test(val);
-        const hasNumber = /[0-9]/.test(val);
-        const hasSpecial = /[^A-Za-z0-9]/.test(val);
-        const score = [hasUpper, hasNumber, hasSpecial, val.length >= 8].filter(Boolean).length;
-
-        if (val.length < 6) strengthBar.classList.add('weak');
-        else if (score <= 2) strengthBar.classList.add('medium');
-        else strengthBar.classList.add('strong');
-      });
+    function passwordRules(val) {
+      return { len: val.length >= 8, upper: /[A-Z]/.test(val), number: /[0-9]/.test(val), special: /[^A-Za-z0-9]/.test(val) };
     }
+
+    function updateChecklist(val) {
+      const rules = passwordRules(val);
+      if (checklist) {
+        Object.keys(rules).forEach(function (key) {
+          const li = checklist.querySelector('[data-rule="' + key + '"]');
+          if (li) li.classList.toggle('met', rules[key]);
+        });
+      }
+      return rules;
+    }
+
+    function validatePassword(showError) {
+      const val = signupPasswordInput.value;
+      const rules = updateChecklist(val);
+      const metCount = Object.values(rules).filter(Boolean).length;
+
+      strengthBar && strengthBar.classList.remove('weak', 'medium', 'strong');
+      if (strengthLabel) strengthLabel.className = 'strength-label';
+
+      if (val.length === 0) {
+        if (strengthLabel) strengthLabel.textContent = '';
+        if (showError) setFieldError(passGroup, 'Password is required.');
+        else clearFieldState(passGroup);
+        return false;
+      }
+
+      let label = 'Weak', cls = 'weak';
+      if (metCount === 4) { label = 'Strong'; cls = 'strong'; }
+      else if (metCount >= 2) { label = 'Fair'; cls = 'medium'; }
+      strengthBar && strengthBar.classList.add(cls);
+      if (strengthLabel) { strengthLabel.textContent = 'Password strength: ' + label; strengthLabel.classList.add(cls); }
+
+      const ok = rules.len && rules.upper && rules.number && rules.special;
+      if (ok) setFieldValid(passGroup);
+      else if (showError) setFieldError(passGroup, 'Still missing ' + (4 - metCount) + ' requirement(s) above.');
+      else clearFieldState(passGroup);
+      return ok;
+    }
+
+    function validateConfirm(showError) {
+      if (confirmInput.value === '') {
+        if (matchIndicator) { matchIndicator.textContent = ''; matchIndicator.className = 'match-indicator'; }
+        if (showError) setFieldError(confirmGroup, 'Please re-enter your password.');
+        else clearFieldState(confirmGroup);
+        return false;
+      }
+      const ok = confirmInput.value === signupPasswordInput.value;
+      if (matchIndicator) {
+        matchIndicator.textContent = ok ? '✓ Passwords match' : '✕ Passwords don\'t match yet';
+        matchIndicator.className = 'match-indicator ' + (ok ? 'match' : 'mismatch');
+      }
+      if (ok) setFieldValid(confirmGroup);
+      else setFieldError(confirmGroup, "This doesn't match the password above.");
+      return ok;
+    }
+
+    function validateName(showError) {
+      const len = nameInput.value.trim().length;
+      if (len === 0) { if (showError) setFieldError(nameGroup, 'Full name is required.'); else clearFieldState(nameGroup); return false; }
+      if (len < 3) { if (showError) setFieldError(nameGroup, 'That looks too short — enter your full name (min 3 characters).'); else clearFieldState(nameGroup); return false; }
+      setFieldValid(nameGroup);
+      return true;
+    }
+
+    function validateSignupEmail(showError) {
+      const msg = emailObjection(emailInput.value);
+      if (msg) { if (showError) setFieldError(emailGroup, msg); else clearFieldState(emailGroup); return false; }
+      setFieldValid(emailGroup);
+      return true;
+    }
+
+    function validateRole(showError) {
+      const ok = roleInput.value !== '';
+      if (ok) setFieldValid(roleGroup);
+      else if (showError) setFieldError(roleGroup, 'Please select the role that best describes you.');
+      else clearFieldState(roleGroup);
+      return ok;
+    }
+
+    function validateTerms(showError) {
+      const ok = termsCheckbox.checked;
+      if (ok) clearFieldState(termsGroup);
+      else if (showError) setFieldError(termsGroup, 'You must accept the Terms & Privacy Policy to create an account.');
+      return ok;
+    }
+
+    // Live feedback as the user types — not just on submit
+    nameInput.addEventListener('input', function () { validateName(false); });
+    nameInput.addEventListener('blur', function () { validateName(true); });
+    emailInput.addEventListener('input', function () { validateSignupEmail(false); });
+    emailInput.addEventListener('blur', function () { validateSignupEmail(true); });
+    roleInput.addEventListener('change', function () { validateRole(true); });
+    signupPasswordInput.addEventListener('input', function () { validatePassword(false); if (confirmInput.value) validateConfirm(false); });
+    signupPasswordInput.addEventListener('blur', function () { validatePassword(true); });
+    confirmInput.addEventListener('input', function () { validateConfirm(false); });
+    confirmInput.addEventListener('blur', function () { validateConfirm(true); });
+    termsCheckbox.addEventListener('change', function () { validateTerms(true); });
 
     signupForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      let isValid = true;
-
-      const nameGroup = document.getElementById('grp-sname');
-      const nameInput = document.getElementById('signupName');
-      const emailGroup = document.getElementById('grp-semail');
-      const emailInput = document.getElementById('signupEmail');
-      const roleGroup = document.getElementById('grp-srole');
-      const roleInput = document.getElementById('signupRole');
-      const passGroup = document.getElementById('grp-spassword');
-      const confirmGroup = document.getElementById('grp-sconfirm');
-      const confirmInput = document.getElementById('signupConfirmPassword');
-      const termsGroup = document.getElementById('grp-sterms');
-      const termsCheckbox = document.getElementById('agreeTerms');
-      const errorBanner = document.getElementById('signupErrorBanner');
-      const successMsg = document.getElementById('signupSuccessMsg');
-
       errorBanner.style.display = 'none';
 
-      if (nameInput.value.trim().length < 3) { nameGroup.classList.add('invalid'); isValid = false; }
-      else nameGroup.classList.remove('invalid');
+      const results = [
+        validateName(true),
+        validateSignupEmail(true),
+        validateRole(true),
+        validatePassword(true),
+        validateConfirm(true),
+        validateTerms(true)
+      ];
+      if (!results.every(Boolean)) return;
 
-      if (!emailPattern.test(emailInput.value.trim())) { emailGroup.classList.add('invalid'); isValid = false; }
-      else emailGroup.classList.remove('invalid');
-
-      if (roleInput.value === '') { roleGroup.classList.add('invalid'); isValid = false; }
-      else roleGroup.classList.remove('invalid');
-
-      if (signupPasswordInput.value.length < 6) { passGroup.classList.add('invalid'); isValid = false; }
-      else passGroup.classList.remove('invalid');
-
-      if (confirmInput.value !== signupPasswordInput.value || confirmInput.value === '') {
-        confirmGroup.classList.add('invalid'); isValid = false;
-      } else confirmGroup.classList.remove('invalid');
-
-      if (!termsCheckbox.checked) { termsGroup.classList.add('invalid'); isValid = false; }
-      else termsGroup.classList.remove('invalid');
-
-      if (!isValid) return;
-
-      // Check if email already registered
       if (findUserByEmail(emailInput.value.trim())) {
         errorBanner.textContent = '❌ An account with this email already exists. Please login instead.';
         errorBanner.style.display = 'block';
         return;
       }
 
-      // Save the new user
       saveUser({
         name: nameInput.value.trim(),
         email: emailInput.value.trim(),
@@ -389,11 +487,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
       successMsg.style.display = 'block';
       signupForm.reset();
-      strengthBar?.classList.remove('weak', 'medium', 'strong');
+      strengthBar && strengthBar.classList.remove('weak', 'medium', 'strong');
+      if (strengthLabel) strengthLabel.textContent = '';
+      if (checklist) checklist.querySelectorAll('li').forEach(function (li) { li.classList.remove('met'); });
+      if (matchIndicator) { matchIndicator.textContent = ''; matchIndicator.className = 'match-indicator'; }
+      document.querySelectorAll('#signupFormEl .form-group').forEach(clearFieldState);
 
-      setTimeout(() => {
-        window.location.href = 'login.html';
-      }, 1500);
+      setTimeout(() => { window.location.href = 'login.html'; }, 1500);
     });
   }
 
@@ -404,7 +504,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
   if (loginForm) {
     const togglePasswordBtn = document.getElementById('togglePassword');
+    const emailGroup = document.getElementById('grp-lemail');
+    const emailInput = document.getElementById('loginEmail');
+    const passGroup = document.getElementById('grp-lpassword');
     const passwordInput = document.getElementById('loginPassword');
+    const errorBanner = document.getElementById('loginErrorBanner');
+    const successMsg = document.getElementById('loginSuccessMsg');
 
     if (togglePasswordBtn) {
       togglePasswordBtn.addEventListener('click', function () {
@@ -414,54 +519,58 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
 
+    function validateLoginEmail(showError) {
+      const msg = emailObjection(emailInput.value);
+      if (msg) { if (showError) setFieldError(emailGroup, msg); else clearFieldState(emailGroup); return false; }
+      setFieldValid(emailGroup);
+      return true;
+    }
+
+    function validateLoginPassword(showError) {
+      const len = passwordInput.value.trim().length;
+      if (len === 0) { if (showError) setFieldError(passGroup, 'Please enter your password.'); else clearFieldState(passGroup); return false; }
+      if (len < 6) { if (showError) setFieldError(passGroup, 'Too short — password needs at least 6 characters (you have ' + len + ').'); else clearFieldState(passGroup); return false; }
+      setFieldValid(passGroup);
+      return true;
+    }
+
+    emailInput.addEventListener('input', function () { validateLoginEmail(false); });
+    emailInput.addEventListener('blur', function () { validateLoginEmail(true); });
+    passwordInput.addEventListener('input', function () { validateLoginPassword(false); });
+    passwordInput.addEventListener('blur', function () { validateLoginPassword(true); });
+
     loginForm.addEventListener('submit', function (e) {
       e.preventDefault();
-      let isValid = true;
-
-      const emailGroup = document.getElementById('grp-lemail');
-      const emailInput = document.getElementById('loginEmail');
-      const passGroup = document.getElementById('grp-lpassword');
-      const errorBanner = document.getElementById('loginErrorBanner');
-      const successMsg = document.getElementById('loginSuccessMsg');
-
       errorBanner.style.display = 'none';
 
-      if (!emailPattern.test(emailInput.value.trim())) {
-        emailGroup.classList.add('invalid'); isValid = false;
-      } else {
-        emailGroup.classList.remove('invalid');
-      }
+      const results = [validateLoginEmail(true), validateLoginPassword(true)];
+      if (!results.every(Boolean)) return;
 
-      if (passwordInput.value.trim().length < 6) {
-        passGroup.classList.add('invalid'); isValid = false;
-      } else {
-        passGroup.classList.remove('invalid');
-      }
-
-      if (!isValid) return;
-
-      // Check credentials against ALL registered users (not just demo)
+      // Distinguish the REAL objection: no such account vs. wrong password
       const matchedUser = findUserByEmail(emailInput.value.trim());
 
-      if (matchedUser && matchedUser.password === passwordInput.value) {
-        successMsg.style.display = 'block';
-
-        const rememberMe = document.getElementById('rememberMe').checked;
-        const userData = JSON.stringify({ name: matchedUser.name, email: matchedUser.email, role: matchedUser.role });
-
-        if (rememberMe) {
-          localStorage.setItem('eduanalytics_current_user', userData);
-        } else {
-          sessionStorage.setItem('eduanalytics_current_user', userData);
-        }
-
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1200);
-      } else {
-        errorBanner.textContent = '❌ Invalid email or password. Try demo@eduanalytics.com / demo123, or sign up for a new account.';
+      if (!matchedUser) {
+        errorBanner.textContent = '❌ No account found with this email. Try again, or sign up for a new account.';
         errorBanner.style.display = 'block';
+        setFieldError(emailGroup, "We don't have an account with this email yet.");
+        return;
       }
+
+      if (matchedUser.password !== passwordInput.value) {
+        errorBanner.textContent = '❌ That password is incorrect for ' + matchedUser.email + '. Try again or reset it.';
+        errorBanner.style.display = 'block';
+        setFieldError(passGroup, 'Incorrect password for this account.');
+        return;
+      }
+
+      successMsg.style.display = 'block';
+      const rememberMe = document.getElementById('rememberMe').checked;
+      const userData = JSON.stringify({ name: matchedUser.name, email: matchedUser.email, role: matchedUser.role });
+
+      if (rememberMe) localStorage.setItem('eduanalytics_current_user', userData);
+      else sessionStorage.setItem('eduanalytics_current_user', userData);
+
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
     });
   }
 
