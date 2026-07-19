@@ -153,24 +153,48 @@
       </div>
       </div>
 
-      <h2 style="margin-bottom:16px;" id="studentTable">Student Records</h2>
-      <div class="toolbar">
-        <input type="text" id="dashSearchInput" placeholder="🔍 Search by name or roll number..." />
-        <select id="dashClassFilter">
-          <option value="all">All Classes</option>
-          <option>Grade 9</option><option>Grade 10</option>
-          <option>Grade 11</option><option>Grade 12</option>
-        </select>
-        <select id="dashStatusFilter">
-          <option value="all">All Statuses</option>
-          <option value="Excellent">Excellent</option>
-          <option value="Average">Average</option>
-          <option value="At Risk">At Risk</option>
-        </select>
-        <input type="number" id="dashMinScore" placeholder="Min %" min="0" max="100" />
-        <input type="number" id="dashMaxScore" placeholder="Max %" min="0" max="100" />
-        <button class="btn btn-clear btn-sm" id="clearFiltersBtn">Clear Filters</button>
+     <h2 style="margin-bottom:16px;" id="studentTable">Student Records</h2>
+
+      <div class="search-filter-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="dashSearchInput" placeholder="Search by name, roll number, class or email..." autocomplete="off" />
+          <button type="button" class="search-clear" id="dashSearchClear" aria-label="Clear search" hidden>✕</button>
+          <kbd class="search-kbd">/</kbd>
+        </div>
+        <button type="button" class="filter-toggle-btn" id="filterToggleBtn" aria-expanded="false">
+          ⚙️ Advanced Filters <span class="filter-count-badge" id="filterCountBadge" hidden>0</span>
+        </button>
       </div>
+
+      <div class="status-pills" id="statusPills">
+        <button type="button" class="pill active" data-status="all">All Students</button>
+        <button type="button" class="pill pill-excellent" data-status="Excellent">🏆 Excellent</button>
+        <button type="button" class="pill pill-average" data-status="Average">📊 Average</button>
+        <button type="button" class="pill pill-atrisk" data-status="At Risk">⚠️ At Risk</button>
+      </div>
+
+      <div class="filter-panel" id="filterPanel" hidden>
+        <div class="filter-field">
+          <label for="dashClassFilter">Class</label>
+          <select id="dashClassFilter">
+            <option value="all">All Classes</option>
+            <option>Grade 9</option><option>Grade 10</option>
+            <option>Grade 11</option><option>Grade 12</option>
+          </select>
+        </div>
+        <div class="filter-field">
+          <label>Score Range</label>
+          <div class="score-range-inputs">
+            <input type="number" id="dashMinScore" placeholder="Min" min="0" max="100" />
+            <span>–</span>
+            <input type="number" id="dashMaxScore" placeholder="Max" min="0" max="100" />
+          </div>
+        </div>
+        <button type="button" class="btn btn-clear btn-sm" id="clearFiltersBtn">Clear All Filters</button>
+      </div>
+
+      <div class="active-chips" id="activeChips"></div>
 
       <div class="toolbar toolbar-secondary">
         <div class="page-size-control">
