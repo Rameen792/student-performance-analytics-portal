@@ -443,3 +443,21 @@ mark.search-highlight {
   font-weight: 600;
   cursor: pointer;
 }
+.activity-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.activity-card-header h4 { margin: 0; }
+.activity-clear-btn {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.activity-clear-btn:hover { border-color: var(--danger-color); color: var(--danger-color); }

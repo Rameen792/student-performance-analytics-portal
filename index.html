@@ -34,7 +34,7 @@
     </div>
   </nav>
 
-<!-- ===== HERO SECTION ===== -->
+  <!-- ===== HERO SECTION ===== -->
   <section class="hero">
     <div class="hero-split">
       <div>
@@ -84,8 +84,11 @@
 
   <!-- ===== STATS SECTION ===== -->
   <section class="stats-section container">
-    <h2 class="section-title">Platform at a Glance</h2>
-    <p class="section-subtitle">Real-time snapshot of overall academic performance</p>
+    <div class="section-title-wrap">
+      <span class="section-eyebrow">Platform Metrics</span>
+      <h2 class="section-title">Platform at a Glance</h2>
+      <p class="section-subtitle">Real-time snapshot of overall academic performance</p>
+    </div>
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -113,72 +116,106 @@
 
   <!-- ===== FEATURES SECTION ===== -->
   <section class="stats-section container">
-    <h2 class="section-title">What You Can Do</h2>
-    <p class="section-subtitle">Everything you need to track student success in one place</p>
+    <div class="section-title-wrap">
+      <span class="section-eyebrow">Core Features</span>
+      <h2 class="section-title">What You Can Do</h2>
+      <p class="section-subtitle">Everything you need to track student success in one place</p>
+    </div>
 
     <div class="features-grid">
       <div class="feature-card">
+        <span class="feature-num">01</span>
         <div class="icon-box">📊</div>
         <h3>Performance Dashboard</h3>
         <p>Visual overview of student grades, attendance, and progress trends at a glance.</p>
+        <span class="feature-arrow">Explore Dashboard →</span>
       </div>
       <div class="feature-card">
+        <span class="feature-num">02</span>
         <div class="icon-box">📝</div>
         <h3>Detailed Reports</h3>
         <p>Generate subject-wise and term-wise performance reports for every student.</p>
+        <span class="feature-arrow">View Reports →</span>
       </div>
       <div class="feature-card">
+        <span class="feature-num">03</span>
         <div class="icon-box">➕</div>
         <h3>Easy Data Entry</h3>
         <p>Add and update student records quickly with validated, error-free forms.</p>
+        <span class="feature-arrow">Add a Student →</span>
       </div>
       <div class="feature-card">
+        <span class="feature-num">04</span>
         <div class="icon-box">📱</div>
         <h3>Fully Responsive</h3>
         <p>Access the portal seamlessly from desktop, tablet, or mobile devices.</p>
+        <span class="feature-arrow">See it in action →</span>
       </div>
     </div>
   </section>
 
-  <!-- ===== TESTIMONIALS / WHY CHOOSE US SECTION ===== -->
+  <!-- ===== TESTIMONIALS SECTION ===== -->
   <section class="stats-section container">
-    <h2 class="section-title">Why Schools Trust Us</h2>
-    <p class="section-subtitle">Built with educators, for educators</p>
+    <div class="section-title-wrap">
+      <span class="section-eyebrow">Why Schools Trust Us</span>
+      <h2 class="section-title">Built With Educators, For Educators</h2>
+      <p class="section-subtitle">Feedback from the people who use the portal every day</p>
+    </div>
 
-    <div class="features-grid">
-      <div class="feature-card">
-        <div class="icon-box">⚡</div>
-        <h3>Fast & Lightweight</h3>
-        <p>No lag, no clutter — just clean data presented clearly and quickly.</p>
+    <div class="testimonial-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">No lag, no clutter — I can pull up a class's performance in seconds instead of digging through spreadsheets.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">GT</div>
+          <div><strong>Grade 10 Teacher</strong><span>Daily dashboard user</span></div>
+        </div>
       </div>
-      <div class="feature-card">
-        <div class="icon-box">🔒</div>
-        <h3>Secure by Design</h3>
-        <p>Student information is handled with strict privacy and security practices.</p>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">Student data finally feels secure and organized. Role-based access means everyone only sees what they should.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">SA</div>
+          <div><strong>School Administrator</strong><span>Manages 3 campuses</span></div>
+        </div>
       </div>
-      <div class="feature-card">
-        <div class="icon-box">🎯</div>
-        <h3>Actionable Insights</h3>
-        <p>Spot at-risk students early with clear visual indicators and progress bars.</p>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-quote">The at-risk indicators helped us catch struggling students early — before it showed up on a report card.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar">AC</div>
+          <div><strong>Academic Coordinator</strong><span>Uses weekly reports</span></div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- ===== CALL TO ACTION SECTION ===== -->
-  <section class="hero" style="padding:60px 20px;">
-    <h1 style="font-size:2rem;">Ready to get started?</h1>
-    <p>Jump into the dashboard and see your student data come to life.</p>
-    <div class="hero-buttons">
-      <a href="dashboard.html" class="btn btn-primary" style="background:#fff; color:var(--primary-color);">Open Dashboard</a>
+  <section class="stats-section container">
+    <div class="cta-banner">
+      <h1 style="font-size:2rem; margin-bottom:12px;">Ready to get started?</h1>
+      <p style="max-width:520px; margin:0 auto 28px;">Jump into the dashboard and see your student data come to life.</p>
+      <div class="hero-buttons">
+        <a href="dashboard.html" class="btn btn-primary" style="background:#fff; color:var(--primary-color);">Open Dashboard</a>
+        <a href="signup.html" class="btn btn-outline" style="border-color:#fff; color:#fff;">Create an Account</a>
+      </div>
+      <p class="cta-note">No setup required — start exploring in seconds.</p>
     </div>
   </section>
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer">
-    <div class="footer-grid">
+    <hr class="footer-top-line" />
+    <div class="footer-grid" style="margin-top:30px;">
       <div class="footer-col">
         <h4>EduAnalytics</h4>
         <p>Empowering educators with data-driven insights into student performance.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook">📘</a>
+          <a href="#" aria-label="Twitter/X">🐦</a>
+          <a href="#" aria-label="LinkedIn">💼</a>
+          <a href="#" aria-label="Instagram">📷</a>
+        </div>
       </div>
       <div class="footer-col">
         <h4>Quick Links</h4>

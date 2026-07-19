@@ -84,6 +84,21 @@
         }).join('')
       : '<li class="activity-item activity-empty">No recent activity yet — actions you take will show up here.</li>';
   }
+  function clearActivityLog() {
+    localStorage.removeItem(ACTIVITY_KEY);
+    renderActivityFeed();
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const clearBtn = document.getElementById('clearActivityBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (confirm('Clear all recent activity? This cannot be undone.')) {
+          clearActivityLog();
+        }
+      });
+    }
+  });
 
   // Expose helpers so js/script.js (loaded earlier, but executed after
   // this file has finished registering its top-level code) can use them.

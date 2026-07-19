@@ -570,7 +570,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (rememberMe) localStorage.setItem('eduanalytics_current_user', userData);
       else sessionStorage.setItem('eduanalytics_current_user', userData);
 
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+      setTimeout(() => { window.location.href = 'index.html'; }, 1200);
     });
   }
 
