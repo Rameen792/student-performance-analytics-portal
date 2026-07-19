@@ -134,13 +134,17 @@ document.addEventListener('DOMContentLoaded', function () {
       // Notify the dashboard controller to refresh cards/table/charts
       document.dispatchEvent(new CustomEvent('studentAdded', { detail: newStudent }));
 
-      // Show success message
+      // Show success message, then send them to fill the full report
       const successMsg = document.getElementById('dashSuccessMsg');
+      successMsg.textContent = '✅ Student added! Redirecting to complete their report...';
       successMsg.style.display = 'block';
-      setTimeout(() => { successMsg.style.display = 'none'; }, 3000);
 
       // Reset form
       addStudentForm.reset();
+
+      setTimeout(() => {
+        window.location.href = 'report-builder.html?id=' + encodeURIComponent(newStudent.id);
+      }, 1000);
     });
   }
 

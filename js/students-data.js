@@ -54,8 +54,51 @@ function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
 }
 
+function getExtraStudentsRaw() {
+  try { return JSON.parse(localStorage.getItem('eduanalytics_extra_students')) || []; }
+  catch (e) { return []; }
+}
+
+function getCompletedExtraStudents() {
+  return getExtraStudentsRaw()
+    .filter(function (s) { return s.subjects && s.attendance != null; })
+    .map(function (s) {
+      return {
+        id: s.id, name: s.name, class: s.class,
+        email: s.email || 'Not provided',
+        attendance: s.attendance, joined: s.joined || 'Recently added',
+        subjects: s.subjects
+      };
+    });
+}
+
 function getStudentById(id) {
-  return STUDENTS_DATA.find(s => s.id.toLowerCase() === String(id).toLowerCase());
+  const clean = String(id).toLowerCase();
+
+  const fromBase = STUDENTS_DATA.find(s => s.id.toLowerCase() === clean);
+  if (fromBase) return Object.assign({ reportComplete: true }, fromBase);
+
+  const extra = getExtraStudentsRaw().find(s => s.id.toLowerCase() === clean);
+  if (!extra) return null;
+
+  // Full subject-wise report already built via report-builder.html
+  if (extra.subjects && extra.attendance != null) {
+    return {
+      id: extra.id, name: extra.name, class: extra.class,
+      email: extra.email || 'Not provided',
+      attendance: extra.attendance, joined: extra.joined || 'Recently added',
+      subjects: extra.subjects, reportComplete: true, isManuallyAdded: true
+    };
+  }
+
+  // Only the quick "Add Student" info exists — full report not built yet
+  return {
+    id: extra.id, name: extra.name, class: extra.class,
+    email: extra.email || 'Not provided',
+    attendance: null, joined: 'Recently added',
+    subjects: { 'Overall Average': extra.score },
+    reportComplete: false, isManuallyAdded: true
+  };
 }
 
 /* ---- 1. Dashboard: Render Student Table Dynamically ---- */
@@ -85,7 +128,8 @@ function renderPerformanceCards(filterFn) {
   const grid = document.getElementById('performanceCardsGrid');
   if (!grid) return;
 
-  const list = typeof filterFn === 'function' ? STUDENTS_DATA.filter(filterFn) : STUDENTS_DATA;
+  const allStudents = STUDENTS_DATA.concat(getCompletedExtraStudents());
+  const list = typeof filterFn === 'function' ? allStudents.filter(filterFn) : allStudents;
 
   if (list.length === 0) {
     grid.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1; padding:30px 0;">No students match the current filters.</p>`;
@@ -147,6 +191,17 @@ function renderStudentProfile() {
       </div>`;
     return;
   }
+  if (student.reportComplete === false) {
+    container.innerHTML = `
+      <div class="profile-not-found">
+        <div class="auth-icon" style="margin:0 auto 16px;">📝</div>
+        <h2>${student.name}'s Report Isn't Ready Yet</h2>
+        <p>Basic info was saved, but the full subject-wise report hasn't been filled in.</p>
+        <a href="report-builder.html?id=${student.id}" class="btn btn-primary" style="margin-top:20px; display:inline-block;">Complete Report →</a>
+        <a href="dashboard.html" class="btn btn-outline" style="margin-top:20px; margin-left:10px; display:inline-block;">← Back to Dashboard</a>
+      </div>`;
+    return;
+  }
 
   const score = getOverallScore(student);
   const status = getStatusFromScore(score);
@@ -167,12 +222,13 @@ function renderStudentProfile() {
         <p>${student.class} &bull; Roll No: ${student.id}</p>
         <p>${student.email}</p>
         <span class="badge ${badgeClass}">${status} Performer</span>
+        ${student.isManuallyAdded ? '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:6px;">📝 Manually added — full subject-wise breakdown not available yet, only overall average.</p>' : ''}
       </div>
     </div>
 
     <div class="stats-grid profile-stats-grid">
       <div class="stat-card"><div class="stat-icon">📊</div><h3>${score}%</h3><p>Overall Average</p></div>
-      <div class="stat-card"><div class="stat-icon">📅</div><h3>${student.attendance}%</h3><p>Attendance</p></div>
+      <div class="stat-card"><div class="stat-icon">📅</div><h3>${student.attendance != null ? student.attendance + '%' : '—'}</h3><p>Attendance</p></div>
       <div class="stat-card"><div class="stat-icon">📚</div><h3>${Object.keys(student.subjects).length}</h3><p>Enrolled Subjects</p></div>
       <div class="stat-card"><div class="stat-icon">🗓️</div><h3>${student.joined}</h3><p>Joined</p></div>
     </div>

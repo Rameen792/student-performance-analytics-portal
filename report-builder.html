@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Student Report | Student Performance Analytics Portal</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard-advanced.css" />
+  <script>
+  (function () {
+    var saved = localStorage.getItem('eduanalytics_theme');
+    if (saved) document.documentElement.setAttribute('data-theme', saved);
+  })();
+</script>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">📊 EduAnalytics</a>
+      <ul class="nav-menu" id="navMenu">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="about.html" class="nav-link">About</a></li>
+        <li><a href="dashboard.html" class="nav-link active">Dashboard</a></li>
+        <li><a href="report.html" class="nav-link">Reports</a></li>
+        <li><a href="contact.html" class="nav-link">Contact</a></li>
+        <li><a href="login.html" class="nav-link" id="navAuthLink">Login</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="page-header premium">
+    <h1>Complete Student Report</h1>
+    <p id="builderSubtitle">Fill in subject-wise marks so this student gets a full profile</p>
+  </header>
+
+  <section class="stats-section container">
+    <div class="form-container" id="builderFormWrap" style="max-width:650px;">
+
+      <div id="studentNotFoundMsg" class="error-banner" style="display:none;">
+        ❌ We couldn't find that student. Go back to the Dashboard and use "Add Student" first.
+      </div>
+
+      <div id="builderContent" style="display:none;">
+        <div class="success-message" id="builderSuccessMsg">✅ Report saved! Opening the full profile...</div>
+
+        <div class="settings-section" style="margin-bottom:24px;">
+          <h3 id="studentNameHeading">—</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem;" id="studentMetaLine">—</p>
+        </div>
+
+        <form id="reportBuilderForm" novalidate>
+          <div class="form-row">
+            <div class="form-group" id="grp-math">
+              <label for="subjMath">Mathematics (%)</label>
+              <input type="number" id="subjMath" min="0" max="100" placeholder="e.g. 85" />
+              <span class="error-text">Enter a score between 0 and 100.</span>
+            </div>
+            <div class="form-group" id="grp-sci">
+              <label for="subjSci">Science (%)</label>
+              <input type="number" id="subjSci" min="0" max="100" placeholder="e.g. 80" />
+              <span class="error-text">Enter a score between 0 and 100.</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" id="grp-eng">
+              <label for="subjEng">English (%)</label>
+              <input type="number" id="subjEng" min="0" max="100" placeholder="e.g. 90" />
+              <span class="error-text">Enter a score between 0 and 100.</span>
+            </div>
+            <div class="form-group" id="grp-cs">
+              <label for="subjCs">Computer Studies (%)</label>
+              <input type="number" id="subjCs" min="0" max="100" placeholder="e.g. 88" />
+              <span class="error-text">Enter a score between 0 and 100.</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group" id="grp-att">
+              <label for="attendanceInput">Attendance (%)</label>
+              <input type="number" id="attendanceInput" min="0" max="100" placeholder="e.g. 92" />
+              <span class="error-text">Enter attendance between 0 and 100.</span>
+            </div>
+            <div class="form-group" id="grp-joined">
+              <label for="joinedInput">Joined</label>
+              <input type="text" id="joinedInput" placeholder="e.g. Jul 2026" />
+              <span class="error-text">Please enter a joined date, e.g. Jul 2026.</span>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%;">Save Report & View Profile</button>
+          <p class="auth-hint" style="margin-top:14px;">You can skip this and come back later from the student's profile page.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-bottom">&copy; 2026 EduAnalytics. All rights reserved.</div>
+  </footer>
+
+  <script src="js/students-data.js"></script>
+  <script src="js/auth-extra.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/week4.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const EXTRA_KEY = 'eduanalytics_extra_students';
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+
+      function getExtras() {
+        try { return JSON.parse(localStorage.getItem(EXTRA_KEY)) || []; } catch (e) { return []; }
+      }
+      function saveExtras(list) { localStorage.setItem(EXTRA_KEY, JSON.stringify(list)); }
+
+      const extras = getExtras();
+      const idx = extras.findIndex(function (s) { return s.id.toLowerCase() === String(id || '').toLowerCase(); });
+
+      if (idx === -1) {
+        document.getElementById('studentNotFoundMsg').style.display = 'block';
+        return;
+      }
+
+      const student = extras[idx];
+      document.getElementById('builderContent').style.display = 'block';
+      document.getElementById('studentNameHeading').textContent = student.name + ' (' + student.id + ')';
+      document.getElementById('studentMetaLine').textContent = student.class + ' • Quick average on file: ' + student.score + '%';
+
+      // Already completed before? Pre-fill so it's an edit, not a re-entry.
+      if (student.subjects) {
+        const s = student.subjects;
+        if (s.Mathematics != null) document.getElementById('subjMath').value = s.Mathematics;
+        if (s.Science != null) document.getElementById('subjSci').value = s.Science;
+        if (s.English != null) document.getElementById('subjEng').value = s.English;
+        if (s['Computer Studies'] != null) document.getElementById('subjCs').value = s['Computer Studies'];
+      }
+      if (student.attendance != null) document.getElementById('attendanceInput').value = student.attendance;
+      if (student.joined) document.getElementById('joinedInput').value = student.joined;
+
+      function showError(groupEl) { groupEl.classList.add('invalid'); }
+      function clearError(groupEl) { groupEl.classList.remove('invalid'); }
+      function validScore(val) { const n = parseFloat(val); return !isNaN(n) && n >= 0 && n <= 100; }
+
+      document.getElementById('reportBuilderForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const fields = [
+          { input: document.getElementById('subjMath'), group: document.getElementById('grp-math') },
+          { input: document.getElementById('subjSci'), group: document.getElementById('grp-sci') },
+          { input: document.getElementById('subjEng'), group: document.getElementById('grp-eng') },
+          { input: document.getElementById('subjCs'), group: document.getElementById('grp-cs') },
+          { input: document.getElementById('attendanceInput'), group: document.getElementById('grp-att') }
+        ];
+
+        let isValid = true;
+        fields.forEach(function (f) {
+          if (validScore(f.input.value)) { clearError(f.group); }
+          else { showError(f.group); isValid = false; }
+        });
+
+        const joinedInput = document.getElementById('joinedInput');
+        const joinedGroup = document.getElementById('grp-joined');
+        if (joinedInput.value.trim() === '') { showError(joinedGroup); isValid = false; }
+        else { clearError(joinedGroup); }
+
+        if (!isValid) return;
+
+        student.subjects = {
+          Mathematics: parseFloat(document.getElementById('subjMath').value),
+          Science: parseFloat(document.getElementById('subjSci').value),
+          English: parseFloat(document.getElementById('subjEng').value),
+          'Computer Studies': parseFloat(document.getElementById('subjCs').value)
+        };
+        student.attendance = parseFloat(document.getElementById('attendanceInput').value);
+        student.joined = joinedInput.value.trim();
+
+        extras[idx] = student;
+        saveExtras(extras);
+
+        if (window.EA_logActivity) {
+          window.EA_logActivity('📝', 'Full report completed for ' + student.name + ' (' + student.id + ').');
+        }
+
+        const successMsg = document.getElementById('builderSuccessMsg');
+        successMsg.style.display = 'block';
+
+        setTimeout(function () {
+          window.location.href = 'student-profile.html?id=' + encodeURIComponent(student.id);
+        }, 900);
+      });
+    });
+  </script>
+</body>
+</html>
