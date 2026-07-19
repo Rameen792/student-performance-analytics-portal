@@ -42,10 +42,17 @@
       const score = getOverallScore(s);
       return { id: s.id, name: s.name, class: s.class, email: s.email || '', score: score, status: getStatusFromScore(score) };
     });
-    const extra = getExtraStudents().map(function (s) {
+   const extra = getExtraStudents().map(function (s) {
       return { id: s.id, name: s.name, class: s.class, email: s.email || '', score: s.score, status: getStatusFromScore(s.score) };
     });
-    return extra.concat(base);
+    return extra.concat(base)
+      .filter(function (s) { return !(window.EA_isStudentDeleted && window.EA_isStudentDeleted(s.id)); })
+      .map(function (s) {
+        if (!window.EA_applyStudentOverride) return s;
+        const merged = window.EA_applyStudentOverride(s);
+        merged.status = getStatusFromScore(merged.score);
+        return merged;
+      });
   }
 
   function isDuplicateRoll(roll) {
@@ -238,13 +245,21 @@
     /* ---- 2d. Row rendering (highlights the live search term) ---- */
     function rowHtml(s, term) {
       const badgeClass = getStatusBadgeClass(s.status);
+      const canManage = els.role === 'Administrator' || els.role === 'Teacher';
+      const actionButtons = canManage
+        ? '<button type="button" class="btn-icon-action btn-edit-row" data-id="' + s.id + '" title="Edit student">✏️ Edit</button>' +
+          '<button type="button" class="btn-icon-action btn-delete-row" data-id="' + s.id + '" title="Delete student">🗑️ Delete</button>'
+        : '';
       return '<tr data-id="' + s.id + '">' +
         '<td data-label="Roll No.">' + highlight(s.id, term) + '</td>' +
         '<td data-label="Name">' + highlight(s.name, term) + '</td>' +
         '<td data-label="Class">' + highlight(s.class, term) + '</td>' +
         '<td data-label="Avg. Score">' + s.score + '%</td>' +
         '<td data-label="Status"><span class="badge ' + badgeClass + '">' + s.status + '</span></td>' +
-        '<td data-label="Action"><a href="student-profile.html?id=' + s.id + '" class="btn-link">View Profile →</a></td>' +
+        '<td data-label="Action" class="action-cell">' +
+          '<a href="student-profile.html?id=' + s.id + '" class="btn-link">View Profile →</a>' +
+          actionButtons +
+        '</td>' +
         '</tr>';
     }
 
@@ -439,6 +454,95 @@
 
     document.addEventListener('studentAdded', function () { goToFirstPageAndRender(); });
 
+    /* ---- 2g-2. Edit & Delete actions on the Student Records table ---- */
+    const editModal = document.getElementById('editStudentModal');
+    const editForm = document.getElementById('editStudentFormEl');
+    const editIdInput = document.getElementById('editStudentId');
+    const editNameInput = document.getElementById('editStudentName');
+    const editClassInput = document.getElementById('editStudentClass');
+    const editScoreInput = document.getElementById('editStudentScore');
+    const editEmailInput = document.getElementById('editStudentEmail');
+    const editModalTitle = document.getElementById('editModalTitle');
+
+    function openEditModal(student) {
+      if (!editModal) return;
+      editIdInput.value = student.id;
+      editModalTitle.textContent = 'Edit ' + student.name;
+      editNameInput.value = student.name;
+      editClassInput.value = student.class;
+      editScoreInput.value = student.score;
+      editEmailInput.value = student.email || '';
+      editModal.hidden = false;
+      document.body.classList.add('modal-open');
+      editNameInput.focus();
+    }
+
+    function closeEditModal() {
+      if (!editModal) return;
+      editModal.hidden = true;
+      document.body.classList.remove('modal-open');
+    }
+
+    if (els.tbody) {
+      els.tbody.addEventListener('click', function (e) {
+        const editBtn = e.target.closest('.btn-edit-row');
+        const deleteBtn = e.target.closest('.btn-delete-row');
+
+        if (editBtn) {
+          const id = editBtn.getAttribute('data-id');
+          const student = getAllStudents().find(function (s) { return s.id === id; });
+          if (student) openEditModal(student);
+          return;
+        }
+
+        if (deleteBtn) {
+          const id = deleteBtn.getAttribute('data-id');
+          const student = getAllStudents().find(function (s) { return s.id === id; });
+          const label = student ? student.name + ' (' + student.id + ')' : id;
+          if (confirm('Delete ' + label + '? This cannot be undone.')) {
+            if (window.EA_deleteStudentEverywhere) window.EA_deleteStudentEverywhere(id);
+            if (window.EA_logActivity) window.EA_logActivity('🗑️', label + ' was removed from Student Records.');
+            goToFirstPageAndRender();
+          }
+        }
+      });
+    }
+
+    if (editForm) {
+      editForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const id = editIdInput.value;
+        const name = editNameInput.value.trim();
+        const cls = editClassInput.value;
+        const score = parseFloat(editScoreInput.value);
+        const email = editEmailInput.value.trim();
+
+        if (name.length < 3 || !cls || isNaN(score) || score < 0 || score > 100 || !email) {
+          alert('Please fill in all fields with valid values before saving.');
+          return;
+        }
+
+        if (window.EA_updateStudentEverywhere) {
+          window.EA_updateStudentEverywhere(id, { name: name, class: cls, score: score, email: email });
+        }
+        if (window.EA_logActivity) window.EA_logActivity('✏️', name + ' (' + id + ') record was updated.');
+
+        closeEditModal();
+        goToFirstPageAndRender();
+      });
+    }
+
+    document.querySelectorAll('[data-close-edit-modal]').forEach(function (btn) {
+      btn.addEventListener('click', closeEditModal);
+    });
+    if (editModal) {
+      editModal.addEventListener('click', function (e) {
+        if (e.target === editModal) closeEditModal();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !editModal.hidden) closeEditModal();
+      });
+    }
     /* ---- 2h. CHARTS (Chart.js) ---- */
     let statusChart = null;
     let classChart = null;

@@ -53,6 +53,63 @@ function getStatusBadgeClass(status) {
 function getInitials(name) {
   return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
 }
+/* ---- Shared: Edit & Delete overlay (used by dashboard, reports, profile) ---- */
+const OVERRIDES_KEY = 'eduanalytics_student_overrides';
+const DELETED_KEY = 'eduanalytics_deleted_students';
+
+function getStudentOverrides() {
+  try { return JSON.parse(localStorage.getItem(OVERRIDES_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function saveStudentOverrides(obj) {
+  localStorage.setItem(OVERRIDES_KEY, JSON.stringify(obj));
+}
+function getDeletedStudentIds() {
+  try { return JSON.parse(localStorage.getItem(DELETED_KEY)) || []; }
+  catch (e) { return []; }
+}
+function saveDeletedStudentIds(arr) {
+  localStorage.setItem(DELETED_KEY, JSON.stringify(arr));
+}
+function isStudentDeleted(id) {
+  const clean = String(id).toLowerCase();
+  return getDeletedStudentIds().some(function (d) { return String(d).toLowerCase() === clean; });
+}
+function applyStudentOverride(student) {
+  const o = getStudentOverrides()[student.id];
+  if (!o) return student;
+  const merged = Object.assign({}, student, o);
+  if (o.score != null && !o.subjects) {
+    merged.subjects = { 'Overall Average': o.score };
+  }
+  return merged;
+}
+function deleteStudentEverywhere(id) {
+  const ids = getDeletedStudentIds();
+  if (!ids.some(function (d) { return String(d).toLowerCase() === String(id).toLowerCase(); })) {
+    ids.push(id);
+    saveDeletedStudentIds(ids);
+  }
+}
+function updateStudentEverywhere(id, fields) {
+  const overrides = getStudentOverrides();
+  overrides[id] = Object.assign({}, overrides[id], fields);
+  saveStudentOverrides(overrides);
+}
+function getGradeLetter(score) {
+  if (score >= 90) return 'A+';
+  if (score >= 80) return 'A';
+  if (score >= 70) return 'B+';
+  if (score >= 60) return 'B';
+  if (score >= 50) return 'C';
+  return 'D';
+}
+
+window.EA_isStudentDeleted = isStudentDeleted;
+window.EA_applyStudentOverride = applyStudentOverride;
+window.EA_deleteStudentEverywhere = deleteStudentEverywhere;
+window.EA_updateStudentEverywhere = updateStudentEverywhere;
+window.EA_getStudentOverrides = getStudentOverrides;
 
 function getExtraStudentsRaw() {
   try { return JSON.parse(localStorage.getItem('eduanalytics_extra_students')) || []; }
@@ -60,45 +117,50 @@ function getExtraStudentsRaw() {
 }
 
 function getCompletedExtraStudents() {
+  // Includes BOTH students with a full subject-wise report AND students that
+  // were just quick-added from the dashboard (score only, report not built
+  // yet) — so every locally added student shows up in Reports right away.
   return getExtraStudentsRaw()
-    .filter(function (s) { return s.subjects && s.attendance != null; })
+    .filter(function (s) { return !isStudentDeleted(s.id); })
     .map(function (s) {
-      return {
+      const hasFullReport = s.subjects && s.attendance != null;
+      return applyStudentOverride({
         id: s.id, name: s.name, class: s.class,
         email: s.email || 'Not provided',
-        attendance: s.attendance, joined: s.joined || 'Recently added',
-        subjects: s.subjects
-      };
+        attendance: hasFullReport ? s.attendance : null,
+        joined: s.joined || 'Recently added',
+        subjects: hasFullReport ? s.subjects : { 'Overall Average': s.score },
+        reportComplete: hasFullReport
+      });
     });
 }
 
 function getStudentById(id) {
   const clean = String(id).toLowerCase();
+  if (isStudentDeleted(clean)) return null;
 
   const fromBase = STUDENTS_DATA.find(s => s.id.toLowerCase() === clean);
-  if (fromBase) return Object.assign({ reportComplete: true }, fromBase);
+  if (fromBase) return applyStudentOverride(Object.assign({ reportComplete: true }, fromBase));
 
   const extra = getExtraStudentsRaw().find(s => s.id.toLowerCase() === clean);
   if (!extra) return null;
 
-  // Full subject-wise report already built via report-builder.html
   if (extra.subjects && extra.attendance != null) {
-    return {
+    return applyStudentOverride({
       id: extra.id, name: extra.name, class: extra.class,
       email: extra.email || 'Not provided',
       attendance: extra.attendance, joined: extra.joined || 'Recently added',
       subjects: extra.subjects, reportComplete: true, isManuallyAdded: true
-    };
+    });
   }
 
-  // Only the quick "Add Student" info exists — full report not built yet
-  return {
+  return applyStudentOverride({
     id: extra.id, name: extra.name, class: extra.class,
     email: extra.email || 'Not provided',
     attendance: null, joined: 'Recently added',
     subjects: { 'Overall Average': extra.score },
     reportComplete: false, isManuallyAdded: true
-  };
+  });
 }
 
 /* ---- 1. Dashboard: Render Student Table Dynamically ---- */
@@ -106,7 +168,10 @@ function renderStudentsTable() {
   const tbody = document.getElementById('studentsTableBody');
   if (!tbody) return;
 
-  tbody.innerHTML = STUDENTS_DATA.map(student => {
+  tbody.innerHTML = STUDENTS_DATA
+    .filter(rawStudent => !isStudentDeleted(rawStudent.id))
+    .map(rawStudent => {
+    const student = applyStudentOverride(rawStudent);
     const score = getOverallScore(student);
     const status = getStatusFromScore(score);
     const badgeClass = getStatusBadgeClass(status);
@@ -128,7 +193,10 @@ function renderPerformanceCards(filterFn) {
   const grid = document.getElementById('performanceCardsGrid');
   if (!grid) return;
 
-  const allStudents = STUDENTS_DATA.concat(getCompletedExtraStudents());
+ const allStudents = STUDENTS_DATA
+    .filter(function (s) { return !isStudentDeleted(s.id); })
+    .map(applyStudentOverride)
+    .concat(getCompletedExtraStudents());
   const list = typeof filterFn === 'function' ? allStudents.filter(filterFn) : allStudents;
 
   if (list.length === 0) {
@@ -248,7 +316,40 @@ function renderStudentProfile() {
   });
 }
 
+/* ---- 4. Reports Page: Keep the static Table View in sync with Add/Edit/Delete ---- */
+function syncReportTableView() {
+  const tbody = document.querySelector('#reportTable tbody');
+  if (!tbody) return;
+
+  tbody.querySelectorAll('tr[data-id]').forEach(function (row) {
+    const id = row.getAttribute('data-id');
+    if (isStudentDeleted(id)) { row.remove(); return; }
+    const o = getStudentOverrides()[id];
+    if (o) {
+      if (o.name) row.children[1].textContent = o.name;
+      if (o.class) { row.children[2].textContent = o.class; row.setAttribute('data-class', o.class); }
+    }
+  });
+
+  const extraRowsHtml = getCompletedExtraStudents().map(function (student) {
+    const score = getOverallScore(student);
+    const status = getStatusFromScore(score);
+    const badgeClass = getStatusBadgeClass(status);
+    const subjectLabel = student.reportComplete ? Object.keys(student.subjects)[0] : 'Overall Average';
+    const barColor = status === 'Excellent' ? '' : (status === 'Average' ? 'background:var(--accent-color);' : 'background:var(--danger-color);');
+    return '<tr data-id="' + student.id + '" data-class="' + student.class + '" data-subject="' + subjectLabel + '">' +
+      '<td>' + student.id + '</td><td>' + student.name + '</td><td>' + student.class + '</td>' +
+      '<td>' + subjectLabel + '</td><td>' + score + '%</td>' +
+      '<td><span class="badge ' + badgeClass + '">' + getGradeLetter(score) + '</span></td>' +
+      '<td><div class="progress-bar"><div class="progress-fill" style="width:' + score + '%; ' + barColor + '"></div></div></td>' +
+      '</tr>';
+  }).join('');
+
+  tbody.insertAdjacentHTML('beforeend', extraRowsHtml);
+}
+
 /* Auto-run: each function safely no-ops if its target container isn't on the current page */
 renderStudentsTable();
 renderPerformanceCards();
 renderStudentProfile();
+syncReportTableView();

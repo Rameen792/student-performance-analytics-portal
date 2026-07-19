@@ -461,3 +461,35 @@ mark.search-highlight {
   transition: var(--transition);
 }
 .activity-clear-btn:hover { border-color: var(--danger-color); color: var(--danger-color); }
+/* ---- Week 6: Student Records — Edit/Delete action buttons ---- */
+.action-cell { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.btn-icon-action {
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.btn-icon-action:hover { border-color: var(--primary-color); color: var(--primary-color); }
+.btn-delete-row:hover { border-color: var(--danger-color); color: var(--danger-color); }
+
+/* ---- Week 6: Edit Student Modal ---- */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(15, 23, 42, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; padding: 20px;
+}
+.modal-overlay[hidden] { display: none; }
+.modal-box { width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.modal-header h3 { margin: 0; }
+.modal-close {
+  border: none; background: transparent; font-size: 1.1rem; cursor: pointer;
+  color: var(--text-muted); line-height: 1;
+}
+.modal-close:hover { color: var(--danger-color); }
+.modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+body.modal-open { overflow: hidden; }
