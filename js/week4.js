@@ -93,7 +93,7 @@
     ]
   };
 
-  const READ_KEY = 'eduanalytics_notifications_read';
+const READ_KEY = 'eduanalytics_notifications_read_' + (currentUser && currentUser.email ? currentUser.email.toLowerCase() : 'guest');
   function getReadIds() {
     const raw = localStorage.getItem(READ_KEY);
     return raw ? JSON.parse(raw) : [];
