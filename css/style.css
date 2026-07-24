@@ -44,7 +44,14 @@
   --primary-color: #818cf8;
   --primary-dark: #6366f1;
 }
-
+/* Visible keyboard focus (accessibility) */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+.hamburger:focus-visible {
+  outline: 2px solid var(--primary-color, #4f46e5);
+  outline-offset: 2px;
+}
 .footer { background: var(--footer-bg) !important; }
 html {
   overflow-x: hidden;
