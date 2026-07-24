@@ -94,12 +94,12 @@
   };
 
 const READ_KEY = 'eduanalytics_notifications_read_' + (currentUser && currentUser.email ? currentUser.email.toLowerCase() : 'guest');
-  function getReadIds() {
-    const raw = localStorage.getItem(READ_KEY);
+function getReadIds() {
+    const raw = sessionStorage.getItem(READ_KEY);
     return raw ? JSON.parse(raw) : [];
   }
   function markAllRead(ids) {
-    localStorage.setItem(READ_KEY, JSON.stringify(ids));
+    sessionStorage.setItem(READ_KEY, JSON.stringify(ids));
   }
 
   /* ---------------------------------------------------------
