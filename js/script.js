@@ -11,10 +11,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const hamburger = document.getElementById('hamburger');
   const navMenu = document.getElementById('navMenu');
 
-  if (hamburger && navMenu) {
+ if (hamburger && navMenu) {
+    hamburger.setAttribute('aria-expanded', 'false');
+
     hamburger.addEventListener('click', function () {
-      hamburger.classList.toggle('active');
-      navMenu.classList.toggle('active');
+      const isOpen = navMenu.classList.toggle('active');
+      hamburger.classList.toggle('active', isOpen);
+      hamburger.setAttribute('aria-expanded', String(isOpen));
     });
 
     // Close menu when a link is clicked (mobile UX improvement)
@@ -22,7 +25,18 @@ document.addEventListener('DOMContentLoaded', function () {
       link.addEventListener('click', () => {
         hamburger.classList.remove('active');
         navMenu.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
       });
+    });
+
+    // Close menu on Escape (keyboard accessibility)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+        hamburger.focus();
+      }
     });
   }
 
