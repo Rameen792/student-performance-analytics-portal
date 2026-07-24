@@ -1195,6 +1195,26 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   .icon-btn { width: 36px; height: 36px; font-size: 0.95rem; }
   .notification-panel { position: fixed; top: 66px; right: 10px; left: 10px; width: auto; }
   .role-badge { display: none; } /* keep mobile navbar uncluttered */
+
+  /* Compact stat cards for phone screens */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    padding: 14px 10px;
+  }
+  .stat-card .stat-icon {
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+  }
+  .stat-card h3 {
+    font-size: 1.3rem;
+  }
+  .stat-card p {
+    font-size: 0.78rem;
+    margin-top: 3px;
+  }
 }
 /* ==========================================================================
    NEXT-LEVEL THEME — New Color Scheme, Glass Navbar, Animations
