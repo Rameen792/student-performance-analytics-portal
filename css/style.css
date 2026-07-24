@@ -765,6 +765,13 @@ th.sortable.sort-desc::after { content: ' ↓'; opacity: 1; }
 @media (max-width: 480px) {
   .auth-card { padding: 26px; }
   .form-options { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .toolbar-secondary { flex-direction: column; align-items: stretch; }
+  .export-controls { width: 100%; }
+  .export-controls .btn { flex: 1; }
+  .toolbar input[type="number"] { width: 100%; }
+  table.responsive-table td { font-size: 0.82rem; padding: 6px 0; }
+  .action-cell { gap: 6px; }
+  .action-cell .btn-link { font-size: 0.8rem; }
 }
 /* ---- Password Strength Indicator (Signup) ---- */
 .password-strength {
@@ -1726,12 +1733,14 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
 .hero-split p { margin: 0 0 36px; font-size: 1.1rem; line-height: 1.75; text-align: left; }
 .hero-split .hero-buttons { justify-content: flex-start; gap: 20px; }
 
-@media (max-width: 900px) {
-  .hero { padding: 90px 20px 70px; border-radius: 0 0 24px 24px; }
-  .hero-split { grid-template-columns: 1fr; text-align: center; gap: 40px; }
-  .hero-split h1, .hero-split p { text-align: center; margin-left: auto; margin-right: auto; font-size: 2.2rem; }
-  .hero-split .hero-buttons { justify-content: center; }
-  .hero-visual { display: none; }
+@media (max-width: 480px) {
+  .hero { padding: 60px 16px 44px; }
+  .hero-split { gap: 24px; padding: 0 8px; }
+  .hero-split h1 { font-size: 1.7rem; margin-bottom: 14px; }
+  .hero-split p { font-size: 0.95rem; margin-bottom: 22px; }
+  .hero-badge { font-size: 0.7rem; padding: 6px 12px; margin-bottom: 18px; }
+  .hero-split .hero-buttons { flex-direction: column; width: 100%; gap: 12px; }
+  .hero-split .hero-buttons .btn { width: 100%; text-align: center; }
 }
 
 /* ---- Floating glass "live preview" card ---- */
