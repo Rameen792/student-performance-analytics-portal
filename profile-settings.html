@@ -74,7 +74,7 @@
           <div>
             <div class="settings-section">
               <h3>👤 Personal Information</h3>
-              <div class="success-message" id="profileSuccessMsg">✅ Profile updated successfully!</div>
+             <div class="success-message" id="profileSuccessMsg" role="status" aria-live="polite">✅ Profile updated successfully!</div>
               <form id="profileFormEl" novalidate>
                 <div class="form-row">
                   <div class="form-group" id="grp-pname">
@@ -160,8 +160,8 @@
             <div class="settings-section">
               <h3>🔑 Change Password</h3>
               <p class="password-last-changed" id="passwordLastChanged" style="color:var(--text-muted); font-size:0.82rem; margin-bottom:14px;"></p>
-              <div class="error-banner" id="passwordErrorBanner"></div>
-              <div class="success-message" id="passwordSuccessMsg">✅ Password changed successfully!</div>
+             <div class="error-banner" id="passwordErrorBanner" role="alert" aria-live="assertive"></div>
+              <div class="success-message" id="passwordSuccessMsg" role="status" aria-live="polite">✅ Password changed successfully!</div>
               <form id="passwordFormEl" novalidate>
                 <div class="form-group" id="grp-currentpass">
                   <label for="currentPassword">Current Password</label>

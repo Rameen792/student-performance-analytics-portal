@@ -41,12 +41,11 @@
   <section class="stats-section container">
     <div class="form-container" id="builderFormWrap" style="max-width:650px;">
 
-      <div id="studentNotFoundMsg" class="error-banner" style="display:none;">
+      <div id="studentNotFoundMsg" class="error-banner" style="display:none;" role="alert" aria-live="assertive">
         ❌ We couldn't find that student. Go back to the Dashboard and use "Add Student" first.
       </div>
 
-      <div id="builderContent" style="display:none;">
-        <div class="success-message" id="builderSuccessMsg">✅ Report saved! Opening the full profile...</div>
+      <div class="success-message" id="builderSuccessMsg" role="status" aria-live="polite">✅ Report saved! Opening the full profile...</div>
 
         <div class="settings-section" style="margin-bottom:24px;">
           <h3 id="studentNameHeading">—</h3>
