@@ -14,7 +14,7 @@
   --bg-light: #f6f6fd;
   --bg-white: #ffffff;
   --text-dark: #1e293b;
-  --text-muted: #64748b;
+  --text-muted: #475569;
   --border-color: #e6e4f7;
   --footer-bg: #1e293b;
   --shadow-sm: 0 2px 8px rgba(99, 102, 241, 0.07);
@@ -1300,7 +1300,6 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: logoGlow 4s ease-in-out infinite;
 }
 @keyframes logoGlow {
   0%, 100% { filter: drop-shadow(0 0 0 rgba(99,102,241,0)); }
@@ -1829,7 +1828,7 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
 .section-eyebrow {
   display: inline-block;
   background: rgba(99,102,241,0.1);
-  color: var(--primary-color);
+  color: var(--primary-dark);
   padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.72rem;
@@ -2113,4 +2112,21 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+.stat-card, .feature-card, .performance-card, .testimonial-card {
+  transition: transform 0.35s cubic-bezier(.2,.8,.2,1);
+}
+.btn-outline {
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+.nav-link {
+  transition: transform 0.2s ease, color 0.3s ease;
+}
+.nav-link:hover {
+  transform: translateY(-2px);
+}
+.toggle-password:active,
+.icon-btn:active,
+.btn:active {
+  transform: scale(0.94);
 }
