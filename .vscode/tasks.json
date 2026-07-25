@@ -4,9 +4,16 @@
     {
       "label": "Start Live Server",
       "type": "shell",
-     "command": "live-server --port=5500 --no-browser",
+      "command": "live-server --port=5500 --no-browser",
       "isBackground": true,
-      "problemMatcher": []
+      "problemMatcher": {
+        "pattern": { "regexp": "." },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".",
+          "endsPattern": "Serving"
+        }
+      }
     }
   ]
 }
