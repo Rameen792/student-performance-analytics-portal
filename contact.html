@@ -63,17 +63,17 @@
 
       <!-- Contact Form -->
       <div class="form-container" style="max-width:100%;">
-        <div class="success-message" id="contactSuccessMsg">✅ Your message has been sent successfully! We'll get back to you soon.</div>
+        <div class="success-message" id="contactSuccessMsg" role="status" aria-live="polite">✅ Your message has been sent successfully! We'll get back to you soon.</div>
         <form id="contactFormEl" novalidate>
           <div class="form-row">
             <div class="form-group" id="grp-cname">
               <label for="contactName">Full Name</label>
-              <input type="text" id="contactName" placeholder="Your name" />
+              <input type="text" id="contactName" placeholder="Your name" maxlength="60" />
               <span class="error-text">Please enter your name.</span>
             </div>
             <div class="form-group" id="grp-cemail">
               <label for="contactEmail">Email Address</label>
-              <input type="email" id="contactEmail" placeholder="you@example.com" />
+              <input type="email" id="contactEmail" placeholder="you@example.com" maxlength="100" />
               <span class="error-text">Please enter a valid email.</span>
             </div>
           </div>
@@ -92,7 +92,7 @@
 
           <div class="form-group" id="grp-cmessage">
             <label for="contactMessage">Message</label>
-            <textarea id="contactMessage" rows="5" placeholder="Write your message here..."></textarea>
+            <textarea id="contactMessage" rows="5" placeholder="Write your message here..." maxlength="500"></textarea>
             <span class="error-text">Message must be at least 10 characters.</span>
           </div>
 
