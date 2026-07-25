@@ -369,9 +369,9 @@ tbody tr:hover {
   font-weight: 600;
 }
 
-.badge-success { background: rgba(16,185,129,0.15); color: var(--secondary-color); }
-.badge-warning { background: rgba(245,158,11,0.15); color: var(--accent-color); }
-.badge-danger { background: rgba(239,68,68,0.15); color: var(--danger-color); }
+.badge-success { background: rgba(16,185,129,0.15); color: #047857; }
+.badge-warning { background: rgba(245,158,11,0.15); color: #b45309; }
+.badge-danger { background: rgba(239,68,68,0.15); color: #b91c1c; }
 
 /* ---- Forms ---- */
 .form-container {
@@ -2106,4 +2106,11 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
 .role-hero-stat:hover {
   transform: translateY(-3px);
   background: rgba(255,255,255,0.22) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
