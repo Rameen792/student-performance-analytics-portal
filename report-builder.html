@@ -106,11 +106,14 @@
   <script src="js/script.js"></script>
   <script src="js/week4.js"></script>
 
-  <script>
+ <script>
     document.addEventListener('DOMContentLoaded', function () {
       const EXTRA_KEY = 'eduanalytics_extra_students';
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id');
+
+      const notFoundMsg = document.getElementById('studentNotFoundMsg');
+      const builderContent = document.getElementById('builderContent');
 
       function getExtras() {
         try { return JSON.parse(localStorage.getItem(EXTRA_KEY)) || []; } catch (e) { return []; }
@@ -121,14 +124,17 @@
       const idx = extras.findIndex(function (s) { return s.id.toLowerCase() === String(id || '').toLowerCase(); });
 
       if (idx === -1) {
-        document.getElementById('studentNotFoundMsg').style.display = 'block';
+        if (notFoundMsg) notFoundMsg.style.display = 'block';
         return;
       }
 
       const student = extras[idx];
-      document.getElementById('builderContent').style.display = 'block';
-      document.getElementById('studentNameHeading').textContent = student.name + ' (' + student.id + ')';
-      document.getElementById('studentMetaLine').textContent = student.class + ' • Quick average on file: ' + student.score + '%';
+      if (builderContent) builderContent.style.display = 'block';
+
+      const nameHeading = document.getElementById('studentNameHeading');
+      const metaLine = document.getElementById('studentMetaLine');
+      if (nameHeading) nameHeading.textContent = student.name + ' (' + student.id + ')';
+      if (metaLine) metaLine.textContent = student.class + ' • Quick average on file: ' + student.score + '%';
 
       // Already completed before? Pre-fill so it's an edit, not a re-entry.
       if (student.subjects) {
