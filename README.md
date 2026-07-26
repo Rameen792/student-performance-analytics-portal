@@ -82,6 +82,12 @@ Tested on **Google Chrome**, and **Microsoft Edge**.
 
 No layout or functional differences were found across all the browsers.
 
+### Demo Highlights
+
+- Dark Mode preference persists across page reloads.
+- Dashboard charts render dynamically after the initial page content loads.
+- Chrome Lighthouse was used to measure performance and accessibility improvements.
+
 **What This Week Reinforced**
 
 Performance and accessibility are essential parts of software development, not final-stage additions. A feature is only complete when it performs efficiently and remains accessible to users who rely on keyboards or screen readers. This week also showed that reducing file size through minification helps, but proper execution timing and efficient rendering have an equally important impact on overall performance.
