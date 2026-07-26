@@ -1,360 +1,350 @@
-/* ==========================================================================
-   Student Performance Analytics Portal — Week 3
-   Shared Student Dataset + Dynamic Rendering Engine
-   Used by: dashboard.html, report.html, student-profile.html
-   ========================================================================== */
-
-const STUDENTS_DATA = [
-  {
-    id: 'STU-1001', name: 'Ayesha Khan', class: 'Grade 10',
-    email: 'ayesha.khan@eduanalytics.edu', attendance: 96, joined: 'Aug 2023',
-    subjects: { Mathematics: 95, Science: 90, English: 91, 'Computer Studies': 92 }
-  },
-  {
-    id: 'STU-1002', name: 'Bilal Ahmed', class: 'Grade 9',
-    email: 'bilal.ahmed@eduanalytics.edu', attendance: 88, joined: 'Jan 2024',
-    subjects: { Mathematics: 70, Science: 75, English: 78, 'Computer Studies': 73 }
-  },
-  {
-    id: 'STU-1003', name: 'Sara Malik', class: 'Grade 11',
-    email: 'sara.malik@eduanalytics.edu', attendance: 79, joined: 'Sep 2022',
-    subjects: { Mathematics: 55, Science: 60, English: 62, 'Computer Studies': 55 }
-  },
-  {
-    id: 'STU-1004', name: 'Hamza Tariq', class: 'Grade 12',
-    email: 'hamza.tariq@eduanalytics.edu', attendance: 94, joined: 'Aug 2021',
-    subjects: { Mathematics: 90, Science: 85, English: 87, 'Computer Studies': 90 }
-  },
-  {
-    id: 'STU-1005', name: 'Zainab Fatima', class: 'Grade 10',
-    email: 'zainab.fatima@eduanalytics.edu', attendance: 85, joined: 'Mar 2023',
-    subjects: { Mathematics: 65, Science: 70, English: 68, 'Computer Studies': 65 }
+const STUDENTS_DATA = [{
+  id: "STU-1001",
+  name: "Ayesha Khan",
+  class: "Grade 10",
+  email: "ayesha.khan@eduanalytics.edu",
+  attendance: 96,
+  joined: "Aug 2023",
+  subjects: {
+    Mathematics: 95,
+    Science: 90,
+    English: 91,
+    "Computer Studies": 92
   }
-];
+}, {
+  id: "STU-1002",
+  name: "Bilal Ahmed",
+  class: "Grade 9",
+  email: "bilal.ahmed@eduanalytics.edu",
+  attendance: 88,
+  joined: "Jan 2024",
+  subjects: {
+    Mathematics: 70,
+    Science: 75,
+    English: 78,
+    "Computer Studies": 73
+  }
+}, {
+  id: "STU-1003",
+  name: "Sara Malik",
+  class: "Grade 11",
+  email: "sara.malik@eduanalytics.edu",
+  attendance: 79,
+  joined: "Sep 2022",
+  subjects: {
+    Mathematics: 55,
+    Science: 60,
+    English: 62,
+    "Computer Studies": 55
+  }
+}, {
+  id: "STU-1004",
+  name: "Hamza Tariq",
+  class: "Grade 12",
+  email: "hamza.tariq@eduanalytics.edu",
+  attendance: 94,
+  joined: "Aug 2021",
+  subjects: {
+    Mathematics: 90,
+    Science: 85,
+    English: 87,
+    "Computer Studies": 90
+  }
+}, {
+  id: "STU-1005",
+  name: "Zainab Fatima",
+  class: "Grade 10",
+  email: "zainab.fatima@eduanalytics.edu",
+  attendance: 85,
+  joined: "Mar 2023",
+  subjects: {
+    Mathematics: 65,
+    Science: 70,
+    English: 68,
+    "Computer Studies": 65
+  }
+}];
 
-/* ---- Helper Functions ---- */
-function getOverallScore(student) {
-  const vals = Object.values(student.subjects);
-  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+function getOverallScore(e) {
+  const t = Object.values(e.subjects);
+  return Math.round(t.reduce((e, t) => e + t, 0) / t.length)
 }
 
-function getStatusFromScore(score) {
-  if (score >= 80) return 'Excellent';
-  if (score >= 60) return 'Average';
-  return 'At Risk';
+function getStatusFromScore(e) {
+  return e >= 80 ? "Excellent" : e >= 60 ? "Average" : "At Risk"
 }
 
-function getStatusBadgeClass(status) {
-  if (status === 'Excellent') return 'badge-success';
-  if (status === 'Average') return 'badge-warning';
-  return 'badge-danger';
+function getStatusBadgeClass(e) {
+  return "Excellent" === e ? "badge-success" : "Average" === e ? "badge-warning" : "badge-danger"
 }
 
-function getInitials(name) {
-  return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
+function getInitials(e) {
+  return e.split(" ").map(e => e[0]).join("").substring(0, 2).toUpperCase()
 }
-/* ---- Shared: Edit & Delete overlay (used by dashboard, reports, profile) ---- */
-const OVERRIDES_KEY = 'eduanalytics_student_overrides';
-const DELETED_KEY = 'eduanalytics_deleted_students';
+const OVERRIDES_KEY = "eduanalytics_student_overrides",
+  DELETED_KEY = "eduanalytics_deleted_students";
 
 function getStudentOverrides() {
-  try { return JSON.parse(localStorage.getItem(OVERRIDES_KEY)) || {}; }
-  catch (e) { return {}; }
-}
-function saveStudentOverrides(obj) {
-  localStorage.setItem(OVERRIDES_KEY, JSON.stringify(obj));
-}
-function getDeletedStudentIds() {
-  try { return JSON.parse(localStorage.getItem(DELETED_KEY)) || []; }
-  catch (e) { return []; }
-}
-function saveDeletedStudentIds(arr) {
-  localStorage.setItem(DELETED_KEY, JSON.stringify(arr));
-}
-function isStudentDeleted(id) {
-  const clean = String(id).toLowerCase();
-  return getDeletedStudentIds().some(function (d) { return String(d).toLowerCase() === clean; });
-}
-function applyStudentOverride(student) {
-  const o = getStudentOverrides()[student.id];
-  if (!o) return student;
-  const merged = Object.assign({}, student, o);
-  if (o.score != null && !o.subjects) {
-    merged.subjects = { 'Overall Average': o.score };
+  try {
+    return JSON.parse(localStorage.getItem(OVERRIDES_KEY)) || {}
+  } catch (e) {
+    return {}
   }
-  return merged;
-}
-function deleteStudentEverywhere(id) {
-  const ids = getDeletedStudentIds();
-  if (!ids.some(function (d) { return String(d).toLowerCase() === String(id).toLowerCase(); })) {
-    ids.push(id);
-    saveDeletedStudentIds(ids);
-  }
-}
-function updateStudentEverywhere(id, fields) {
-  const overrides = getStudentOverrides();
-  overrides[id] = Object.assign({}, overrides[id], fields);
-  saveStudentOverrides(overrides);
-}
-function getGradeLetter(score) {
-  if (score >= 90) return 'A+';
-  if (score >= 80) return 'A';
-  if (score >= 70) return 'B+';
-  if (score >= 60) return 'B';
-  if (score >= 50) return 'C';
-  return 'D';
 }
 
-window.EA_isStudentDeleted = isStudentDeleted;
-window.EA_applyStudentOverride = applyStudentOverride;
-window.EA_deleteStudentEverywhere = deleteStudentEverywhere;
-function undeleteStudent(id) {
-  const ids = getDeletedStudentIds().filter(function (d) { return String(d).toLowerCase() !== String(id).toLowerCase(); });
-  saveDeletedStudentIds(ids);
+function saveStudentOverrides(e) {
+  localStorage.setItem(OVERRIDES_KEY, JSON.stringify(e))
 }
-window.EA_undeleteStudent = undeleteStudent;
-window.EA_updateStudentEverywhere = updateStudentEverywhere;
-window.EA_getStudentOverrides = getStudentOverrides;
+
+function getDeletedStudentIds() {
+  try {
+    return JSON.parse(localStorage.getItem(DELETED_KEY)) || []
+  } catch (e) {
+    return []
+  }
+}
+
+function saveDeletedStudentIds(e) {
+  localStorage.setItem(DELETED_KEY, JSON.stringify(e))
+}
+
+function isStudentDeleted(e) {
+  const t = String(e).toLowerCase();
+  return getDeletedStudentIds().some(function(e) {
+    return String(e).toLowerCase() === t
+  })
+}
+
+function applyStudentOverride(e) {
+  const t = getStudentOverrides()[e.id];
+  if (!t) return e;
+  const n = Object.assign({}, e, t);
+  return null == t.score || t.subjects || (n.subjects = {
+    "Overall Average": t.score
+  }), n
+}
+
+function deleteStudentEverywhere(e) {
+  const t = getDeletedStudentIds();
+  t.some(function(t) {
+    return String(t).toLowerCase() === String(e).toLowerCase()
+  }) || (t.push(e), saveDeletedStudentIds(t))
+}
+
+function updateStudentEverywhere(e, t) {
+  const n = getStudentOverrides();
+  n[e] = Object.assign({}, n[e], t), saveStudentOverrides(n)
+}
+
+function getGradeLetter(e) {
+  return e >= 90 ? "A+" : e >= 80 ? "A" : e >= 70 ? "B+" : e >= 60 ? "B" : e >= 50 ? "C" : "D"
+}
+
+function undeleteStudent(e) {
+  saveDeletedStudentIds(getDeletedStudentIds().filter(function(t) {
+    return String(t).toLowerCase() !== String(e).toLowerCase()
+  }))
+}
 
 function getExtraStudentsRaw() {
-  try { return JSON.parse(localStorage.getItem('eduanalytics_extra_students')) || []; }
-  catch (e) { return []; }
+  try {
+    return JSON.parse(localStorage.getItem("eduanalytics_extra_students")) || []
+  } catch (e) {
+    return []
+  }
 }
 
 function getCompletedExtraStudents() {
-  // Includes BOTH students with a full subject-wise report AND students that
-  // were just quick-added from the dashboard (score only, report not built
-  // yet) — so every locally added student shows up in Reports right away.
-  return getExtraStudentsRaw()
-    .filter(function (s) { return !isStudentDeleted(s.id); })
-    .map(function (s) {
-      const hasFullReport = s.subjects && s.attendance != null;
-      return applyStudentOverride({
-        id: s.id, name: s.name, class: s.class,
-        email: s.email || 'Not provided',
-        attendance: hasFullReport ? s.attendance : null,
-        joined: s.joined || 'Recently added',
-        subjects: hasFullReport ? s.subjects : { 'Overall Average': s.score },
-        reportComplete: hasFullReport
-      });
-    });
-}
-
-function getStudentById(id) {
-  const clean = String(id).toLowerCase();
-  if (isStudentDeleted(clean)) return null;
-
-  const fromBase = STUDENTS_DATA.find(s => s.id.toLowerCase() === clean);
-  if (fromBase) return applyStudentOverride(Object.assign({ reportComplete: true }, fromBase));
-
-  const extra = getExtraStudentsRaw().find(s => s.id.toLowerCase() === clean);
-  if (!extra) return null;
-
-  if (extra.subjects && extra.attendance != null) {
+  return getExtraStudentsRaw().filter(function(e) {
+    return !isStudentDeleted(e.id)
+  }).map(function(e) {
+    const t = e.subjects && null != e.attendance;
     return applyStudentOverride({
-      id: extra.id, name: extra.name, class: extra.class,
-      email: extra.email || 'Not provided',
-      attendance: extra.attendance, joined: extra.joined || 'Recently added',
-      subjects: extra.subjects, reportComplete: true, isManuallyAdded: true
-    });
-  }
-
-  return applyStudentOverride({
-    id: extra.id, name: extra.name, class: extra.class,
-    email: extra.email || 'Not provided',
-    attendance: null, joined: 'Recently added',
-    subjects: { 'Overall Average': extra.score },
-    reportComplete: false, isManuallyAdded: true
-  });
+      id: e.id,
+      name: e.name,
+      class: e.class,
+      email: e.email || "Not provided",
+      attendance: t ? e.attendance : null,
+      joined: e.joined || "Recently added",
+      subjects: t ? e.subjects : {
+        "Overall Average": e.score
+      },
+      reportComplete: t
+    })
+  })
 }
 
-/* ---- 1. Dashboard: Render Student Table Dynamically ---- */
+function getStudentById(e) {
+  const t = String(e).toLowerCase();
+  if (isStudentDeleted(t)) return null;
+  const n = STUDENTS_DATA.find(e => e.id.toLowerCase() === t);
+  if (n) return applyStudentOverride(Object.assign({
+    reportComplete: !0
+  }, n));
+  const a = getExtraStudentsRaw().find(e => e.id.toLowerCase() === t);
+  return a ? a.subjects && null != a.attendance ? applyStudentOverride({
+    id: a.id,
+    name: a.name,
+    class: a.class,
+    email: a.email || "Not provided",
+    attendance: a.attendance,
+    joined: a.joined || "Recently added",
+    subjects: a.subjects,
+    reportComplete: !0,
+    isManuallyAdded: !0
+  }) : applyStudentOverride({
+    id: a.id,
+    name: a.name,
+    class: a.class,
+    email: a.email || "Not provided",
+    attendance: null,
+    joined: "Recently added",
+    subjects: {
+      "Overall Average": a.score
+    },
+    reportComplete: !1,
+    isManuallyAdded: !0
+  }) : null
+}
+
 function renderStudentsTable() {
-  const tbody = document.getElementById('studentsTableBody');
-  if (!tbody) return;
-
-  tbody.innerHTML = STUDENTS_DATA
-    .filter(rawStudent => !isStudentDeleted(rawStudent.id))
-    .map(rawStudent => {
-    const student = applyStudentOverride(rawStudent);
-    const score = getOverallScore(student);
-    const status = getStatusFromScore(score);
-    const badgeClass = getStatusBadgeClass(status);
-
+  const e = document.getElementById("studentsTableBody");
+  e && (e.innerHTML = STUDENTS_DATA.filter(e => !isStudentDeleted(e.id)).map(e => {
+    const t = applyStudentOverride(e),
+      n = getOverallScore(t),
+      a = getStatusFromScore(n),
+      s = getStatusBadgeClass(a);
     return `
-      <tr data-class="${student.class}" data-status="${status}" data-score="${score}" data-email="${student.email.toLowerCase()}">
-        <td data-label="Roll No.">${student.id}</td>
-        <td data-label="Name">${student.name}</td>
-        <td data-label="Class">${student.class}</td>
-        <td data-label="Avg. Score">${score}%</td>
-        <td data-label="Status"><span class="badge ${badgeClass}">${status}</span></td>
-        <td data-label="Action"><a href="student-profile.html?id=${student.id}" class="btn-link">View Profile →</a></td>
-      </tr>`;
-  }).join('');
+      <tr data-class="${t.class}" data-status="${a}" data-score="${n}" data-email="${t.email.toLowerCase()}">
+        <td data-label="Roll No.">${t.id}</td>
+        <td data-label="Name">${t.name}</td>
+        <td data-label="Class">${t.class}</td>
+        <td data-label="Avg. Score">${n}%</td>
+        <td data-label="Status"><span class="badge ${s}">${a}</span></td>
+        <td data-label="Action"><a href="student-profile.html?id=${t.id}" class="btn-link">View Profile →</a></td>
+      </tr>`
+  }).join(""))
 }
 
-/* ---- 2. Reports Page: Render Performance Cards Dynamically ---- */
-function renderPerformanceCards(filterFn) {
-  const grid = document.getElementById('performanceCardsGrid');
-  if (!grid) return;
-
- const allStudents = STUDENTS_DATA
-    .filter(function (s) { return !isStudentDeleted(s.id); })
-    .map(applyStudentOverride)
-    .concat(getCompletedExtraStudents());
-  const list = typeof filterFn === 'function' ? allStudents.filter(filterFn) : allStudents;
-
-  if (list.length === 0) {
-    grid.innerHTML = `<p style="text-align:center; color:var(--text-muted); grid-column:1/-1; padding:30px 0;">No students match the current filters.</p>`;
-    return;
-  }
-
-  grid.innerHTML = list.map(student => {
-    const score = getOverallScore(student);
-    const status = getStatusFromScore(score);
-    const badgeClass = getStatusBadgeClass(status);
-
-    const subjectBars = Object.entries(student.subjects).map(([subject, val]) => `
+function renderPerformanceCards(e) {
+  const t = document.getElementById("performanceCardsGrid");
+  if (!t) return;
+  const n = STUDENTS_DATA.filter(function(e) {
+      return !isStudentDeleted(e.id)
+    }).map(applyStudentOverride).concat(getCompletedExtraStudents()),
+    a = "function" == typeof e ? n.filter(e) : n;
+  0 !== a.length ? t.innerHTML = a.map(e => {
+    const t = getOverallScore(e),
+      n = getStatusFromScore(t),
+      a = getStatusBadgeClass(n),
+      s = Object.entries(e.subjects).map(([e, t]) => `
       <div class="subject-bar-row">
-        <span class="subject-label">${subject}</span>
-        <div class="mini-bar"><div class="mini-bar-fill" style="width:${val}%;"></div></div>
-        <span class="subject-value">${val}%</span>
-      </div>`).join('');
-
+        <span class="subject-label">${e}</span>
+        <div class="mini-bar"><div class="mini-bar-fill" style="width:${t}%;"></div></div>
+        <span class="subject-value">${t}%</span>
+      </div>`).join("");
     return `
       <div class="performance-card reveal in-view">
         <div class="performance-card-header">
-          <div class="avatar-circle">${getInitials(student.name)}</div>
+          <div class="avatar-circle">${getInitials(e.name)}</div>
           <div>
-            <h3>${student.name}</h3>
-            <p>${student.class} &bull; ${student.id}</p>
+            <h3>${e.name}</h3>
+            <p>${e.class} &bull; ${e.id}</p>
           </div>
         </div>
 
-        <div class="progress-ring" style="--pct:${score};">
+        <div class="progress-ring" style="--pct:${t};">
           <div class="progress-ring-inner">
-            <strong>${score}%</strong>
-            <span class="badge ${badgeClass}">${status}</span>
+            <strong>${t}%</strong>
+            <span class="badge ${a}">${n}</span>
           </div>
         </div>
 
-        <div class="subject-bars">${subjectBars}</div>
+        <div class="subject-bars">${s}</div>
 
-        <a href="student-profile.html?id=${student.id}" class="btn btn-outline btn-sm" style="width:100%; text-align:center; margin-top:14px; display:block;">View Full Profile</a>
-      </div>`;
-  }).join('');
+        <a href="student-profile.html?id=${e.id}" class="btn btn-outline btn-sm" style="width:100%; text-align:center; margin-top:14px; display:block;">View Full Profile</a>
+      </div>`
+  }).join("") : t.innerHTML = '<p style="text-align:center; color:var(--text-muted); grid-column:1/-1; padding:30px 0;">No students match the current filters.</p>'
 }
 
-/* ---- 3. Student Profile Page: Render Dynamically from URL ?id= ---- */
 function renderStudentProfile() {
-  const container = document.getElementById('profileContainer');
-  if (!container) return;
-
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('id');
-  const student = id ? getStudentById(id) : null;
-
-  if (!student) {
-    container.innerHTML = `
+  const e = document.getElementById("profileContainer");
+  if (!e) return;
+  const t = new URLSearchParams(window.location.search).get("id"),
+    n = t ? getStudentById(t) : null;
+  if (!n) return void(e.innerHTML = `
       <div class="profile-not-found">
         <div class="auth-icon" style="margin:0 auto 16px;">🔍</div>
         <h2>Student Not Found</h2>
-        <p>We couldn't find a profile for "<strong>${id || 'unknown'}</strong>". This demo includes full profiles for STU-1001 to STU-1005.</p>
+        <p>We couldn't find a profile for "<strong>${t||"unknown"}</strong>". This demo includes full profiles for STU-1001 to STU-1005.</p>
         <a href="dashboard.html" class="btn btn-primary" style="margin-top:20px; display:inline-block;">← Back to Dashboard</a>
-      </div>`;
-    return;
-  }
-  if (student.reportComplete === false) {
-    container.innerHTML = `
+      </div>`);
+  if (!1 === n.reportComplete) return void(e.innerHTML = `
       <div class="profile-not-found">
         <div class="auth-icon" style="margin:0 auto 16px;">📝</div>
-        <h2>${student.name}'s Report Isn't Ready Yet</h2>
+        <h2>${n.name}'s Report Isn't Ready Yet</h2>
         <p>Basic info was saved, but the full subject-wise report hasn't been filled in.</p>
-        <a href="report-builder.html?id=${student.id}" class="btn btn-primary" style="margin-top:20px; display:inline-block;">Complete Report →</a>
+        <a href="report-builder.html?id=${n.id}" class="btn btn-primary" style="margin-top:20px; display:inline-block;">Complete Report →</a>
         <a href="dashboard.html" class="btn btn-outline" style="margin-top:20px; margin-left:10px; display:inline-block;">← Back to Dashboard</a>
-      </div>`;
-    return;
-  }
-
-  const score = getOverallScore(student);
-  const status = getStatusFromScore(score);
-  const badgeClass = getStatusBadgeClass(status);
-
-  const subjectBars = Object.entries(student.subjects).map(([subject, val]) => `
+      </div>`);
+  const a = getOverallScore(n),
+    s = getStatusFromScore(a),
+    d = getStatusBadgeClass(s),
+    r = Object.entries(n.subjects).map(([e, t]) => `
     <div class="subject-bar-row">
-      <span class="subject-label">${subject}</span>
-      <div class="mini-bar"><div class="mini-bar-fill" data-target="${val}"></div></div>
-      <span class="subject-value">${val}%</span>
-    </div>`).join('');
-
-  container.innerHTML = `
+      <span class="subject-label">${e}</span>
+      <div class="mini-bar"><div class="mini-bar-fill" data-target="${t}"></div></div>
+      <span class="subject-value">${t}%</span>
+    </div>`).join("");
+  e.innerHTML = `
     <div class="profile-header">
-      <div class="avatar-circle avatar-lg">${getInitials(student.name)}</div>
+      <div class="avatar-circle avatar-lg">${getInitials(n.name)}</div>
       <div class="profile-header-info">
-        <h1>${student.name}</h1>
-        <p>${student.class} &bull; Roll No: ${student.id}</p>
-        <p>${student.email}</p>
-        <span class="badge ${badgeClass}">${status} Performer</span>
-        ${student.isManuallyAdded ? '<p style="color:var(--text-muted); font-size:0.85rem; margin-top:6px;">📝 Manually added — full subject-wise breakdown not available yet, only overall average.</p>' : ''}
+        <h1>${n.name}</h1>
+        <p>${n.class} &bull; Roll No: ${n.id}</p>
+        <p>${n.email}</p>
+        <span class="badge ${d}">${s} Performer</span>
+        ${n.isManuallyAdded?'<p style="color:var(--text-muted); font-size:0.85rem; margin-top:6px;">📝 Manually added — full subject-wise breakdown not available yet, only overall average.</p>':""}
       </div>
     </div>
 
     <div class="stats-grid profile-stats-grid">
-      <div class="stat-card"><div class="stat-icon">📊</div><h3>${score}%</h3><p>Overall Average</p></div>
-      <div class="stat-card"><div class="stat-icon">📅</div><h3>${student.attendance != null ? student.attendance + '%' : '—'}</h3><p>Attendance</p></div>
-      <div class="stat-card"><div class="stat-icon">📚</div><h3>${Object.keys(student.subjects).length}</h3><p>Enrolled Subjects</p></div>
-      <div class="stat-card"><div class="stat-icon">🗓️</div><h3>${student.joined}</h3><p>Joined</p></div>
+      <div class="stat-card"><div class="stat-icon">📊</div><h3>${a}%</h3><p>Overall Average</p></div>
+      <div class="stat-card"><div class="stat-icon">📅</div><h3>${null!=n.attendance?n.attendance+"%":"—"}</h3><p>Attendance</p></div>
+      <div class="stat-card"><div class="stat-icon">📚</div><h3>${Object.keys(n.subjects).length}</h3><p>Enrolled Subjects</p></div>
+      <div class="stat-card"><div class="stat-icon">🗓️</div><h3>${n.joined}</h3><p>Joined</p></div>
     </div>
 
     <h2 style="margin:36px 0 16px;">Subject-Wise Performance</h2>
     <div class="form-container subject-bars" style="max-width:100%;">
-      ${subjectBars}
+      ${r}
     </div>
 
-    <a href="dashboard.html" class="btn btn-outline" style="margin-top:30px; display:inline-block;">← Back to Dashboard</a>`;
-
-  // Animate the subject bars filling in after render
-  requestAnimationFrame(() => {
-    document.querySelectorAll('.mini-bar-fill[data-target]').forEach(bar => {
-      setTimeout(() => { bar.style.width = bar.getAttribute('data-target') + '%'; }, 150);
-    });
-  });
+    <a href="dashboard.html" class="btn btn-outline" style="margin-top:30px; display:inline-block;">← Back to Dashboard</a>`, requestAnimationFrame(() => {
+    document.querySelectorAll(".mini-bar-fill[data-target]").forEach(e => {
+      setTimeout(() => {
+        e.style.width = e.getAttribute("data-target") + "%"
+      }, 150)
+    })
+  })
 }
 
-/* ---- 4. Reports Page: Keep the static Table View in sync with Add/Edit/Delete ---- */
 function syncReportTableView() {
-  const tbody = document.querySelector('#reportTable tbody');
-  if (!tbody) return;
-
-  tbody.querySelectorAll('tr[data-id]').forEach(function (row) {
-    const id = row.getAttribute('data-id');
-    if (isStudentDeleted(id)) { row.remove(); return; }
-    const o = getStudentOverrides()[id];
-    if (o) {
-      if (o.name) row.children[1].textContent = o.name;
-      if (o.class) { row.children[2].textContent = o.class; row.setAttribute('data-class', o.class); }
-    }
+  const e = document.querySelector("#reportTable tbody");
+  if (!e) return;
+  e.querySelectorAll("tr[data-id]").forEach(function(e) {
+    const t = e.getAttribute("data-id");
+    if (isStudentDeleted(t)) return void e.remove();
+    const n = getStudentOverrides()[t];
+    n && (n.name && (e.children[1].textContent = n.name), n.class && (e.children[2].textContent = n.class, e.setAttribute("data-class", n.class)))
   });
-
-  const extraRowsHtml = getCompletedExtraStudents().map(function (student) {
-    const score = getOverallScore(student);
-    const status = getStatusFromScore(score);
-    const badgeClass = getStatusBadgeClass(status);
-    const subjectLabel = student.reportComplete ? Object.keys(student.subjects)[0] : 'Overall Average';
-    const barColor = status === 'Excellent' ? '' : (status === 'Average' ? 'background:var(--accent-color);' : 'background:var(--danger-color);');
-    return '<tr data-id="' + student.id + '" data-class="' + student.class + '" data-subject="' + subjectLabel + '">' +
-      '<td>' + student.id + '</td><td>' + student.name + '</td><td>' + student.class + '</td>' +
-      '<td>' + subjectLabel + '</td><td>' + score + '%</td>' +
-      '<td><span class="badge ' + badgeClass + '">' + getGradeLetter(score) + '</span></td>' +
-      '<td><div class="progress-bar"><div class="progress-fill" style="width:' + score + '%; ' + barColor + '"></div></div></td>' +
-      '</tr>';
-  }).join('');
-
-  tbody.insertAdjacentHTML('beforeend', extraRowsHtml);
+  const t = getCompletedExtraStudents().map(function(e) {
+    const t = getOverallScore(e),
+      n = getStatusFromScore(t),
+      a = getStatusBadgeClass(n),
+      s = e.reportComplete ? Object.keys(e.subjects)[0] : "Overall Average",
+      d = "Excellent" === n ? "" : "Average" === n ? "background:var(--accent-color);" : "background:var(--danger-color);";
+    return '<tr data-id="' + e.id + '" data-class="' + e.class + '" data-subject="' + s + '"><td>' + e.id + "</td><td>" + e.name + "</td><td>" + e.class + "</td><td>" + s + "</td><td>" + t + '%</td><td><span class="badge ' + a + '">' + getGradeLetter(t) + '</span></td><td><div class="progress-bar"><div class="progress-fill" style="width:' + t + "%; " + d + '"></div></div></td></tr>'
+  }).join("");
+  e.insertAdjacentHTML("beforeend", t)
 }
-
-/* Auto-run: each function safely no-ops if its target container isn't on the current page */
-renderStudentsTable();
-renderPerformanceCards();
-renderStudentProfile();
-syncReportTableView();

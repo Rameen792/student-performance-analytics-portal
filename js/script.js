@@ -1,658 +1,356 @@
-/* ==========================================================================
-   Student Performance Analytics Portal - Main JavaScript
-   Handles: Mobile Nav Toggle, Form Validation, Table Filtering, Dynamic Rows
-   ========================================================================== */
+document.addEventListener("DOMContentLoaded", function() {
+  const e = document.getElementById("hamburger"),
+    t = document.getElementById("navMenu");
 
-document.addEventListener('DOMContentLoaded', function () {
-
-  /* ---------------------------------------------------------
-     1. MOBILE NAVIGATION TOGGLE
-  --------------------------------------------------------- */
-  const hamburger = document.getElementById('hamburger');
-  const navMenu = document.getElementById('navMenu');
-
- if (hamburger && navMenu) {
-    hamburger.setAttribute('aria-expanded', 'false');
-
-    hamburger.addEventListener('click', function () {
-      const isOpen = navMenu.classList.toggle('active');
-      hamburger.classList.toggle('active', isOpen);
-      hamburger.setAttribute('aria-expanded', String(isOpen));
-    });
-
-    // Close menu when a link is clicked (mobile UX improvement)
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        hamburger.setAttribute('aria-expanded', 'false');
-      });
-    });
-
-    // Close menu on Escape (keyboard accessibility)
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && navMenu.classList.contains('active')) {
-        hamburger.classList.remove('active');
-        navMenu.classList.remove('active');
-        hamburger.setAttribute('aria-expanded', 'false');
-        hamburger.focus();
-      }
-    });
+  function n(e) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)
   }
 
-  /* ---------------------------------------------------------
-     2. GENERIC VALIDATION HELPERS
-  --------------------------------------------------------- */
-  function isEmailValid(email) {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return pattern.test(email);
+  function o(e) {
+    e.classList.add("invalid")
   }
 
-  function showError(groupEl) {
-    groupEl.classList.add('invalid');
+  function s(e) {
+    e.classList.remove("invalid")
   }
+  e && t && (e.setAttribute("aria-expanded", "false"), e.addEventListener("click", function() {
+    const n = t.classList.toggle("active");
+    e.classList.toggle("active", n), e.setAttribute("aria-expanded", String(n))
+  }), document.querySelectorAll(".nav-link").forEach(n => {
+    n.addEventListener("click", () => {
+      e.classList.remove("active"), t.classList.remove("active"), e.setAttribute("aria-expanded", "false")
+    })
+  }), document.addEventListener("keydown", n => {
+    "Escape" === n.key && t.classList.contains("active") && (e.classList.remove("active"), t.classList.remove("active"), e.setAttribute("aria-expanded", "false"), e.focus())
+  }));
+  const a = document.getElementById("addStudentFormEl");
+  if (a) {
+    const v = document.getElementById("grp-name"),
+      f = document.getElementById("studentName"),
+      p = document.getElementById("grp-roll"),
+      h = document.getElementById("rollNo"),
+      I = document.getElementById("grp-class"),
+      B = document.getElementById("studentClass"),
+      L = document.getElementById("grp-score"),
+      w = document.getElementById("studentScore"),
+      b = document.getElementById("grp-email"),
+      S = document.getElementById("studentEmail"),
+      x = p.querySelector(".error-text"),
+      C = x ? x.textContent : "";
 
-  function clearError(groupEl) {
-    groupEl.classList.remove('invalid');
-  }
-
-  /* ---------------------------------------------------------
-     3. DASHBOARD: ADD STUDENT FORM VALIDATION
-  --------------------------------------------------------- */
-  const addStudentForm = document.getElementById('addStudentFormEl');
-
-  if (addStudentForm) {
-    const nameGroup = document.getElementById('grp-name');
-    const nameInput = document.getElementById('studentName');
-    const rollGroup = document.getElementById('grp-roll');
-    const rollInput = document.getElementById('rollNo');
-    const classGroup = document.getElementById('grp-class');
-    const classInput = document.getElementById('studentClass');
-    const scoreGroup = document.getElementById('grp-score');
-    const scoreInput = document.getElementById('studentScore');
-    const emailGroup = document.getElementById('grp-email');
-    const emailInput = document.getElementById('studentEmail');
-    const rollErrorText = rollGroup.querySelector('.error-text');
-    const defaultRollError = rollErrorText ? rollErrorText.textContent : '';
-
-    // Each validator toggles its own error state and returns true/false, so
-    // the exact same function can run on blur (live feedback) AND on submit.
-    function validateName() {
-      const ok = nameInput.value.trim().length >= 3;
-      ok ? clearError(nameGroup) : showError(nameGroup);
-      return ok;
-    }
-    function validateRoll() {
-      const val = rollInput.value.trim();
-      if (val.length < 3) {
-        if (rollErrorText) rollErrorText.textContent = defaultRollError;
-        showError(rollGroup);
-        return false;
-      }
-      if (window.EA_isDuplicateRoll && window.EA_isDuplicateRoll(val)) {
-        if (rollErrorText) rollErrorText.textContent = 'This roll number is already in use — please use a unique one.';
-        showError(rollGroup);
-        return false;
-      }
-      clearError(rollGroup);
-      return true;
-    }
-    function validateClass() {
-      const ok = classInput.value !== '';
-      ok ? clearError(classGroup) : showError(classGroup);
-      return ok;
-    }
-    function validateScore() {
-      const score = parseFloat(scoreInput.value);
-      const ok = !isNaN(score) && score >= 0 && score <= 100;
-      ok ? clearError(scoreGroup) : showError(scoreGroup);
-      return ok;
-    }
-    function validateEmail() {
-      const ok = isEmailValid(emailInput.value.trim());
-      ok ? clearError(emailGroup) : showError(emailGroup);
-      return ok;
+    function r() {
+      const e = f.value.trim().length >= 3;
+      return e ? s(v) : o(v), e
     }
 
-    // Live validation: flag/clear a field as soon as the user leaves it,
-    // instead of only finding out about mistakes at submit time.
-    nameInput.addEventListener('blur', validateName);
-    rollInput.addEventListener('blur', validateRoll);
-    classInput.addEventListener('change', validateClass);
-    scoreInput.addEventListener('blur', validateScore);
-    emailInput.addEventListener('blur', validateEmail);
+    function l() {
+      const e = h.value.trim();
+      return e.length < 3 ? (x && (x.textContent = C), o(p), !1) : window.EA_isDuplicateRoll && window.EA_isDuplicateRoll(e) ? (x && (x.textContent = "This roll number is already in use — please use a unique one."), o(p), !1) : (s(p), !0)
+    }
 
-    addStudentForm.addEventListener('submit', function (e) {
+    function c() {
+      const e = "" !== B.value;
+      return e ? s(I) : o(I), e
+    }
+
+    function d() {
+      const e = parseFloat(w.value),
+        t = !isNaN(e) && e >= 0 && e <= 100;
+      return t ? s(L) : o(L), t
+    }
+
+    function i() {
+      const e = n(S.value.trim());
+      return e ? s(b) : o(b), e
+    }
+    f.addEventListener("blur", r), h.addEventListener("blur", l), B.addEventListener("change", c), w.addEventListener("blur", d), S.addEventListener("blur", i), a.addEventListener("submit", function(e) {
       e.preventDefault();
-
-      // Run every validator (avoid short-circuiting with &&, so ALL fields
-      // get their error state updated together, not just the first bad one).
-      const results = [validateName(), validateRoll(), validateClass(), validateScore(), validateEmail()];
-      const isValid = results.every(Boolean);
-      if (!isValid) return;
-
-      // ---- Week 5: hand the new student off to the shared data layer ----
-      // js/dashboard-week5.js owns rendering (search/filter/sort/pagination),
-      // so we just persist the record here and let it re-render the table.
-      const newStudent = {
-        id: rollInput.value.trim(),
-        name: nameInput.value.trim(),
-        class: classInput.value,
-        score: parseFloat(scoreInput.value),
-        email: emailInput.value.trim()
+      if (![r(), l(), c(), d(), i()].every(Boolean)) return;
+      const t = {
+        id: h.value.trim(),
+        name: f.value.trim(),
+        class: B.value,
+        score: parseFloat(w.value),
+        email: S.value.trim()
       };
+      window.EA_addExtraStudent && window.EA_addExtraStudent(t), window.EA_logActivity && window.EA_logActivity("➕", `${t.name} (${t.id}) was added to Student Records.`), document.dispatchEvent(new CustomEvent("studentAdded", {
+        detail: t
+      }));
+      const n = document.getElementById("dashSuccessMsg");
+      n.textContent = "✅ Student added! Redirecting to complete their report...", n.style.display = "block", a.reset(), setTimeout(() => {
+        window.location.href = "report-builder.html?id=" + encodeURIComponent(t.id)
+      }, 1e3)
+    })
+  }
+  const u = document.getElementById("contactFormEl");
+  u && u.addEventListener("submit", function(e) {
+    e.preventDefault();
+    let t = !0;
+    const a = document.getElementById("grp-cname"),
+      r = document.getElementById("contactName"),
+      l = document.getElementById("grp-cemail"),
+      c = document.getElementById("contactEmail"),
+      d = document.getElementById("grp-csubject"),
+      i = document.getElementById("contactSubject"),
+      m = document.getElementById("grp-cmessage"),
+      g = document.getElementById("contactMessage");
+    if (r.value.trim().length < 3 ? (o(a), t = !1) : s(a), n(c.value.trim()) ? s(l) : (o(l), t = !1), "" === i.value ? (o(d), t = !1) : s(d), g.value.trim().length < 10 ? (o(m), t = !1) : s(m), !t) return;
+    const y = document.getElementById("contactSuccessMsg");
+    y.style.display = "block", setTimeout(() => {
+      y.style.display = "none"
+    }, 3500), u.reset()
+  });
+  const m = document.getElementById("applyFilterBtn");
 
-      if (window.EA_addExtraStudent) window.EA_addExtraStudent(newStudent);
-      if (window.EA_logActivity) window.EA_logActivity('➕', `${newStudent.name} (${newStudent.id}) was added to Student Records.`);
-
-      // Notify the dashboard controller to refresh cards/table/charts
-      document.dispatchEvent(new CustomEvent('studentAdded', { detail: newStudent }));
-
-      // Show success message, then send them to fill the full report
-      const successMsg = document.getElementById('dashSuccessMsg');
-      successMsg.textContent = '✅ Student added! Redirecting to complete their report...';
-      successMsg.style.display = 'block';
-
-      // Reset form
-      addStudentForm.reset();
-
-      setTimeout(() => {
-        window.location.href = 'report-builder.html?id=' + encodeURIComponent(newStudent.id);
-      }, 1000);
+  function g() {
+    const e = document.getElementById("filterClass").value,
+      t = document.getElementById("filterSubject").value,
+      n = document.getElementById("searchStudent").value.trim().toLowerCase(),
+      o = document.querySelectorAll("#reportTable tbody tr");
+    let s = 0;
+    o.forEach(o => {
+      const a = o.getAttribute("data-class"),
+        r = o.getAttribute("data-subject"),
+        l = o.textContent.toLowerCase(),
+        c = "all" === e || a === e,
+        d = "all" === t || r === t,
+        i = "" === n || l.includes(n);
+      c && d && i ? (o.style.display = "", s++) : o.style.display = "none"
     });
+    const a = document.getElementById("noResultsMsg");
+    a && (a.style.display = 0 === s ? "block" : "none")
   }
 
-  /* ---------------------------------------------------------
-     4. CONTACT FORM VALIDATION
-  --------------------------------------------------------- */
-  const contactForm = document.getElementById('contactFormEl');
+  function y(e, t, n) {
+    let o = 0;
+    const s = t / 60,
+      a = setInterval(() => {
+        o += s, o >= t && (o = t, clearInterval(a)), e.textContent = Math.floor(o).toLocaleString() + n
+      }, 20)
+  }
+  m && (m.addEventListener("click", g), document.getElementById("searchStudent").addEventListener("input", g), document.getElementById("filterClass").addEventListener("change", g), document.getElementById("filterSubject").addEventListener("change", g));
+  const E = document.getElementById("statStudents");
+  E && (y(E, 1240, ""), y(document.getElementById("statAvg"), 78, "%"), y(document.getElementById("statPass"), 91, "%"), y(document.getElementById("statCourses"), 36, ""))
+}), document.addEventListener("DOMContentLoaded", function() {
+  const e = "eduanalytics_users";
 
-  if (contactForm) {
-    contactForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      let isValid = true;
-
-      const nameGroup = document.getElementById('grp-cname');
-      const nameInput = document.getElementById('contactName');
-      const emailGroup = document.getElementById('grp-cemail');
-      const emailInput = document.getElementById('contactEmail');
-      const subjectGroup = document.getElementById('grp-csubject');
-      const subjectInput = document.getElementById('contactSubject');
-      const messageGroup = document.getElementById('grp-cmessage');
-      const messageInput = document.getElementById('contactMessage');
-
-      if (nameInput.value.trim().length < 3) {
-        showError(nameGroup); isValid = false;
-      } else clearError(nameGroup);
-
-      if (!isEmailValid(emailInput.value.trim())) {
-        showError(emailGroup); isValid = false;
-      } else clearError(emailGroup);
-
-      if (subjectInput.value === '') {
-        showError(subjectGroup); isValid = false;
-      } else clearError(subjectGroup);
-
-      if (messageInput.value.trim().length < 10) {
-        showError(messageGroup); isValid = false;
-      } else clearError(messageGroup);
-
-      if (!isValid) return;
-
-      const successMsg = document.getElementById('contactSuccessMsg');
-      successMsg.style.display = 'block';
-      setTimeout(() => { successMsg.style.display = 'none'; }, 3500);
-
-      contactForm.reset();
-    });
+  function t() {
+    const t = localStorage.getItem(e);
+    let n = t ? JSON.parse(t) : [];
+    return 0 === n.length && (n = [{
+      name: "Demo Teacher",
+      email: "demo@eduanalytics.com",
+      role: "Teacher",
+      password: "demo123"
+    }], localStorage.setItem(e, JSON.stringify(n))), n
   }
 
-  /* ---------------------------------------------------------
-     5. REPORT PAGE: FILTER + SEARCH TABLE
-  --------------------------------------------------------- */
-  const applyFilterBtn = document.getElementById('applyFilterBtn');
+  function n(e) {
+    return t().find(t => t.email.toLowerCase() === e.toLowerCase())
+  }
+  const o = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (applyFilterBtn) {
-    applyFilterBtn.addEventListener('click', filterReportTable);
-
-    // Also filter live while typing in search box
-    document.getElementById('searchStudent').addEventListener('input', filterReportTable);
-    document.getElementById('filterClass').addEventListener('change', filterReportTable);
-    document.getElementById('filterSubject').addEventListener('change', filterReportTable);
+  function s(e, t) {
+    e.classList.add("invalid"), e.classList.remove("valid");
+    const n = e.querySelector(".error-text");
+    n && t && (n.textContent = t)
   }
 
-  function filterReportTable() {
-    const classVal = document.getElementById('filterClass').value;
-    const subjectVal = document.getElementById('filterSubject').value;
-    const searchVal = document.getElementById('searchStudent').value.trim().toLowerCase();
+  function a(e) {
+    e.classList.remove("invalid"), e.classList.add("valid")
+  }
 
-    const rows = document.querySelectorAll('#reportTable tbody tr');
-    let visibleCount = 0;
+  function r(e) {
+    e.classList.remove("invalid", "valid")
+  }
 
-    rows.forEach(row => {
-      const rowClass = row.getAttribute('data-class');
-      const rowSubject = row.getAttribute('data-subject');
-      const rowText = row.textContent.toLowerCase();
+  function l(e) {
+    const t = e.trim();
+    if ("" === t) return "We need your email address to continue.";
+    if (!t.includes("@")) return "That's missing the @ symbol — e.g. name@example.com.";
+    const [n, s] = t.split("@");
+    return n ? s ? s.includes(".") ? o.test(t) ? "" : "That email address doesn't look valid — please double-check it." : 'The domain needs an extension, like ".com" or ".edu".' : "Add a domain after the @, like gmail.com." : "Add something before the @ symbol."
+  }
+  const c = document.getElementById("signupFormEl");
+  if (c) {
+    const b = document.getElementById("grp-sname"),
+      S = document.getElementById("signupName"),
+      x = document.getElementById("grp-semail"),
+      C = document.getElementById("signupEmail"),
+      k = document.getElementById("grp-srole"),
+      A = document.getElementById("signupRole"),
+      T = document.getElementById("grp-spassword"),
+      _ = document.getElementById("signupPassword"),
+      N = document.getElementById("toggleSignupPassword"),
+      P = document.getElementById("passwordStrength"),
+      q = document.getElementById("strengthLabel"),
+      M = document.getElementById("pwChecklist"),
+      D = document.getElementById("grp-sconfirm"),
+      F = document.getElementById("signupConfirmPassword"),
+      O = document.getElementById("matchIndicator"),
+      j = document.getElementById("grp-sterms"),
+      R = document.getElementById("agreeTerms"),
+      $ = document.getElementById("signupErrorBanner"),
+      J = document.getElementById("signupSuccessMsg");
 
-      const classMatch = classVal === 'all' || rowClass === classVal;
-      const subjectMatch = subjectVal === 'all' || rowSubject === subjectVal;
-      const searchMatch = searchVal === '' || rowText.includes(searchVal);
+    function d(e) {
+      const t = _.value,
+        n = function(e) {
+          const t = function(e) {
+            return {
+              len: e.length >= 8,
+              upper: /[A-Z]/.test(e),
+              number: /[0-9]/.test(e),
+              special: /[^A-Za-z0-9]/.test(e)
+            }
+          }(e);
+          return M && Object.keys(t).forEach(function(e) {
+            const n = M.querySelector('[data-rule="' + e + '"]');
+            n && n.classList.toggle("met", t[e])
+          }), t
+        }(t),
+        o = Object.values(n).filter(Boolean).length;
+      if (P && P.classList.remove("weak", "medium", "strong"), q && (q.className = "strength-label"), 0 === t.length) return q && (q.textContent = ""), e ? s(T, "Password is required.") : r(T), !1;
+      let l = "Weak",
+        c = "weak";
+      4 === o ? (l = "Strong", c = "strong") : o >= 2 && (l = "Fair", c = "medium"), P && P.classList.add(c), q && (q.textContent = "Password strength: " + l, q.classList.add(c));
+      const d = n.len && n.upper && n.number && n.special;
+      return d ? a(T) : e ? s(T, "Still missing " + (4 - o) + " requirement(s) above.") : r(T), d
+    }
 
-      if (classMatch && subjectMatch && searchMatch) {
-        row.style.display = '';
-        visibleCount++;
-      } else {
-        row.style.display = 'none';
+    function i(e) {
+      if ("" === F.value) return O && (O.textContent = "", O.className = "match-indicator"), e ? s(D, "Please re-enter your password.") : r(D), !1;
+      const t = F.value === _.value;
+      return O && (O.textContent = t ? "✓ Passwords match" : "✕ Passwords don't match yet", O.className = "match-indicator " + (t ? "match" : "mismatch")), t ? a(D) : s(D, "This doesn't match the password above."), t
+    }
+
+    function u(e) {
+      const t = S.value.trim().length;
+      return 0 === t ? (e ? s(b, "Full name is required.") : r(b), !1) : t < 3 ? (e ? s(b, "That looks too short — enter your full name (min 3 characters).") : r(b), !1) : (a(b), !0)
+    }
+
+    function m(e) {
+      const t = l(C.value);
+      return t ? (e ? s(x, t) : r(x), !1) : (a(x), !0)
+    }
+
+    function g(e) {
+      const t = "" !== A.value;
+      return t ? a(k) : e ? s(k, "Please select the role that best describes you.") : r(k), t
+    }
+
+    function y(e) {
+      const t = R.checked;
+      return t ? r(j) : e && s(j, "You must accept the Terms & Privacy Policy to create an account."), t
+    }
+    N && N.addEventListener("click", function() {
+      const e = "password" === _.type;
+      _.type = e ? "text" : "password", N.textContent = e ? "🙈" : "👁️"
+    }), S.addEventListener("input", function() {
+      u(!1)
+    }), S.addEventListener("blur", function() {
+      u(!0)
+    }), C.addEventListener("input", function() {
+      m(!1)
+    }), C.addEventListener("blur", function() {
+      m(!0)
+    }), A.addEventListener("change", function() {
+      g(!0)
+    }), _.addEventListener("input", function() {
+      d(!1), F.value && i(!1)
+    }), _.addEventListener("blur", function() {
+      d(!0)
+    }), F.addEventListener("input", function() {
+      i(!1)
+    }), F.addEventListener("blur", function() {
+      i(!0)
+    }), R.addEventListener("change", function() {
+      y(!0)
+    }), c.addEventListener("submit", function(o) {
+      o.preventDefault(), $.style.display = "none";
+      if ([u(!0), m(!0), g(!0), d(!0), i(!0), y(!0)].every(Boolean)) {
+        if (n(C.value.trim())) return $.textContent = "❌ An account with this email already exists. Please login instead.", void($.style.display = "block");
+        !function(n) {
+          const o = t();
+          o.push(n), localStorage.setItem(e, JSON.stringify(o))
+        }({
+          name: S.value.trim(),
+          email: C.value.trim(),
+          role: A.value,
+          password: _.value
+        }), J.style.display = "block", c.reset(), P && P.classList.remove("weak", "medium", "strong"), q && (q.textContent = ""), M && M.querySelectorAll("li").forEach(function(e) {
+          e.classList.remove("met")
+        }), O && (O.textContent = "", O.className = "match-indicator"), document.querySelectorAll("#signupFormEl .form-group").forEach(r), setTimeout(() => {
+          window.location.href = "login.html"
+        }, 1500)
       }
-    });
-
-    const noResultsMsg = document.getElementById('noResultsMsg');
-    if (noResultsMsg) {
-      noResultsMsg.style.display = visibleCount === 0 ? 'block' : 'none';
-    }
+    })
   }
+  const E = document.getElementById("loginFormEl");
+  if (E) {
+    const W = document.getElementById("togglePassword"),
+      Y = document.getElementById("grp-lemail"),
+      Z = document.getElementById("loginEmail"),
+      z = document.getElementById("grp-lpassword"),
+      U = document.getElementById("loginPassword"),
+      G = document.getElementById("loginErrorBanner"),
+      H = document.getElementById("loginSuccessMsg");
 
-  /* ---------------------------------------------------------
-     6. ANIMATE STAT NUMBERS ON HOME PAGE (nice UX touch)
-  --------------------------------------------------------- */
-  function animateCount(el, target, suffix) {
-    let current = 0;
-    const increment = target / 60; // ~60 frames
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= target) {
-        current = target;
-        clearInterval(timer);
-      }
-      el.textContent = Math.floor(current).toLocaleString() + suffix;
-    }, 20);
-  }
-
-  const statStudents = document.getElementById('statStudents');
-  if (statStudents) {
-    animateCount(statStudents, 1240, '');
-    animateCount(document.getElementById('statAvg'), 78, '%');
-    animateCount(document.getElementById('statPass'), 91, '%');
-    animateCount(document.getElementById('statCourses'), 36, '');
-  }
-
-});
-/* ==========================================================================
-   WEEK 2 ADDITIONS: Login System, Dynamic Cards, Search/Filter/Sort,
-   Scroll-Spy Navigation
-   ========================================================================== */
-
-document.addEventListener('DOMContentLoaded', function () {
-
-  /* ---------------------------------------------------------
-     1. USER STORAGE HELPERS (localStorage-based mini "database")
-  --------------------------------------------------------- */
-  const USERS_KEY = 'eduanalytics_users';
-
-  function getStoredUsers() {
-    const usersJSON = localStorage.getItem(USERS_KEY);
-    let users = usersJSON ? JSON.parse(usersJSON) : [];
-
-    // Seed a default demo account if none exist yet
-    if (users.length === 0) {
-      users = [{ name: 'Demo Teacher', email: 'demo@eduanalytics.com', role: 'Teacher', password: 'demo123' }];
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    }
-    return users;
-  }
-
-  function saveUser(newUser) {
-    const users = getStoredUsers();
-    users.push(newUser);
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
-  }
-
-  function findUserByEmail(email) {
-    return getStoredUsers().find(u => u.email.toLowerCase() === email.toLowerCase());
-  }
-
- const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  function setFieldError(groupEl, message) {
-    groupEl.classList.add('invalid');
-    groupEl.classList.remove('valid');
-    const errText = groupEl.querySelector('.error-text');
-    if (errText && message) errText.textContent = message;
-  }
-  function setFieldValid(groupEl) {
-    groupEl.classList.remove('invalid');
-    groupEl.classList.add('valid');
-  }
-  function clearFieldState(groupEl) {
-    groupEl.classList.remove('invalid', 'valid');
-  }
-
-  // Pinpoints the REAL objection instead of a generic "invalid email" message
-  function emailObjection(value) {
-    const v = value.trim();
-    if (v === '') return 'We need your email address to continue.';
-    if (!v.includes('@')) return "That's missing the @ symbol — e.g. name@example.com.";
-    const [local, domain] = v.split('@');
-    if (!local) return 'Add something before the @ symbol.';
-    if (!domain) return 'Add a domain after the @, like gmail.com.';
-    if (!domain.includes('.')) return 'The domain needs an extension, like ".com" or ".edu".';
-    if (!emailPattern.test(v)) return "That email address doesn't look valid — please double-check it.";
-    return '';
-  }
-
-  /* ---------------------------------------------------------
-     2. SIGNUP FORM: VALIDATION + REGISTER NEW USER
-  --------------------------------------------------------- */
-  const signupForm = document.getElementById('signupFormEl');
-
-  if (signupForm) {
-    const nameGroup = document.getElementById('grp-sname');
-    const nameInput = document.getElementById('signupName');
-    const emailGroup = document.getElementById('grp-semail');
-    const emailInput = document.getElementById('signupEmail');
-    const roleGroup = document.getElementById('grp-srole');
-    const roleInput = document.getElementById('signupRole');
-    const passGroup = document.getElementById('grp-spassword');
-    const signupPasswordInput = document.getElementById('signupPassword');
-    const toggleSignupBtn = document.getElementById('toggleSignupPassword');
-    const strengthBar = document.getElementById('passwordStrength');
-    const strengthLabel = document.getElementById('strengthLabel');
-    const checklist = document.getElementById('pwChecklist');
-    const confirmGroup = document.getElementById('grp-sconfirm');
-    const confirmInput = document.getElementById('signupConfirmPassword');
-    const matchIndicator = document.getElementById('matchIndicator');
-    const termsGroup = document.getElementById('grp-sterms');
-    const termsCheckbox = document.getElementById('agreeTerms');
-    const errorBanner = document.getElementById('signupErrorBanner');
-    const successMsg = document.getElementById('signupSuccessMsg');
-
-    if (toggleSignupBtn) {
-      toggleSignupBtn.addEventListener('click', function () {
-        const isHidden = signupPasswordInput.type === 'password';
-        signupPasswordInput.type = isHidden ? 'text' : 'password';
-        toggleSignupBtn.textContent = isHidden ? '🙈' : '👁️';
-      });
+    function v(e) {
+      const t = l(Z.value);
+      return t ? (e ? s(Y, t) : r(Y), !1) : (a(Y), !0)
     }
 
-    function passwordRules(val) {
-      return { len: val.length >= 8, upper: /[A-Z]/.test(val), number: /[0-9]/.test(val), special: /[^A-Za-z0-9]/.test(val) };
+    function f(e) {
+      const t = U.value.trim().length;
+      return 0 === t ? (e ? s(z, "Please enter your password.") : r(z), !1) : t < 6 ? (e ? s(z, "Too short — password needs at least 6 characters (you have " + t + ").") : r(z), !1) : (a(z), !0)
     }
-
-    function updateChecklist(val) {
-      const rules = passwordRules(val);
-      if (checklist) {
-        Object.keys(rules).forEach(function (key) {
-          const li = checklist.querySelector('[data-rule="' + key + '"]');
-          if (li) li.classList.toggle('met', rules[key]);
+    W && W.addEventListener("click", function() {
+      const e = "password" === U.type;
+      U.type = e ? "text" : "password", W.textContent = e ? "🙈" : "👁️"
+    }), Z.addEventListener("input", function() {
+      v(!1)
+    }), Z.addEventListener("blur", function() {
+      v(!0)
+    }), U.addEventListener("input", function() {
+      f(!1)
+    }), U.addEventListener("blur", function() {
+      f(!0)
+    }), E.addEventListener("submit", function(e) {
+      e.preventDefault(), G.style.display = "none";
+      if (![v(!0), f(!0)].every(Boolean)) return;
+      const t = n(Z.value.trim());
+      if (!t) return G.textContent = "❌ No account found with this email. Try again, or sign up for a new account.", G.style.display = "block", void s(Y, "We don't have an account with this email yet.");
+      if (t.password !== U.value) return G.textContent = "❌ That password is incorrect for " + t.email + ". Try again or reset it.", G.style.display = "block", void s(z, "Incorrect password for this account.");
+      H.style.display = "block";
+      const o = document.getElementById("rememberMe").checked,
+        a = JSON.stringify({
+          name: t.name,
+          email: t.email,
+          role: t.role
         });
-      }
-      return rules;
-    }
-
-    function validatePassword(showError) {
-      const val = signupPasswordInput.value;
-      const rules = updateChecklist(val);
-      const metCount = Object.values(rules).filter(Boolean).length;
-
-      strengthBar && strengthBar.classList.remove('weak', 'medium', 'strong');
-      if (strengthLabel) strengthLabel.className = 'strength-label';
-
-      if (val.length === 0) {
-        if (strengthLabel) strengthLabel.textContent = '';
-        if (showError) setFieldError(passGroup, 'Password is required.');
-        else clearFieldState(passGroup);
-        return false;
-      }
-
-      let label = 'Weak', cls = 'weak';
-      if (metCount === 4) { label = 'Strong'; cls = 'strong'; }
-      else if (metCount >= 2) { label = 'Fair'; cls = 'medium'; }
-      strengthBar && strengthBar.classList.add(cls);
-      if (strengthLabel) { strengthLabel.textContent = 'Password strength: ' + label; strengthLabel.classList.add(cls); }
-
-      const ok = rules.len && rules.upper && rules.number && rules.special;
-      if (ok) setFieldValid(passGroup);
-      else if (showError) setFieldError(passGroup, 'Still missing ' + (4 - metCount) + ' requirement(s) above.');
-      else clearFieldState(passGroup);
-      return ok;
-    }
-
-    function validateConfirm(showError) {
-      if (confirmInput.value === '') {
-        if (matchIndicator) { matchIndicator.textContent = ''; matchIndicator.className = 'match-indicator'; }
-        if (showError) setFieldError(confirmGroup, 'Please re-enter your password.');
-        else clearFieldState(confirmGroup);
-        return false;
-      }
-      const ok = confirmInput.value === signupPasswordInput.value;
-      if (matchIndicator) {
-        matchIndicator.textContent = ok ? '✓ Passwords match' : '✕ Passwords don\'t match yet';
-        matchIndicator.className = 'match-indicator ' + (ok ? 'match' : 'mismatch');
-      }
-      if (ok) setFieldValid(confirmGroup);
-      else setFieldError(confirmGroup, "This doesn't match the password above.");
-      return ok;
-    }
-
-    function validateName(showError) {
-      const len = nameInput.value.trim().length;
-      if (len === 0) { if (showError) setFieldError(nameGroup, 'Full name is required.'); else clearFieldState(nameGroup); return false; }
-      if (len < 3) { if (showError) setFieldError(nameGroup, 'That looks too short — enter your full name (min 3 characters).'); else clearFieldState(nameGroup); return false; }
-      setFieldValid(nameGroup);
-      return true;
-    }
-
-    function validateSignupEmail(showError) {
-      const msg = emailObjection(emailInput.value);
-      if (msg) { if (showError) setFieldError(emailGroup, msg); else clearFieldState(emailGroup); return false; }
-      setFieldValid(emailGroup);
-      return true;
-    }
-
-    function validateRole(showError) {
-      const ok = roleInput.value !== '';
-      if (ok) setFieldValid(roleGroup);
-      else if (showError) setFieldError(roleGroup, 'Please select the role that best describes you.');
-      else clearFieldState(roleGroup);
-      return ok;
-    }
-
-    function validateTerms(showError) {
-      const ok = termsCheckbox.checked;
-      if (ok) clearFieldState(termsGroup);
-      else if (showError) setFieldError(termsGroup, 'You must accept the Terms & Privacy Policy to create an account.');
-      return ok;
-    }
-
-    // Live feedback as the user types — not just on submit
-    nameInput.addEventListener('input', function () { validateName(false); });
-    nameInput.addEventListener('blur', function () { validateName(true); });
-    emailInput.addEventListener('input', function () { validateSignupEmail(false); });
-    emailInput.addEventListener('blur', function () { validateSignupEmail(true); });
-    roleInput.addEventListener('change', function () { validateRole(true); });
-    signupPasswordInput.addEventListener('input', function () { validatePassword(false); if (confirmInput.value) validateConfirm(false); });
-    signupPasswordInput.addEventListener('blur', function () { validatePassword(true); });
-    confirmInput.addEventListener('input', function () { validateConfirm(false); });
-    confirmInput.addEventListener('blur', function () { validateConfirm(true); });
-    termsCheckbox.addEventListener('change', function () { validateTerms(true); });
-
-    signupForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      errorBanner.style.display = 'none';
-
-      const results = [
-        validateName(true),
-        validateSignupEmail(true),
-        validateRole(true),
-        validatePassword(true),
-        validateConfirm(true),
-        validateTerms(true)
-      ];
-      if (!results.every(Boolean)) return;
-
-      if (findUserByEmail(emailInput.value.trim())) {
-        errorBanner.textContent = '❌ An account with this email already exists. Please login instead.';
-        errorBanner.style.display = 'block';
-        return;
-      }
-
-      saveUser({
-        name: nameInput.value.trim(),
-        email: emailInput.value.trim(),
-        role: roleInput.value,
-        password: signupPasswordInput.value
-      });
-
-      successMsg.style.display = 'block';
-      signupForm.reset();
-      strengthBar && strengthBar.classList.remove('weak', 'medium', 'strong');
-      if (strengthLabel) strengthLabel.textContent = '';
-      if (checklist) checklist.querySelectorAll('li').forEach(function (li) { li.classList.remove('met'); });
-      if (matchIndicator) { matchIndicator.textContent = ''; matchIndicator.className = 'match-indicator'; }
-      document.querySelectorAll('#signupFormEl .form-group').forEach(clearFieldState);
-
-      setTimeout(() => { window.location.href = 'login.html'; }, 1500);
-    });
+      o ? localStorage.setItem("eduanalytics_current_user", a) : sessionStorage.setItem("eduanalytics_current_user", a), setTimeout(() => {
+        window.location.href = "index.html"
+      }, 1200)
+    })
   }
-
-  /* ---------------------------------------------------------
-     3. LOGIN FORM: VALIDATE AGAINST REGISTERED USERS
-  --------------------------------------------------------- */
-  const loginForm = document.getElementById('loginFormEl');
-
-  if (loginForm) {
-    const togglePasswordBtn = document.getElementById('togglePassword');
-    const emailGroup = document.getElementById('grp-lemail');
-    const emailInput = document.getElementById('loginEmail');
-    const passGroup = document.getElementById('grp-lpassword');
-    const passwordInput = document.getElementById('loginPassword');
-    const errorBanner = document.getElementById('loginErrorBanner');
-    const successMsg = document.getElementById('loginSuccessMsg');
-
-    if (togglePasswordBtn) {
-      togglePasswordBtn.addEventListener('click', function () {
-        const isHidden = passwordInput.type === 'password';
-        passwordInput.type = isHidden ? 'text' : 'password';
-        togglePasswordBtn.textContent = isHidden ? '🙈' : '👁️';
-      });
-    }
-
-    function validateLoginEmail(showError) {
-      const msg = emailObjection(emailInput.value);
-      if (msg) { if (showError) setFieldError(emailGroup, msg); else clearFieldState(emailGroup); return false; }
-      setFieldValid(emailGroup);
-      return true;
-    }
-
-    function validateLoginPassword(showError) {
-      const len = passwordInput.value.trim().length;
-      if (len === 0) { if (showError) setFieldError(passGroup, 'Please enter your password.'); else clearFieldState(passGroup); return false; }
-      if (len < 6) { if (showError) setFieldError(passGroup, 'Too short — password needs at least 6 characters (you have ' + len + ').'); else clearFieldState(passGroup); return false; }
-      setFieldValid(passGroup);
-      return true;
-    }
-
-    emailInput.addEventListener('input', function () { validateLoginEmail(false); });
-    emailInput.addEventListener('blur', function () { validateLoginEmail(true); });
-    passwordInput.addEventListener('input', function () { validateLoginPassword(false); });
-    passwordInput.addEventListener('blur', function () { validateLoginPassword(true); });
-
-    loginForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-      errorBanner.style.display = 'none';
-
-      const results = [validateLoginEmail(true), validateLoginPassword(true)];
-      if (!results.every(Boolean)) return;
-
-      // Distinguish the REAL objection: no such account vs. wrong password
-      const matchedUser = findUserByEmail(emailInput.value.trim());
-
-      if (!matchedUser) {
-        errorBanner.textContent = '❌ No account found with this email. Try again, or sign up for a new account.';
-        errorBanner.style.display = 'block';
-        setFieldError(emailGroup, "We don't have an account with this email yet.");
-        return;
-      }
-
-      if (matchedUser.password !== passwordInput.value) {
-        errorBanner.textContent = '❌ That password is incorrect for ' + matchedUser.email + '. Try again or reset it.';
-        errorBanner.style.display = 'block';
-        setFieldError(passGroup, 'Incorrect password for this account.');
-        return;
-      }
-
-      successMsg.style.display = 'block';
-      const rememberMe = document.getElementById('rememberMe').checked;
-      const userData = JSON.stringify({ name: matchedUser.name, email: matchedUser.email, role: matchedUser.role });
-
-      if (rememberMe) localStorage.setItem('eduanalytics_current_user', userData);
-      else sessionStorage.setItem('eduanalytics_current_user', userData);
-
-      setTimeout(() => { window.location.href = 'index.html'; }, 1200);
-    });
-  }
-
- /* ---------------------------------------------------------
-     4. UPDATE NAVBAR LOGIN/LOGOUT STATE ON ALL PAGES
-  --------------------------------------------------------- */
-  const navAuthLink = document.getElementById('navAuthLink');
-  const currentUserJSON = localStorage.getItem('eduanalytics_current_user') || sessionStorage.getItem('eduanalytics_current_user');
-  const currentUser = currentUserJSON ? JSON.parse(currentUserJSON) : null;
-
-  if (navAuthLink) {
-    if (currentUser) {
-      navAuthLink.textContent = 'Logout';
-      navAuthLink.href = '#';
-      navAuthLink.addEventListener('click', function (e) {
-        e.preventDefault();
-        localStorage.removeItem('eduanalytics_current_user');
-        sessionStorage.removeItem('eduanalytics_current_user');
-        window.location.href = 'login.html';
-      });
-    } else {
-      navAuthLink.textContent = 'Login';
-      navAuthLink.href = 'login.html';
-    }
-  }
-
-  // Personalize dashboard welcome message with actual registered name
-  const welcomeMsg = document.getElementById('welcomeMsg');
-  if (welcomeMsg && currentUser) {
-    welcomeMsg.textContent = `Welcome back, ${currentUser.name} 👋`;
-  }
-  /* ---------------------------------------------------------
-     3. DASHBOARD CARDS / FILTERS / SORT / PAGINATION
-     Week 5: this logic now lives in js/dashboard-week5.js, which
-     also handles pagination, Chart.js charts, CSV/PDF export and
-     the recent-activity feed as one consistent render pipeline.
-  --------------------------------------------------------- */
-
-  /* ---------------------------------------------------------
-     4. SCROLL-SPY: HIGHLIGHT ACTIVE NAV LINK WHILE SCROLLING
-  --------------------------------------------------------- */
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('.nav-link');
-
-  if (sections.length > 0) {
-    window.addEventListener('scroll', function () {
-      let currentSectionId = '';
-
-      sections.forEach(section => {
-        const sectionTop = section.offsetTop - 120;
-        if (window.scrollY >= sectionTop) {
-          currentSectionId = section.getAttribute('id');
-        }
-      });
-
-      if (currentSectionId) {
-        navLinks.forEach(link => {
-          link.classList.remove('active');
-          if (link.getAttribute('href') === `#${currentSectionId}` || link.getAttribute('href').includes(currentSectionId)) {
-            link.classList.add('active');
-          }
-        });
-      }
-    });
-  }
-
+  const p = document.getElementById("navAuthLink"),
+    h = localStorage.getItem("eduanalytics_current_user") || sessionStorage.getItem("eduanalytics_current_user"),
+    I = h ? JSON.parse(h) : null;
+  p && (I ? (p.textContent = "Logout", p.href = "#", p.addEventListener("click", function(e) {
+    e.preventDefault(), localStorage.removeItem("eduanalytics_current_user"), sessionStorage.removeItem("eduanalytics_current_user"), window.location.href = "login.html"
+  })) : (p.textContent = "Login", p.href = "login.html"));
+  const B = document.getElementById("welcomeMsg");
+  B && I && (B.textContent = `Welcome back, ${I.name} 👋`);
+  const L = document.querySelectorAll("section[id]"),
+    w = document.querySelectorAll(".nav-link");
+  L.length > 0 && window.addEventListener("scroll", function() {
+    let e = "";
+    L.forEach(t => {
+      const n = t.offsetTop - 120;
+      window.scrollY >= n && (e = t.getAttribute("id"))
+    }), e && w.forEach(t => {
+      t.classList.remove("active"), (t.getAttribute("href") === `#${e}` || t.getAttribute("href").includes(e)) && t.classList.add("active")
+    })
+  })
 });
