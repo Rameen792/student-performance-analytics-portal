@@ -348,3 +348,4 @@ function syncReportTableView() {
   }).join("");
   e.insertAdjacentHTML("beforeend", t)
 }
+window.EA_isStudentDeleted = isStudentDeleted, window.EA_applyStudentOverride = applyStudentOverride, window.EA_deleteStudentEverywhere = deleteStudentEverywhere, window.EA_undeleteStudent = undeleteStudent, window.EA_updateStudentEverywhere = updateStudentEverywhere, window.EA_getStudentOverrides = getStudentOverrides, renderStudentsTable(), renderPerformanceCards(), renderStudentProfile(), syncReportTableView();
