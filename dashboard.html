@@ -135,11 +135,13 @@
           </div>
           <div class="form-row">
             <div class="form-group" id="grp-class">
-              <label for="studentClass">Class / Grade</label>
+              <label for="studentClass">Semester</label>
               <select id="studentClass">
-                <option value="">Select Class</option>
-                <option>Grade 9</option><option>Grade 10</option>
-                <option>Grade 11</option><option>Grade 12</option>
+                <option value="">Select Semester</option>
+                <option>1st Sem</option><option>2nd Sem</option>
+                <option>3rd Sem</option><option>4th Sem</option>
+                <option>5th Sem</option><option>6th Sem</option>
+                <option>7th Sem</option><option>8th Sem</option>
               </select>
               <span class="error-text">Please select a class.</span>
             </div>
@@ -168,9 +170,6 @@
           <button type="button" class="search-clear" id="dashSearchClear" aria-label="Clear search" hidden>✕</button>
           <kbd class="search-kbd">/</kbd>
         </div>
-        <button type="button" class="filter-toggle-btn" id="filterToggleBtn" aria-expanded="false">
-          ⚙️ Advanced Filters <span class="filter-count-badge" id="filterCountBadge" hidden>0</span>
-        </button>
       </div>
 
       <div class="status-pills" id="statusPills">
@@ -185,8 +184,10 @@
           <label for="dashClassFilter">Class</label>
           <select id="dashClassFilter">
             <option value="all">All Classes</option>
-            <option>Grade 9</option><option>Grade 10</option>
-            <option>Grade 11</option><option>Grade 12</option>
+            <option>1st Sem</option><option>2nd Sem</option>
+            <option>3rd Sem</option><option>4th Sem</option>
+            <option>5th Sem</option><option>6th Sem</option>
+            <option>7th Sem</option><option>8th Sem</option>
           </select>
         </div>
         <div class="filter-field">
@@ -196,6 +197,27 @@
             <span>–</span>
             <input type="number" id="dashMaxScore" placeholder="Max" min="0" max="100" />
           </div>
+        </div>
+
+        <div class="filter-field">
+          <label>Attendance Range (%)</label>
+          <div class="score-range-inputs">
+            <input type="number" id="dashMinAttendance" placeholder="Min" min="0" max="100" />
+            <span>–</span>
+            <input type="number" id="dashMaxAttendance" placeholder="Max" min="0" max="100" />
+          </div>
+        </div>
+        <div class="filter-field">
+          <label for="dashSortBy">Sort By</label>
+          <select id="dashSortBy">
+            <option value="id-asc">Roll No. (A–Z)</option>
+            <option value="id-desc">Roll No. (Z–A)</option>
+            <option value="name-asc">Name (A–Z)</option>
+            <option value="name-desc">Name (Z–A)</option>
+            <option value="score-desc">Score (High → Low)</option>
+            <option value="score-asc">Score (Low → High)</option>
+            <option value="class-asc">Class (A–Z)</option>
+          </select>
         </div>
         <button type="button" class="btn btn-clear btn-sm" id="clearFiltersBtn">Clear All Filters</button>
       </div>
@@ -264,10 +286,12 @@
             <input type="text" id="editStudentName" />
           </div>
           <div class="form-group">
-            <label for="editStudentClass">Class / Grade</label>
+            <label for="editStudentClass">Semester</label>
             <select id="editStudentClass">
-              <option>Grade 9</option><option>Grade 10</option>
-              <option>Grade 11</option><option>Grade 12</option>
+              <option>1st Sem</option><option>2nd Sem</option>
+              <option>3rd Sem</option><option>4th Sem</option>
+              <option>5th Sem</option><option>6th Sem</option>
+              <option>7th Sem</option><option>8th Sem</option>
             </select>
           </div>
         </div>
