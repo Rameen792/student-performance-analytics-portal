@@ -20,7 +20,8 @@
         class: t.class,
         email: t.email || "",
         score: e,
-        status: getStatusFromScore(e)
+        status: getStatusFromScore(e),
+        attendance: t.attendance
       }
     });
     return n().map(function(t) {
@@ -30,7 +31,8 @@
         class: t.class,
         email: t.email || "",
         score: t.score,
-        status: getStatusFromScore(t.score)
+        status: getStatusFromScore(t.score),
+        attendance: t.attendance
       }
     }).concat(t).filter(function(t) {
       return !(window.EA_isStudentDeleted && window.EA_isStudentDeleted(t.id))
@@ -77,11 +79,11 @@
       confirm("Clear all recent activity? This cannot be undone.") && (localStorage.removeItem(e), s())
     })
   }), window.EA_getAllStudents = a, window.EA_isDuplicateRoll = function(t) {
-    const e = String(t || "").trim().toLowerCase();
+    const e = String(t || "").replace(/\s+/g, "").toLowerCase();
     return !!e && a().some(function(t) {
-      return t.id.toLowerCase() === e
+      return t.id.replace(/\s+/g, "").toLowerCase() === e
     })
-  }, window.EA_addExtraStudent = function(e) {
+}, window.EA_addExtraStudent = function(e) {
     const a = n();
     a.unshift(e),
       function(e) {
@@ -109,6 +111,9 @@
       filterCountBadge: document.getElementById("filterCountBadge"),
       statusPills: document.getElementById("statusPills"),
       activeChips: document.getElementById("activeChips"),
+      minAttendance: document.getElementById("dashMinAttendance"),
+      maxAttendance: document.getElementById("dashMaxAttendance"),
+      sortBy: document.getElementById("dashSortBy"),
       role: window.EA_role || "Guest",
       currentUser: window.EA_currentUser || null
     };
@@ -138,7 +143,9 @@
       const t = (e.search && e.search.value || "").trim().toLowerCase(),
         n = e.classFilter ? e.classFilter.value : "all",
         o = e.minScore && "" !== e.minScore.value ? parseFloat(e.minScore.value) : 0,
-        s = e.maxScore && "" !== e.maxScore.value ? parseFloat(e.maxScore.value) : 100;
+        s = e.maxScore && "" !== e.maxScore.value ? parseFloat(e.maxScore.value) : 100,
+        minAtt = e.minAttendance && "" !== e.minAttendance.value ? parseFloat(e.minAttendance.value) : 0,
+        maxAtt = e.maxAttendance && "" !== e.maxAttendance.value ? parseFloat(e.maxAttendance.value) : 100;
       let r = a();
       return "Student" === e.role && e.currentUser && (r = r.filter(function(t) {
         return t.email.toLowerCase() === e.currentUser.email.toLowerCase()
@@ -147,8 +154,9 @@
           r = "" === t || a.includes(t),
           i = "all" === n || e.class === n,
           c = "all" === l || e.status === l,
-          d = e.score >= o && e.score <= s;
-        return r && i && c && d
+          d = e.score >= o && e.score <= s,
+          attOk = null == e.attendance || e.attendance >= minAtt && e.attendance <= maxAtt;
+        return r && i && c && d && attOk
       })
     }
 
@@ -225,7 +233,14 @@
         }), "" === a && "" === o || s.push({
           type: "score",
           label: "Score: " + (a || "0") + "–" + (o || "100") + "%"
-        }), e.activeChips.innerHTML = s.map(function(t) {
+        }), (function() {
+          const minA = e.minAttendance ? e.minAttendance.value : "",
+            maxA = e.maxAttendance ? e.maxAttendance.value : "";
+          "" === minA && "" === maxA || s.push({
+            type: "attendance",
+            label: "Attendance: " + (minA || "0") + "–" + (maxA || "100") + "%"
+          })
+        })(), e.activeChips.innerHTML = s.map(function(t) {
           return '<span class="chip" data-type="' + t.type + '">' + t.label + '<button type="button" data-remove="' + t.type + '" aria-label="Remove filter">✕</button></span>'
         }).join("");
         const r = ("all" !== n ? 1 : 0) + ("" !== a || "" !== o ? 1 : 0);
@@ -295,7 +310,7 @@
       const n = t.target.closest("[data-remove]");
       if (!n) return;
       const a = n.getAttribute("data-remove");
-      "search" === a && e.search && (e.search.value = ""), "class" === a && e.classFilter && (e.classFilter.value = "all"), "score" === a && (e.minScore && (e.minScore.value = ""), e.maxScore && (e.maxScore.value = "")), "status" === a && g("all"), f()
+      "search" === a && e.search && (e.search.value = ""), "class" === a && e.classFilter && (e.classFilter.value = "all"), "score" === a && (e.minScore && (e.minScore.value = ""), e.maxScore && (e.maxScore.value = "")), "attendance" === a && (e.minAttendance && (e.minAttendance.value = ""), e.maxAttendance && (e.maxAttendance.value = "")), "status" === a && g("all"), f()
     });
     const m = window.EA_debounce || function(t, e) {
       let n;
@@ -320,8 +335,11 @@
         e.classList.toggle("card-active", e.getAttribute("data-filter") === t)
       })
     }
-    e.classFilter && e.classFilter.addEventListener("change", f), [e.minScore, e.maxScore].forEach(function(t) {
+    e.classFilter && e.classFilter.addEventListener("change", f), [e.minScore, e.maxScore, e.minAttendance, e.maxAttendance].forEach(function(t) {
       t && t.addEventListener("input", m(f, 250))
+    }), e.sortBy && e.sortBy.addEventListener("change", function() {
+      const v = e.sortBy.value.split("-"), k = v[0], dir = v[1];
+      n.key = "id" === k ? "roll" : k, n.asc = "asc" === dir, f()
     }), e.search && e.search.addEventListener("input", m(f, 200)), e.pageSize && e.pageSize.addEventListener("change", f), e.searchClear && e.searchClear.addEventListener("click", function() {
       e.search.value = "", e.search.focus(), f()
     }), document.addEventListener("keydown", function(t) {
@@ -334,8 +352,8 @@
     }), e.statusPills && e.statusPills.addEventListener("click", function(t) {
       const e = t.target.closest(".pill");
       e && (g(e.getAttribute("data-status")), f())
-    }), e.clearBtn && e.clearBtn.addEventListener("click", function() {
-      e.search && (e.search.value = ""), e.classFilter && (e.classFilter.value = "all"), e.minScore && (e.minScore.value = ""), e.maxScore && (e.maxScore.value = ""), g("all"), f()
+  }), e.clearBtn && e.clearBtn.addEventListener("click", function() {
+      e.search && (e.search.value = ""), e.classFilter && (e.classFilter.value = "all"), e.minScore && (e.minScore.value = ""), e.maxScore && (e.maxScore.value = ""), e.minAttendance && (e.minAttendance.value = ""), e.maxAttendance && (e.maxAttendance.value = ""), e.sortBy && (e.sortBy.value = "id-asc"), g("all"), f()
     }), e.sortHeaders.forEach(function(t) {
       t.addEventListener("click", function() {
         const a = t.getAttribute("data-key");
