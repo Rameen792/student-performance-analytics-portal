@@ -4,14 +4,16 @@
     {
       "label": "Start Live Server",
       "type": "shell",
-      "command": "live-server --port=5500 --no-browser",
+      "command": "npm start",
       "isBackground": true,
       "problemMatcher": {
-        "pattern": { "regexp": "." },
+        "pattern": {
+          "regexp": "^(Serving)"
+        },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": ".",
-          "endsPattern": "Serving"
+          "beginsPattern": "Serving",
+          "endsPattern": "Ready for changes"
         }
       }
     }
