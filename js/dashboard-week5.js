@@ -30,10 +30,11 @@
     localStorage.setItem(EXTRA_KEY, JSON.stringify(list));
   }
 
-  function addExtraStudent(student) {
+ function addExtraStudent(student) {
     const list = getExtraStudents();
     list.unshift(student);
     saveExtraStudents(list);
+   if (window.EA_undeleteStudent) window.EA_undeleteStudent(student.id);
   }
 
   // Returns one normalized array: { id, name, class, email, score, status }

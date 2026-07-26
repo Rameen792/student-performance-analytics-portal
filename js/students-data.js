@@ -108,6 +108,11 @@ function getGradeLetter(score) {
 window.EA_isStudentDeleted = isStudentDeleted;
 window.EA_applyStudentOverride = applyStudentOverride;
 window.EA_deleteStudentEverywhere = deleteStudentEverywhere;
+function undeleteStudent(id) {
+  const ids = getDeletedStudentIds().filter(function (d) { return String(d).toLowerCase() !== String(id).toLowerCase(); });
+  saveDeletedStudentIds(ids);
+}
+window.EA_undeleteStudent = undeleteStudent;
 window.EA_updateStudentEverywhere = updateStudentEverywhere;
 window.EA_getStudentOverrides = getStudentOverrides;
 
