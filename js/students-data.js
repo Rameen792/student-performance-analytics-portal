@@ -1,7 +1,7 @@
 const STUDENTS_DATA = [{
   id: "STU-1001",
   name: "Ayesha Khan",
-  class: "Grade 10",
+  class: "2nd Sem",
   email: "ayesha.khan@eduanalytics.edu",
   attendance: 96,
   joined: "Aug 2023",
@@ -14,7 +14,7 @@ const STUDENTS_DATA = [{
 }, {
   id: "STU-1002",
   name: "Bilal Ahmed",
-  class: "Grade 9",
+  class: "1st Sem",
   email: "bilal.ahmed@eduanalytics.edu",
   attendance: 88,
   joined: "Jan 2024",
@@ -27,7 +27,7 @@ const STUDENTS_DATA = [{
 }, {
   id: "STU-1003",
   name: "Sara Malik",
-  class: "Grade 11",
+  class: "3rd Sem",
   email: "sara.malik@eduanalytics.edu",
   attendance: 79,
   joined: "Sep 2022",
@@ -40,7 +40,7 @@ const STUDENTS_DATA = [{
 }, {
   id: "STU-1004",
   name: "Hamza Tariq",
-  class: "Grade 12",
+  class: "4th Sem",
   email: "hamza.tariq@eduanalytics.edu",
   attendance: 94,
   joined: "Aug 2021",
@@ -53,7 +53,7 @@ const STUDENTS_DATA = [{
 }, {
   id: "STU-1005",
   name: "Zainab Fatima",
-  class: "Grade 10",
+  class: "2nd Sem",
   email: "zainab.fatima@eduanalytics.edu",
   attendance: 85,
   joined: "Mar 2023",
