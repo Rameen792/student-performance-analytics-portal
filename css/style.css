@@ -2130,3 +2130,157 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
 .btn:active {
   transform: scale(0.94);
 }
+/* ==========================================================================
+   WEEK 7
+   ========================================================================== */
+
+/* ---- Sidebar: from flat list to a proper premium nav panel ---- */
+.sidebar {
+  background: linear-gradient(180deg, var(--bg-white), var(--bg-light));
+  border-right: none;
+  box-shadow: 2px 0 12px rgba(99, 102, 241, 0.06);
+  padding: 20px 14px;
+  position: sticky;
+  top: 70px;
+  height: calc(100vh - 70px);
+  overflow-y: auto;
+}
+
+.sidebar::before {
+  content: 'MENU';
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  padding: 6px 14px 14px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-menu li a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border-left: none;
+  font-size: 0.92rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-menu li a::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--gradient-brand);
+  border-radius: 0 4px 4px 0;
+  transform: scaleY(0);
+  transition: transform 0.25s ease;
+}
+
+.sidebar-menu li a:hover {
+  background: rgba(99, 102, 241, 0.08);
+  color: var(--primary-color);
+  transform: translateX(6px);
+  padding-left: 20px;
+}
+
+.sidebar-menu li a.active {
+  background: var(--gradient-brand);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+  transform: translateX(0);
+}
+
+.sidebar-menu li a.active::before {
+  transform: scaleY(1);
+  background: #fff;
+}
+
+.sidebar-menu li a.active:hover {
+  transform: translateX(0);
+  padding-left: 16px;
+}
+
+/* ---- Loading spinner (fills the Week 7 "loading interface" gap) ---- */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+.spinner-dark {
+  border: 2.5px solid rgba(99,102,241,0.2);
+  border-top-color: var(--primary-color);
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn.is-loading {
+  pointer-events: none;
+  opacity: 0.85;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---- Nav links: subtle hover pill (extra premium touch) ---- */
+.nav-link {
+  border-radius: 8px;
+}
+.nav-link:hover {
+  background: rgba(99, 102, 241, 0.07);
+}
+
+/* ---- Custom scrollbar (whole app feels more designed) ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-light); }
+::-webkit-scrollbar-thumb {
+  background: var(--gradient-brand);
+  border-radius: 10px;
+  border: 2px solid var(--bg-light);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--primary-dark); }
+
+/* ---- Text selection color ---- */
+::selection {
+  background: rgba(99, 102, 241, 0.25);
+  color: var(--text-dark);
+}
+
+/* ---- Mobile: sidebar becomes a clean top strip of scrollable chips instead of vanishing ---- */
+@media (max-width: 900px) {
+  .sidebar {
+    display: flex;
+    flex-direction: row;
+    position: static;
+    height: auto;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 12px 14px;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.06);
+  }
+  .sidebar::before { display: none; }
+  .sidebar-menu {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .sidebar-menu li a {
+    white-space: nowrap;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+  }
+  .sidebar-menu li a:hover { transform: none; padding-left: 14px; }
+}
