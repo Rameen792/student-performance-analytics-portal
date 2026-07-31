@@ -322,6 +322,9 @@ document.addEventListener("DOMContentLoaded", function() {
       const t = n(Z.value.trim());
       if (!t) return G.textContent = "❌ No account found with this email. Try again, or sign up for a new account.", G.style.display = "block", void s(Y, "We don't have an account with this email yet.");
       if (t.password !== U.value) return G.textContent = "❌ That password is incorrect for " + t.email + ". Try again or reset it.", G.style.display = "block", void s(z, "Incorrect password for this account.");
+      const loginBtn = E.querySelector('button[type="submit"]');
+      loginBtn.classList.add('is-loading');
+      loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
       H.style.display = "block";
       const o = document.getElementById("rememberMe").checked,
         a = JSON.stringify({
