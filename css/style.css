@@ -2284,3 +2284,141 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
   }
   .sidebar-menu li a:hover { transform: none; padding-left: 14px; }
 }
+/* ===================== WEEK 7: SITE-WIDE POLISH LAYER ===================== */
+
+/* Smooth everything by default — no more jerky hovers anywhere */
+a, button, input, select, textarea, .btn, .stat-card, .nav-link,
+.card, tr, .filter-chip, .view-toggle button {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Buttons: gradient shift + lift + soft glow on hover */
+.btn-primary {
+  background: var(--gradient-brand);
+  background-size: 200% 200%;
+  background-position: 0% 50%;
+}
+.btn-primary:hover {
+  background-position: 100% 50%;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+.btn-primary:active { transform: translateY(0) scale(0.98); }
+
+.btn-outline:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Stat cards: lift + top gradient bar sweep-in */
+.stat-card {
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 4px;
+  background: var(--gradient-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s ease;
+}
+.stat-card:hover::after { transform: scaleX(1); }
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-glow);
+}
+.stat-card .stat-icon {
+  transition: transform 0.35s ease;
+  display: inline-block;
+}
+.stat-card:hover .stat-icon {
+  transform: scale(1.15) rotate(-4deg);
+}
+
+/* Nav links: animated underline instead of flat color change */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -4px;
+  width: 0; height: 2px;
+  background: var(--gradient-brand);
+  transition: width 0.3s ease;
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+/* Table rows: subtle highlight + slide, feels alive instead of static */
+tbody tr {
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+tbody tr:hover {
+  background: rgba(99, 102, 241, 0.06);
+  transform: translateX(2px);
+}
+
+/* Form inputs: glowing focus ring instead of default browser outline */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+/* Filter chips / toggle buttons: pop on select */
+.filter-chip.active, .view-toggle button.active {
+  box-shadow: var(--shadow-md);
+  transform: scale(1.04);
+}
+
+/* Page container: gentle fade-up on every page load, not just index */
+body { animation: pageFadeIn 0.45s ease; }
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cards / sections: consistent breathing room so nothing feels cramped */
+.stats-grid, .dashboard-main > section, .table-wrapper, .card {
+  margin-bottom: 32px;
+}
+
+/* Gradient scrollbar — small detail, matches brand instead of default grey */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--gradient-brand);
+  border-radius: 10px;
+}
+
+/* Headings: slightly more expressive font weight + letter spacing */
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+/* Notification bell + badge: gentle pulse so it draws the eye, not jarring */
+.notif-badge {
+  animation: notifPulse 1.8s ease-in-out infinite;
+}
+@keyframes notifPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Sidebar links: smooth slide-in indicator */
+.sidebar-menu li a {
+  position: relative;
+  transition: padding-left 0.25s ease, color 0.25s ease;
+}
+.sidebar-menu li a:hover,
+.sidebar-menu li a.active {
+  padding-left: 6px;
+  color: var(--primary-color);
+}
