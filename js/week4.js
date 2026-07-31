@@ -162,6 +162,10 @@
       icon: "📄",
       label: "Performance Reports"
     }, {
+      href: "report-builder.html",
+      icon: "🧾",
+      label: "Report Builder"
+    }, {
       href: "profile-settings.html",
       icon: "⚙️",
       label: "My Profile"
@@ -182,6 +186,10 @@
       href: "report.html",
       icon: "📄",
       label: "Performance Reports"
+    }, {
+      href: "report-builder.html",
+      icon: "🧾",
+      label: "Report Builder"
     }, {
       href: "profile-settings.html",
       icon: "⚙️",
