@@ -116,36 +116,6 @@ img { max-width: 100%; display: block; }
   gap: 30px;
 }
 
-.nav-link {
-  font-weight: 500;
-  color: var(--text-dark);
-  padding: 8px 4px;
-  padding-left: 30px;
-  position: relative;
-  transition: var(--transition);
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 17px;
-  width: 0;
-  height: 2px;
-  background: var(--primary-color);
-  transition: var(--transition);
-}
-
-.nav-link:hover::after,
-.nav-link.active::after {
-  width: 100%;
-}
-
-.nav-link:hover,
-.nav-link.active {
-  color: var(--primary-color);
-}
-
 .hamburger {
   display: none;
   flex-direction: column;
@@ -1306,12 +1276,6 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   50% { filter: drop-shadow(0 0 10px rgba(99,102,241,0.35)); }
 }
 
-.nav-link::after {
-  background: var(--gradient-brand);
-  height: 3px;
-  border-radius: 3px;
-}
-.nav-link:hover { transform: translateY(-1px); }
 
 /* ---- Buttons: gradient + shine sweep ---- */
 .btn-primary {
@@ -2119,17 +2083,7 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
 .btn-outline {
   transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease;
 }
-.nav-link {
-  transition: transform 0.2s ease, color 0.3s ease;
-}
-.nav-link:hover {
-  transform: translateY(-2px);
-}
-.toggle-password:active,
-.icon-btn:active,
-.btn:active {
-  transform: scale(0.94);
-}
+
 /* ==========================================================================
    WEEK 7
    ========================================================================== */
@@ -2234,13 +2188,7 @@ body[data-role-view="Student"] .stat-card { border-top-color: var(--secondary-co
   gap: 8px;
 }
 
-/* ---- Nav links: subtle hover pill (extra premium touch) ---- */
-.nav-link {
-  border-radius: 8px;
-}
-.nav-link:hover {
-  background: rgba(99, 102, 241, 0.07);
-}
+
 
 /* ---- Custom scrollbar (whole app feels more designed) ---- */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
@@ -2338,23 +2286,6 @@ a, button, input, select, textarea, .btn, .stat-card, .nav-link,
   transform: scale(1.15) rotate(-4deg);
 }
 
-/* Nav links: animated underline instead of flat color change */
-.nav-link {
-  position: relative;
-}
-.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0; bottom: -4px;
-  width: 0; height: 2px;
-  background: var(--gradient-brand);
-  transition: width 0.3s ease;
-}
-.nav-link:hover::after,
-.nav-link.active::after {
-  width: 100%;
-}
-
 /* Table rows: subtle highlight + slide, feels alive instead of static */
 tbody tr {
   transition: background 0.2s ease, transform 0.2s ease;
@@ -2420,5 +2351,41 @@ h1, h2, h3 {
 .sidebar-menu li a:hover,
 .sidebar-menu li a.active {
   padding-left: 6px;
+  color: var(--primary-color);
+}
+.nav-link {
+  font-weight: 500;
+  color: var(--text-dark);
+  padding: 8px 30px;
+  position: relative;
+  transition: var(--transition);
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 30px;
+  right: 4px;
+  bottom: -4px;
+  height: 2px;
+  background: var(--gradient-brand);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--primary-color);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+}
+
+.nav-link:focus-visible {
+  outline: none;
+  box-shadow: none;
   color: var(--primary-color);
 }
