@@ -115,7 +115,8 @@ img { max-width: 100%; display: block; }
   display: flex;
   gap: 30px;
   position: absolute;
-  left: 50%;
+  left: 45%;
+  top: 30%;
   transform: translateX(-50%);
 }
 
