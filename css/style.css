@@ -2392,3 +2392,66 @@ h1, h2, h3 {
   box-shadow: none;
   color: var(--primary-color);
 }
+/* ---- Report Page: Table glow bar + row stagger entrance ---- */
+.table-wrapper {
+  position: relative;
+}
+.table-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gradient-brand);
+  z-index: 1;
+}
+#reportTable tbody tr {
+  animation: rowFadeIn 0.5s ease backwards;
+}
+#reportTable tbody tr:nth-child(1) { animation-delay: 0.05s; }
+#reportTable tbody tr:nth-child(2) { animation-delay: 0.1s; }
+#reportTable tbody tr:nth-child(3) { animation-delay: 0.15s; }
+#reportTable tbody tr:nth-child(4) { animation-delay: 0.2s; }
+#reportTable tbody tr:nth-child(5) { animation-delay: 0.25s; }
+@keyframes rowFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Report Page: Card View stagger entrance ---- */
+.performance-cards-grid .performance-card {
+  animation: cardRise 0.6s ease backwards;
+}
+.performance-cards-grid .performance-card:nth-child(1) { animation-delay: 0.05s; }
+.performance-cards-grid .performance-card:nth-child(2) { animation-delay: 0.12s; }
+.performance-cards-grid .performance-card:nth-child(3) { animation-delay: 0.19s; }
+.performance-cards-grid .performance-card:nth-child(4) { animation-delay: 0.26s; }
+.performance-cards-grid .performance-card:nth-child(5) { animation-delay: 0.33s; }
+.performance-cards-grid .performance-card:nth-child(6) { animation-delay: 0.4s; }
+
+/* ---- Contact Page: Info cards stagger entrance + icon hover bounce ---- */
+.contact-grid .feature-card {
+  animation: cardRise 0.6s ease backwards;
+}
+.contact-grid .feature-card:nth-child(1) { animation-delay: 0.05s; }
+.contact-grid .feature-card:nth-child(2) { animation-delay: 0.15s; }
+.contact-grid .feature-card:nth-child(3) { animation-delay: 0.25s; }
+.contact-grid .icon-box {
+  transition: transform 0.35s ease;
+}
+.contact-grid .feature-card:hover .icon-box {
+  transform: scale(1.12) rotate(-6deg);
+}
+
+/* ---- Contact Page: Form card gradient top bar + entrance ---- */
+.contact-grid .form-container {
+  position: relative;
+  overflow: hidden;
+  animation: authCardIn 0.5s cubic-bezier(.2,.8,.2,1);
+}
+.contact-grid .form-container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--gradient-brand);
+}
