@@ -958,11 +958,10 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
 .topbar-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 18px;
   margin-left: auto;
   margin-right: 18px;
 }
-
 .icon-btn {
   background: var(--bg-light);
   border: 1.5px solid var(--border-color);
@@ -1067,6 +1066,7 @@ select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
   font-weight: 700;
   color: #fff;
   white-space: nowrap;
+  margin-left: 4px;
 }
 .role-badge-administrator { background: var(--gradient-pretty); }
 .role-badge-teacher { background: var(--gradient-brand); }
@@ -2348,10 +2348,13 @@ h1, h2, h3 {
   position: relative;
   transition: padding-left 0.25s ease, color 0.25s ease;
 }
-.sidebar-menu li a:hover,
-.sidebar-menu li a.active {
+.sidebar-menu li a:hover {
   padding-left: 6px;
   color: var(--primary-color);
+}
+.sidebar-menu li a.active {
+  padding-left: 6px;
+  color: #fff;
 }
 .nav-link {
   font-weight: 500;

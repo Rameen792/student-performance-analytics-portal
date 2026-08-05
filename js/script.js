@@ -95,9 +95,14 @@ document.addEventListener("DOMContentLoaded", function() {
       m = document.getElementById("grp-cmessage"),
       g = document.getElementById("contactMessage");
     if (r.value.trim().length < 3 ? (o(a), t = !1) : s(a), n(c.value.trim()) ? s(l) : (o(l), t = !1), "" === i.value ? (o(d), t = !1) : s(d), g.value.trim().length < 10 ? (o(m), t = !1) : s(m), !t) return;
+  const contactBtn = u.querySelector('button[type="submit"]');
+    contactBtn.classList.add('is-loading');
+    contactBtn.innerHTML = '<span class="spinner"></span> Sending...';
     const y = document.getElementById("contactSuccessMsg");
     y.style.display = "block", setTimeout(() => {
-      y.style.display = "none"
+      y.style.display = "none";
+      contactBtn.classList.remove('is-loading');
+      contactBtn.textContent = 'Send Message';
     }, 3500), u.reset()
   });
   const m = document.getElementById("applyFilterBtn");
@@ -270,6 +275,9 @@ document.addEventListener("DOMContentLoaded", function() {
       o.preventDefault(), $.style.display = "none";
       if ([u(!0), m(!0), g(!0), d(!0), i(!0), y(!0)].every(Boolean)) {
         if (n(C.value.trim())) return $.textContent = "❌ An account with this email already exists. Please login instead.", void($.style.display = "block");
+        const signupBtn = c.querySelector('button[type="submit"]');
+signupBtn.classList.add('is-loading');
+signupBtn.innerHTML = '<span class="spinner"></span> Creating account...';
         !function(n) {
           const o = t();
           o.push(n), localStorage.setItem(e, JSON.stringify(o))
