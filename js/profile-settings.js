@@ -250,5 +250,15 @@ document.addEventListener('DOMContentLoaded', function () {
   emailNotifSwitch.addEventListener('change', function () {
     localStorage.setItem(EMAIL_NOTIF_KEY, emailNotifSwitch.checked ? 'on' : 'off');
   });
-
+document.querySelectorAll('.toggle-password').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      const targetId = btn.getAttribute('data-target');
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      const isHidden = input.type === 'password';
+      input.type = isHidden ? 'text' : 'password';
+      btn.textContent = isHidden ? '🙈' : '👁️';
+      btn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+    });
+  });
 });
