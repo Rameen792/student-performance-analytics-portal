@@ -509,4 +509,450 @@
     }) : (L(), u())
   })
 }();
+/* ==========================================================================
+   UI POLISH — LIVE ROLE HERO STATISTICS
+   --------------------------------------------------------------------------
+   PURPOSE:
+   - Keeps the purple Administrator hero statistics synchronized.
+   - Updates Total Users, Student Records and Flagged At Risk.
+   - Adds a small number-change animation.
+   - Does NOT modify the existing student CRUD logic.
+   ========================================================================== */
+
+(function () {
+
+  "use strict";
+
+
+  /* =========================================================================
+     1. GET CURRENT STUDENT DATA
+     -------------------------------------------------------------------------
+     We use the existing EA_getAllStudents() function.
+
+     This is important because it already knows about:
+     - original students
+     - added students
+     - deleted students
+     - edited students
+     - overrides
+     ========================================================================= */
+
+  function getStudents() {
+
+    if (typeof window.EA_getAllStudents === "function") {
+
+      return window.EA_getAllStudents();
+
+    }
+
+    return [];
+
+  }
+
+
+  /* =========================================================================
+     2. GET CURRENT USERS
+     ========================================================================= */
+
+  function getUsers() {
+
+    try {
+
+      return JSON.parse(
+        localStorage.getItem("eduanalytics_users") || "[]"
+      );
+
+    } catch (error) {
+
+      return [];
+
+    }
+
+  }
+
+
+  /* =========================================================================
+     3. CALCULATE LIVE HERO NUMBERS
+     ========================================================================= */
+
+  function calculateHeroStats() {
+
+    const students = getStudents();
+
+    const users = getUsers();
+
+
+    const atRiskStudents = students.filter(function (student) {
+
+      return student.status === "At Risk";
+
+    });
+
+
+    return {
+
+      users: users.length,
+
+      students: students.length,
+
+      atRisk: atRiskStudents.length
+
+    };
+
+  }
+
+
+  /* =========================================================================
+     4. ANIMATE A NUMBER
+     ========================================================================= */
+
+  function animateHeroNumber(element, newValue) {
+
+    if (!element) {
+      return;
+    }
+
+
+    const oldValue = parseInt(
+      element.textContent.trim(),
+      10
+    );
+
+
+    /*
+     * If the existing value is not numeric, simply display the value.
+     */
+    if (Number.isNaN(oldValue)) {
+
+      element.textContent = newValue;
+
+      return;
+
+    }
+
+
+    /*
+     * No animation if nothing changed.
+     */
+    if (oldValue === newValue) {
+
+      return;
+
+    }
+
+
+    const duration = 550;
+
+    const startTime = performance.now();
+
+
+    /*
+     * Add visual pulse.
+     *
+     * Remove first so the animation can replay every time.
+     */
+    element.classList.remove(
+      "ea-hero-number-change"
+    );
+
+
+    void element.offsetWidth;
+
+
+    element.classList.add(
+      "ea-hero-number-change"
+    );
+
+
+    function updateNumber(currentTime) {
+
+      const progress = Math.min(
+
+        (currentTime - startTime) / duration,
+
+        1
+
+      );
+
+
+      /*
+       * Smooth ease-out.
+       */
+      const easedProgress =
+        1 - Math.pow(1 - progress, 3);
+
+
+      const currentValue = Math.round(
+
+        oldValue +
+        (newValue - oldValue) * easedProgress
+
+      );
+
+
+      element.textContent = currentValue;
+
+
+      if (progress < 1) {
+
+        requestAnimationFrame(updateNumber);
+
+      } else {
+
+        element.textContent = newValue;
+
+      }
+
+    }
+
+
+    requestAnimationFrame(updateNumber);
+
+  }
+
+
+  /* =========================================================================
+     5. UPDATE PURPLE ADMINISTRATOR HERO
+     ========================================================================= */
+
+  function updateHero() {
+
+    /*
+     * Only Administrator uses these three numbers.
+     *
+     * Teacher and Student heroes are left untouched.
+     */
+    if (window.EA_role !== "Administrator") {
+
+      return;
+
+    }
+
+
+    const hero = document.getElementById(
+      "roleHeroMount"
+    );
+
+
+    if (!hero) {
+
+      return;
+
+    }
+
+
+    const stats = hero.querySelectorAll(
+      ".role-hero-stat strong"
+    );
+
+
+    /*
+     * Administrator hero has exactly 3 statistics:
+     *
+     * 0 = Total Users
+     * 1 = Student Records
+     * 2 = Flagged At Risk
+     */
+    if (stats.length < 3) {
+
+      return;
+
+    }
+
+
+    const values = calculateHeroStats();
+
+
+    animateHeroNumber(
+      stats[0],
+      values.users
+    );
+
+
+    animateHeroNumber(
+      stats[1],
+      values.students
+    );
+
+
+    animateHeroNumber(
+      stats[2],
+      values.atRisk
+    );
+
+
+    /*
+     * Add the live indicator only once.
+     */
+    addLiveIndicator();
+
+  }
+
+
+  /* =========================================================================
+     6. ADD "LIVE DATA" INDICATOR
+     ========================================================================= */
+
+  function addLiveIndicator() {
+
+    const hero = document.getElementById(
+      "roleHeroMount"
+    );
+
+
+    if (!hero) {
+
+      return;
+
+    }
+
+
+    if (
+      hero.querySelector(".ea-live-status")
+    ) {
+
+      return;
+
+    }
+
+
+    const statsContainer = hero.querySelector(
+      ".role-hero-stats"
+    );
+
+
+    if (!statsContainer) {
+
+      return;
+
+    }
+
+
+    const indicator =
+      document.createElement("div");
+
+
+    indicator.className =
+      "ea-live-status";
+
+
+    indicator.innerHTML =
+      '<span class="ea-live-status-dot"></span>' +
+      '<span>Live data</span>';
+
+
+    statsContainer.appendChild(
+      indicator
+    );
+
+  }
+
+
+  /* =========================================================================
+     7. WATCH FOR STUDENT CHANGES
+     -------------------------------------------------------------------------
+     Your existing script already dispatches "studentAdded".
+
+     dashboard-week5.js also refreshes after edit/delete.
+
+     We simply listen to the existing event here.
+     ========================================================================= */
+
+  document.addEventListener(
+    "studentAdded",
+    function () {
+
+      setTimeout(
+        updateHero,
+        100
+      );
+
+    }
+  );
+
+
+  /* =========================================================================
+     8. INITIAL UPDATE
+     ========================================================================= */
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+      /*
+       * week4.js creates the role hero during DOMContentLoaded.
+       *
+       * A tiny delay lets that existing code finish first.
+       */
+      setTimeout(
+        updateHero,
+        300
+      );
+
+    }
+  );
+
+
+  /* =========================================================================
+     9. LIVE CHECK
+     -------------------------------------------------------------------------
+     This is intentionally lightweight.
+     We only compare 3 numbers once per second.
+
+     This also catches:
+     - user removal
+     - student deletion
+     - student editing
+     - changes made by other existing dashboard logic
+     ========================================================================= */
+
+  let previousSignature = "";
+
+
+  setInterval(
+    function () {
+
+      if (window.EA_role !== "Administrator") {
+
+        return;
+
+      }
+
+
+      const stats =
+        calculateHeroStats();
+
+
+      const signature =
+        stats.users +
+        "|" +
+        stats.students +
+        "|" +
+        stats.atRisk;
+
+
+      /*
+       * Do nothing if nothing changed.
+       */
+      if (
+        signature === previousSignature
+      ) {
+
+        return;
+
+      }
+
+
+      previousSignature =
+        signature;
+
+
+      updateHero();
+
+    },
+    1000
+  );
+
+
+})();
     

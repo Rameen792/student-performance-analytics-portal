@@ -493,3 +493,415 @@ mark.search-highlight {
 .modal-close:hover { color: var(--danger-color); }
 .modal-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
 body.modal-open { overflow: hidden; }
+/* ==========================================================================
+   UI POLISH — DASHBOARD MOTION
+   --------------------------------------------------------------------------
+   Added visual enhancements only.
+   Existing dashboard styles above remain untouched.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. PURPLE ROLE HERO
+   --------------------------------------------------------------------------
+   Adds depth, shine and movement to the existing role hero.
+   ========================================================================== */
+
+.role-hero {
+  position: relative;
+  overflow: hidden;
+
+  /* Keep the existing design, just make it feel more alive */
+  isolation: isolate;
+
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+
+/* Soft moving light across the hero */
+
+.role-hero::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -35%;
+
+  width: 35%;
+  height: 100%;
+
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.13),
+    transparent
+  );
+
+  transform: skewX(-18deg);
+
+  pointer-events: none;
+
+  animation: eaHeroShine 6s ease-in-out infinite;
+}
+
+
+/* Decorative glow */
+
+.role-hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 220px;
+  height: 220px;
+
+  right: -80px;
+  bottom: -130px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.10);
+
+  filter: blur(8px);
+
+  pointer-events: none;
+
+  animation: eaHeroGlow 5s ease-in-out infinite alternate;
+}
+
+
+@keyframes eaHeroShine {
+
+  0% {
+    left: -40%;
+  }
+
+  45%,
+  100% {
+    left: 125%;
+  }
+
+}
+
+
+@keyframes eaHeroGlow {
+
+  from {
+    transform: scale(0.9);
+    opacity: 0.5;
+  }
+
+  to {
+    transform: scale(1.2);
+    opacity: 0.9;
+  }
+
+}
+
+
+/* Keep actual hero content above decorative layers */
+
+.role-hero > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* ==========================================================================
+   2. HERO STAT CARDS
+   ========================================================================== */
+
+.role-hero-stat {
+  position: relative;
+
+  overflow: hidden;
+
+  transition:
+    transform 0.3s cubic-bezier(.22, 1, .36, 1),
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+
+/* Hover = visible interaction */
+
+.role-hero-stat:hover {
+  transform: translateY(-6px) scale(1.025);
+
+  background: rgba(255, 255, 255, 0.18);
+
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.10);
+}
+
+
+/* Number */
+
+.role-hero-stat strong {
+  display: inline-block;
+
+  font-variant-numeric: tabular-nums;
+
+  transition:
+    transform 0.25s ease;
+}
+
+
+.role-hero-stat:hover strong {
+  transform: scale(1.08);
+}
+
+
+/* ==========================================================================
+   3. LIVE NUMBER UPDATE
+   --------------------------------------------------------------------------
+   dashboard-week5.js adds this class when hero numbers change.
+   ========================================================================== */
+
+.ea-hero-number-change {
+  animation:
+    eaHeroNumberPop 0.55s cubic-bezier(.22, 1, .36, 1);
+}
+
+
+@keyframes eaHeroNumberPop {
+
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.22);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+
+/* ==========================================================================
+   4. LIVE DATA INDICATOR
+   ========================================================================== */
+
+.ea-live-status {
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 12px;
+
+  padding: 6px 11px;
+
+  border-radius: 999px;
+
+  color: rgba(255, 255, 255, 0.92);
+
+  background: rgba(255, 255, 255, 0.10);
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  font-size: 0.72rem;
+
+  font-weight: 600;
+
+  backdrop-filter: blur(8px);
+
+}
+
+
+/* Green live dot */
+
+.ea-live-status-dot {
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #4ade80;
+
+  animation: eaLiveDot 1.8s ease-out infinite;
+
+}
+
+
+@keyframes eaLiveDot {
+
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55);
+  }
+
+  70% {
+    box-shadow: 0 0 0 7px rgba(74, 222, 128, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+
+}
+
+
+/* ==========================================================================
+   5. CHART ENTRANCE
+   --------------------------------------------------------------------------
+   Existing Chart.js remains responsible for the chart itself.
+   This only animates the chart container/canvas visually.
+   ========================================================================== */
+
+.chart-card {
+  animation:
+    eaChartCardIn 0.65s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+
+/* Stagger the three analytics cards */
+
+.chart-card:nth-child(1) {
+  animation-delay: 180ms;
+}
+
+.chart-card:nth-child(2) {
+  animation-delay: 300ms;
+}
+
+.chart-card:nth-child(3) {
+  animation-delay: 420ms;
+}
+
+
+@keyframes eaChartCardIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+}
+
+
+/* ==========================================================================
+   6. CHART HOVER
+   ========================================================================== */
+
+.chart-card:hover {
+  transform: translateY(-5px);
+
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.10);
+}
+
+
+.chart-card canvas {
+  transition:
+    transform 0.35s ease;
+}
+
+
+.chart-card:hover canvas {
+  transform: scale(1.015);
+}
+
+
+/* ==========================================================================
+   7. TABLE ROW ENTRANCE
+   -------------------------------------------------------------------------- */
+
+#studentsTableBody tr {
+  animation:
+    eaTableRowIn 0.35s ease both;
+}
+
+
+#studentsTableBody tr:nth-child(1) {
+  animation-delay: 30ms;
+}
+
+#studentsTableBody tr:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+#studentsTableBody tr:nth-child(3) {
+  animation-delay: 90ms;
+}
+
+#studentsTableBody tr:nth-child(4) {
+  animation-delay: 120ms;
+}
+
+#studentsTableBody tr:nth-child(5) {
+  animation-delay: 150ms;
+}
+
+#studentsTableBody tr:nth-child(6) {
+  animation-delay: 180ms;
+}
+
+#studentsTableBody tr:nth-child(7) {
+  animation-delay: 210ms;
+}
+
+#studentsTableBody tr:nth-child(8) {
+  animation-delay: 240ms;
+}
+
+#studentsTableBody tr:nth-child(9) {
+  animation-delay: 270ms;
+}
+
+#studentsTableBody tr:nth-child(10) {
+  animation-delay: 300ms;
+}
+
+
+@keyframes eaTableRowIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+/* ==========================================================================
+   8. ACCESSIBILITY
+   --------------------------------------------------------------------------
+   Respect users who prefer reduced motion.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .role-hero,
+  .role-hero::before,
+  .role-hero::after,
+  .role-hero-stat,
+  .chart-card,
+  #studentsTableBody tr,
+  .ea-live-status-dot,
+  .ea-hero-number-change {
+
+    animation: none !important;
+    transition: none !important;
+
+  }
+
+}
