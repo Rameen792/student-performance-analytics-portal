@@ -2487,8 +2487,8 @@ h1, h2, h3 {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 18px;
-  background: #16324F;
+  gap: 16px;
+  background: #ffffff;
   transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 #appLoader.hidden {
@@ -2496,25 +2496,32 @@ h1, h2, h3 {
   visibility: hidden;
   pointer-events: none;
 }
-#appLoader .app-loader-bg-text {
-  position: absolute;
-  font-size: 34px;
-  font-weight: 800;
-  color: rgba(255,255,255,0.06);
-  letter-spacing: 1px;
-}
 #appLoader .app-loader-ring {
-  width: 64px;
-  height: 64px;
-  border: 5px solid rgba(255,255,255,0.15);
-  border-top-color: #C79A2B;
+  width: 46px;
+  height: 46px;
+  border: 4px solid #e2e2e2;
+  border-top-color: #333;
   border-radius: 50%;
-  animation: spin 0.9s linear infinite;
+  animation: spin 0.8s linear infinite;
 }
 #appLoader .app-loader-text {
-  color: #fff;
+  color: #333;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 15px;
   letter-spacing: 0.3px;
-  opacity: 0.9;
+}
+/* Eye icon swap transition */
+#togglePassword, #toggleSignupPassword {
+  transition: transform 0.2s ease;
+}
+#togglePassword.icon-swap, #toggleSignupPassword.icon-swap {
+  animation: iconPop 0.25s ease;
+}
+@keyframes iconPop {
+  0%   { transform: scale(0.7) rotate(-15deg); opacity: 0.4; }
+  60%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+#togglePassword:hover, #toggleSignupPassword:hover {
+  transform: scale(1.1);
 }

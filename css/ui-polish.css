@@ -1,0 +1,447 @@
+/* ==========================================================================
+   EduAnalytics UI POLISH
+   --------------------------------------------------------------------------
+   PURPOSE:
+   - Adds visual animations and micro-interactions.
+   - Does NOT replace existing styles.
+   - Does NOT change application logic.
+   - Designed to work on top of the existing stylesheet.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. PAGE LOAD ANIMATION
+   --------------------------------------------------------------------------
+   The page content gently appears instead of suddenly popping onto screen.
+   ========================================================================== */
+
+.dashboard-main {
+  animation: eaPageEnter 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes eaPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* ==========================================================================
+   2. DASHBOARD STAT CARDS
+   --------------------------------------------------------------------------
+   Existing .stat-card styles remain untouched.
+   We only add visual polish.
+   ========================================================================== */
+
+.stat-card {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+
+  /* Slightly smoother existing transition */
+  will-change: transform, box-shadow;
+}
+
+
+/* Decorative light sweep inside the card */
+.stat-card::before {
+  content: "";
+  position: absolute;
+
+  top: 0;
+  left: -120%;
+
+  width: 80%;
+  height: 100%;
+
+  background: linear-gradient(
+    110deg,
+    transparent,
+    rgba(255, 255, 255, 0.16),
+    transparent
+  );
+
+  transform: skewX(-18deg);
+
+  pointer-events: none;
+  z-index: -1;
+
+  transition: left 0.7s ease;
+}
+
+
+/* Move the light sweep when the user hovers */
+.stat-card:hover::before {
+  left: 140%;
+}
+
+
+/* Existing hover is enhanced without changing its purpose */
+.stat-card:hover {
+  transform: translateY(-8px) scale(1.015);
+  box-shadow: var(--shadow-glow);
+}
+
+
+/* Icon becomes slightly lively */
+.stat-card .stat-icon {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.35s ease;
+}
+
+.stat-card:hover .stat-icon {
+  transform: translateY(-4px) scale(1.08) rotate(-3deg);
+  filter: drop-shadow(0 6px 10px rgba(99, 102, 241, 0.18));
+}
+
+
+/* ==========================================================================
+   3. STAT NUMBER COUNT-UP VISUAL
+   --------------------------------------------------------------------------
+   JavaScript will add this class while numbers are being animated.
+   ========================================================================== */
+
+.stat-card h3 {
+  font-variant-numeric: tabular-nums;
+  transition:
+    transform 0.25s ease,
+    color 0.25s ease;
+}
+
+.stat-card:hover h3 {
+  transform: scale(1.04);
+}
+
+
+/* ==========================================================================
+   4. ANALYTICS / CHART CARDS
+   ========================================================================== */
+
+.chart-card {
+  position: relative;
+  overflow: hidden;
+
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
+
+  will-change: transform;
+}
+
+
+/* Soft gradient glow */
+.chart-card::after {
+  content: "";
+
+  position: absolute;
+  top: -80px;
+  right: -80px;
+
+  width: 160px;
+  height: 160px;
+
+  border-radius: 50%;
+
+  background: rgba(99, 102, 241, 0.08);
+
+  filter: blur(10px);
+
+  pointer-events: none;
+
+  transition:
+    transform 0.5s ease,
+    opacity 0.5s ease;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(99, 102, 241, 0.25);
+}
+
+.chart-card:hover::after {
+  transform: scale(1.35);
+}
+
+
+/* ==========================================================================
+   5. ACTIVITY FEED
+   ========================================================================== */
+
+.activity-item {
+  transition:
+    transform 0.25s ease,
+    padding-left 0.25s ease,
+    background 0.25s ease;
+}
+
+.activity-item:hover {
+  transform: translateX(5px);
+  padding-left: 5px;
+}
+
+
+/* Activity icon gets a tiny interaction */
+.activity-icon {
+  display: inline-block;
+
+  transition:
+    transform 0.3s ease;
+}
+
+.activity-item:hover .activity-icon {
+  transform: scale(1.12) rotate(-5deg);
+}
+
+
+/* ==========================================================================
+   6. TABLE ROW MICRO-INTERACTION
+   -------------------------------------------------------------------------- */
+
+#studentsTable tbody tr {
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#studentsTable tbody tr:hover {
+  transform: translateX(3px);
+}
+
+
+/* Status badge interaction */
+#studentsTable .badge {
+  display: inline-block;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+#studentsTable tbody tr:hover .badge {
+  transform: scale(1.05);
+}
+
+
+/* ==========================================================================
+   7. BUTTON MICRO-INTERACTIONS
+   -------------------------------------------------------------------------- */
+
+.btn,
+.page-btn,
+.btn-link,
+.btn-icon-action {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+
+/* Tiny press effect */
+.btn:active,
+.page-btn:active,
+.btn-icon-action:active {
+  transform: scale(0.96);
+}
+
+
+/* Primary button gets a subtle glow */
+.btn-primary:hover {
+  box-shadow:
+    0 8px 22px rgba(99, 102, 241, 0.25);
+}
+
+
+/* ==========================================================================
+   8. PAGINATION
+   ========================================================================== */
+
+.page-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+
+/* Active page gets subtle depth */
+.page-btn.active {
+  box-shadow:
+    0 5px 14px rgba(99, 102, 241, 0.22);
+}
+
+
+/* ==========================================================================
+   9. FILTER CHIPS
+   -------------------------------------------------------------------------- */
+
+.chip {
+  animation: eaChipIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.chip:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+@keyframes eaChipIn {
+  from {
+    opacity: 0;
+    transform: translateY(7px) scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ==========================================================================
+   10. SIDEBAR NAVIGATION
+   ========================================================================== */
+
+.sidebar-menu li a {
+  position: relative;
+  overflow: hidden;
+}
+
+
+/* Animated light layer */
+.sidebar-menu li a::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: -100%;
+
+  width: 100%;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(99, 102, 241, 0.06),
+    transparent
+  );
+
+  transition: left 0.5s ease;
+
+  pointer-events: none;
+}
+
+.sidebar-menu li a:hover::after {
+  left: 100%;
+}
+
+
+/* ==========================================================================
+   11. FORM INPUT MICRO-INTERACTIONS
+   -------------------------------------------------------------------------- */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  transform: translateY(-1px);
+}
+
+
+/* ==========================================================================
+   12. MODAL ENTRY ANIMATION
+   -------------------------------------------------------------------------- */
+
+.modal-overlay:not([hidden]) .modal-box {
+  animation: eaModalIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes eaModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+
+/* ==========================================================================
+   13. SMOOTH SECTION REVEAL
+   --------------------------------------------------------------------------
+   JavaScript will add .ea-reveal-visible to elements.
+   ========================================================================== */
+
+.ea-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+
+  transition:
+    opacity 0.65s ease,
+    transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ea-reveal.ea-reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+/* ==========================================================================
+   14. ACCESSIBILITY
+   --------------------------------------------------------------------------
+   Users who request reduced motion should not receive animations.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+}
+/* ==========================================================================
+   STAT CARD ENTRANCE
+   ========================================================================== */
+
+@keyframes eaStatCardIn {
+
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+}

@@ -248,10 +248,15 @@ document.addEventListener("DOMContentLoaded", function() {
       const t = R.checked;
       return t ? r(j) : e && s(j, "You must accept the Terms & Privacy Policy to create an account."), t
     }
-    N && N.addEventListener("click", function() {
-      const e = "password" === _.type;
-      _.type = e ? "text" : "password", N.textContent = e ? "🙈" : "👁️"
-    }), S.addEventListener("input", function() {
+   N && N.addEventListener("click", function() {
+  const e = "password" === _.type;
+  _.type = e ? "text" : "password";
+  N.classList.add("icon-swap");
+  N.innerHTML = e
+    ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  setTimeout(() => N.classList.remove("icon-swap"), 250);
+}), S.addEventListener("input", function() {
       u(!1)
     }), S.addEventListener("blur", function() {
       u(!0)
@@ -313,10 +318,15 @@ signupBtn.innerHTML = '<span class="spinner"></span> Creating account...';
       const t = U.value.trim().length;
       return 0 === t ? (e ? s(z, "Please enter your password.") : r(z), !1) : t < 6 ? (e ? s(z, "Too short — password needs at least 6 characters (you have " + t + ").") : r(z), !1) : (a(z), !0)
     }
-    W && W.addEventListener("click", function() {
-      const e = "password" === U.type;
-      U.type = e ? "text" : "password", W.textContent = e ? "🙈" : "👁️"
-    }), Z.addEventListener("input", function() {
+  W && W.addEventListener("click", function() {
+  const e = "password" === U.type;
+  U.type = e ? "text" : "password";
+  W.classList.add("icon-swap");
+  W.innerHTML = e
+    ? '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
+    : '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+  setTimeout(() => W.classList.remove("icon-swap"), 250);
+}), Z.addEventListener("input", function() {
       v(!1)
     }), Z.addEventListener("blur", function() {
       v(!0)
