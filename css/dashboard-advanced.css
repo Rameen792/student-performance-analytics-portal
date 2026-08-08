@@ -905,3 +905,41 @@ body.modal-open { overflow: hidden; }
   }
 
 }
+/* ==========================================================================
+   FIX — HERO STATS: NUMBER + LABEL ON ONE LINE
+   ========================================================================== */
+
+.role-hero-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.role-hero-stat strong {
+  display: inline-block !important;
+
+  font-size: 1.1rem !important;
+  line-height: 1 !important;
+
+  font-weight: 700 !important;
+
+  margin: 0 !important;
+
+  transform: none;
+}
+
+.role-hero-stat span {
+  display: inline-block;
+
+  font-size: 1rem;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+}
+
+
+/* Subtle hover only */
+.role-hero-stat:hover strong {
+  transform: scale(1.04);
+}
