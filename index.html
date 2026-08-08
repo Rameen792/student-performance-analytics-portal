@@ -15,7 +15,31 @@
 </script>
 </head>
 <body>
-
+<!-- ===== APP LOADER ===== -->
+<div id="appLoader">
+  <div class="app-loader-logo">
+    <div class="ring"></div>
+    <div class="ring2"></div>
+    <span class="emoji">🎓</span>
+  </div>
+  <div class="app-loader-text">Loading your dashboard<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
+  <div class="app-loader-bar"><div class="app-loader-bar-fill"></div></div>
+</div>
+<script>
+(function () {
+  var justLoggedIn = sessionStorage.getItem('eduanalytics_just_logged_in');
+  var loader = document.getElementById('appLoader');
+  if (justLoggedIn) {
+    sessionStorage.removeItem('eduanalytics_just_logged_in');
+    document.body.classList.add('app-was-loading');
+    setTimeout(function () {
+      loader.classList.add('hidden');
+    }, 2000);
+  } else {
+    loader.style.display = 'none';
+  }
+})();
+</script>
   <!-- ===== NAVIGATION BAR ===== -->
   <nav class="navbar">
     <div class="nav-container">
