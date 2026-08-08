@@ -15,15 +15,10 @@
 </script>
 </head>
 <body>
-<!-- ===== APP LOADER ===== -->
 <div id="appLoader">
-  <div class="app-loader-logo">
-    <div class="ring"></div>
-    <div class="ring2"></div>
-    <span class="emoji">🎓</span>
-  </div>
-  <div class="app-loader-text">Loading your dashboard<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span></div>
-  <div class="app-loader-bar"><div class="app-loader-bar-fill"></div></div>
+  <div class="app-loader-bg-text">Student Portal</div>
+  <div class="app-loader-ring"></div>
+  <div class="app-loader-text">Loading Dashboard...</div>
 </div>
 <script>
 (function () {
@@ -31,7 +26,6 @@
   var loader = document.getElementById('appLoader');
   if (justLoggedIn) {
     sessionStorage.removeItem('eduanalytics_just_logged_in');
-    document.body.classList.add('app-was-loading');
     setTimeout(function () {
       loader.classList.add('hidden');
     }, 2000);

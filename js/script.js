@@ -340,7 +340,7 @@ signupBtn.innerHTML = '<span class="spinner"></span> Creating account...';
           email: t.email,
           role: t.role
         });
-      o ? localStorage.setItem("eduanalytics_current_user", a) : sessionStorage.setItem("eduanalytics_current_user", a), setTimeout(() => {
+      o ? localStorage.setItem("eduanalytics_current_user", a) : sessionStorage.setItem("eduanalytics_current_user", a), sessionStorage.setItem("eduanalytics_just_logged_in", "1"), setTimeout(() => {
         window.location.href = "index.html"
       }, 1200)
     })

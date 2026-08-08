@@ -19,7 +19,25 @@
   </script>
 </head>
 <body>
-
+<div id="appLoader">
+  <div class="app-loader-bg-text">Student Portal</div>
+  <div class="app-loader-ring"></div>
+  <div class="app-loader-text">Loading Dashboard...</div>
+</div>
+<script>
+(function () {
+  var justLoggedIn = sessionStorage.getItem('eduanalytics_just_logged_in');
+  var loader = document.getElementById('appLoader');
+  if (justLoggedIn) {
+    sessionStorage.removeItem('eduanalytics_just_logged_in');
+    setTimeout(function () {
+      loader.classList.add('hidden');
+    }, 2000);
+  } else {
+    loader.style.display = 'none';
+  }
+})();
+</script>
   <a href="#mainContent" class="skip-link">Skip to main content</a>
 
   <nav class="navbar">
